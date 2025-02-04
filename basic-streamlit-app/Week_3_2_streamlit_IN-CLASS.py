@@ -6,6 +6,8 @@ import streamlit as st
 # cd lets you choose a folder in the directory to go to
 
 # Display a simple text message
+st.title("Hello, streamlit!")
+st.markdown("## This is my first streamlit app!")
 
 # Display a large title on the app
 
@@ -15,6 +17,17 @@ import streamlit as st
 
 # Create a button that users can click.
 # If the button is clicked, the message changes.
+if st.button("Click me!"):
+    st.write("You clicked the button. Nice work!")
+else:
+    st.write("Go ahead. Click the button. I dare you.")
+
+# I want to make a set of radio buttons
+if st.radio("What's your favorite fruit?", ["Apple", "Orange", "Pineapple"]) == "Apple":
+    st.write("Mine too!")
+else:
+    st.write("Terrible choice.")
+
 
 # ------------------------
 # COLOR PICKER WIDGET
