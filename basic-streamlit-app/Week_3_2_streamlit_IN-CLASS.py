@@ -1,5 +1,10 @@
 # Import the Streamlit library
 import streamlit as st
+
+# Navigate through the terminal
+# ls gives you the list of files in the current directory
+# cd lets you choose a folder in the directory to go to
+
 # Display a simple text message
 
 # Display a large title on the app
