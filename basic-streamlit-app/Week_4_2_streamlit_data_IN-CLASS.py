@@ -28,7 +28,7 @@ st.dataframe(df)
 # Students learn how to use widgets in Streamlit for interactivity
 city = st.selectbox("Select a city", df["City"].unique())
 
-# Filtering the DataFrame based on user selection
+# Filtering the DataFrame based on user selection!
 filtered_df = df[df["City"] == city]
 
 # Display the filtered results
