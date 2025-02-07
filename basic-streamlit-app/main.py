@@ -28,3 +28,7 @@ elif var == "bill_length_mm":
 elif var == "bill_depth_mm":
     depth_slider_values = st.slider("Select a range of bill depths to explore: ", min_value = penguins_df["bill_depth_mm"].min(), max_value = penguins_df["bill_depth_mm"].max(), value = (17.5, 20.5))
     st.dataframe(penguins_df[(penguins_df["bill_depth_mm"] >= depth_slider_values[0]) & (penguins_df["bill_depth_mm"] <= depth_slider_values[1])])
+
+elif var == "flipper_length_mm":
+    flipper_slider_values = st.slider("Select a range of flipper lengths to explore: ", min_value = int(penguins_df["flipper_length_mm"].min()), max_value = int(penguins_df["flipper_length_mm"].max()), value = (190, 205), step = 1)
+    st.dataframe(penguins_df[(penguins_df["flipper_length_mm"] >= flipper_slider_values[0]) & (penguins_df["flipper_length_mm"] <= flipper_slider_values[1])])
