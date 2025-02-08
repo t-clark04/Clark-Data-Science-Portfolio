@@ -92,7 +92,7 @@ elif var == "year":
     st.dataframe(penguins_df[penguins_df["year"] == year])
 
 # Providing a link to more information about the Palmer's Penguins dataset.
-st.write("For more information on the dataset, see: https://allisonhorst.github.io/palmerpenguins/articles/intro.html.")
+st.write("For more information on the dataset, see: https://allisonhorst.github.io/palmerpenguins/articles/intro.html")
 
 # Thanking the user.
 st.write("Thanks for checking out my app!")
