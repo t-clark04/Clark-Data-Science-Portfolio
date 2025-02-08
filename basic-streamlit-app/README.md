@@ -1,4 +1,4 @@
-# Palmer's Penguins Streamlit App
+# Palmer's Penguins Streamlit App 🌟
 
 ### This is a basic streamlit app that allows users to filter and explore the Palmer's Penguins dataset. 🐧 The dataframe contains measurement data collected between 2007 and 2009 on three different species of penguins living on the Palmer Archipelago in Antarctica. ❄️ With 344 observations across 9 different variables, there's plenty to uncover!
 
