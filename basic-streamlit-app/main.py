@@ -5,7 +5,7 @@ st.title("Filtering the Palmer's Penguins Dataset")
 penguins_df = pd.read_csv("data/penguins.csv")
 penguins_df["year"] = penguins_df["year"].astype(str)
 
-st.write("The Palmer's Penguins dataset contains 344 observations of penguin data across 9 different variables. The purpose of this streamlit application is to allow you to explore the data a bit better!")
+st.write("The Palmer's Penguins dataset contains measurement data collected between 2007 and 2009 on three different species of penguins living on the Palmer Archipelago. The data frame contains 344 observations of penguin data across 9 different variables. The purpose of this streamlit application is to allow you to explore the data a bit better!")
 st.write("Start out by choosing a metric you would like to sort by (or choose '(none)' to see the whole dataset), then interact with the resulting widget to narrow down the data. The filtered dataset will be displayed for you!")
 
 st.markdown(
@@ -65,3 +65,6 @@ elif var == "sex":
 elif var == "year":
     year = st.radio("Choose a year of penguin data to explore: ", options = penguins_df["year"].unique())
     st.dataframe(penguins_df[penguins_df["year"] == year])
+
+st.write("For more information on the dataset, see: https://allisonhorst.github.io/palmerpenguins/articles/intro.html.")
+st.write("Thanks for checking out my app!")
