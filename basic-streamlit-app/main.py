@@ -3,11 +3,15 @@ import pandas as pd
 
 st.title("Filtering the Palmer's Penguins Dataset")
 penguins_df = pd.read_csv("data/penguins.csv")
+penguins_df["year"] = penguins_df["year"].astype(str)
 
 st.write("The Palmer's Penguins dataset contains 344 observations of penguin data across 9 different variables. The purpose of this streamlit application is to allow you to explore the data a bit better!")
 st.write("Start out by choosing a metric you would like to sort by, then interact with the resulting widget to narrow down the data. The filtered dataset will then be displayed for you!")
 
-var = st.selectbox("Choose a variable to filter by: ", penguins_df.columns.tolist())
+var = st.selectbox("Choose a variable to filter by: ", ["(none)"] + penguins_df.columns.tolist())
+
+if var == "(none)":
+    st.dataframe(penguins_df)
 
 if var == "id":
     id_slider_values = st.slider("Select a range of penguin IDs to explore: ", min_value = 0, max_value = 343, value = (100, 200))
@@ -43,3 +47,7 @@ elif var == "sex":
         st.dataframe(penguins_df[penguins_df["sex"] == sex])
     else:
         st.dataframe(penguins_df[~penguins_df["sex"].isin(["male", "female"])])
+
+elif var == "year":
+    year = st.radio("Choose a year of penguin data to explore: ", options = penguins_df["year"].unique())
+    st.dataframe(penguins_df[penguins_df["year"] == year])
