@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-st.title("Filtering the Palmer's Penguins Dataset")
+st.title("Exploring the Palmer's Penguins Dataset")
 penguins_df = pd.read_csv("data/penguins.csv")
 penguins_df["year"] = penguins_df["year"].astype(str)
 
