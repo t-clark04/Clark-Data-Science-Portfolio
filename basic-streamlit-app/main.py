@@ -36,3 +36,10 @@ elif var == "flipper_length_mm":
 elif var == "body_mass_g":
     mass_slider_values = st.slider("Select a range of penguin body mass values: ", min_value = int(penguins_df["body_mass_g"].min()), max_value = int(penguins_df["body_mass_g"].max()), value = (4100, 5100), step = 5)
     st.dataframe(penguins_df[(penguins_df["body_mass_g"] >= mass_slider_values[0]) & (penguins_df["body_mass_g"] <= mass_slider_values[1])])
+
+elif var == "sex":
+    sex = st.radio("Select which sex you would like to filter by: ", options = ["male", "female", "not given"])
+    if (sex == "male") | (sex == "female"):
+        st.dataframe(penguins_df[penguins_df["sex"] == sex])
+    else:
+        st.dataframe(penguins_df[~penguins_df["sex"].isin(["male", "female"])])
