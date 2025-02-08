@@ -31,10 +31,10 @@ st.markdown(
 For your reference:
 - "id" is the penguin identification number, which runs from 0 to 343.
 - "species" is the penguin species, with choices Adelie, Gentoo, or Chinstrap.
-- "island" is the particular island they came from, either Torgersen, Biscoe, or Dream.
+- "island" is the particular island they came from -- either Torgersen, Biscoe, or Dream.
 - "bill_length_mm" is the bill length in millimeters, running from 32.1 to 59.6.
-- "bill_depth_mm" is likewise the bill depth in millimeters, ranging from 13.1 to 21.5.
-- "flipper_length_mm" is the flipper length in millimeters, which runs from 172 to 231.
+- "bill_depth_mm" is the bill depth in millimeters, ranging from 13.1 to 21.5.
+- "flipper_length_mm" is the flipper length in millimeters, between 172 and 231.
 - "body_mass_g" is the body mass of the penguin in grams, with range 2,700 to 6,300.
 - "sex" is the sex of the penguin -- either male, female, or not given.
 - "year" is the year in which they were studied (2007, 2008, or 2009).
