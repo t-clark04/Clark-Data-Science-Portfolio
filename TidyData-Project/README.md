@@ -1,7 +1,7 @@
 # Tidy Data Project 🧹 ✨
 
 ## Overview 📊
-In this "tidy data" mini-project, I showcase my skills in data cleaning and visualization in Python, using a "messy" dataset on the medalists at the 2008 Summer Olympics in Beijing 🥇. With the help of methods like ``pd.melt()``, ``dropna()``, and ``str.split()``, I first transform the data according to the principles of "tidy data" put forth by New Zealand statistician Hadley Wickham. He proposed that data be formatted such that:
+In this "tidy data" mini-project, I showcase my skills in data cleaning and visualization in Python, starting with a "messy" dataset on the medalists at the 2008 Summer Olympics in Beijing 🥇. With the help of methods like ``pd.melt()``, ``dropna()``, and ``str.split()``, I first transform the data according to the principles of ["tidy data"](https://www.jstatsoft.org/article/view/v059i10) put forth by New Zealand statistician Hadley Wickham. He proposed that data be formatted such that:
 
 (1) Every variable has its own column.
 
@@ -9,7 +9,7 @@ In this "tidy data" mini-project, I showcase my skills in data cleaning and visu
 
 (3) Every distinct type of observational unit has its own separate table
 
-Following this universal standard for data formatting makes cleaning, modeling, and visualization much simpler, since many of the tools we use for facilitating data analysis in Python (such as those found in the [Pandas Cheat Sheet](https://pandas.pydata.org/Pandas_Cheat_Sheet.pdf)) expect data to be inputted in this format. It also cuts down the number of tools necessary to transform messy data into the tidy data we want. For more information on "tidy data", check out Wickham's original article linked [here](https://www.jstatsoft.org/article/view/v059i10).
+Following this universal standard for data formatting makes cleaning, modeling, and visualization much simpler, since many of the tools we use for facilitating data analysis in Python (such as those found in the [Pandas Cheat Sheet](https://pandas.pydata.org/Pandas_Cheat_Sheet.pdf)) expect data to be inputted in this format. It also cuts down the number of tools necessary to transform messy data into the tidy data we want.
 
 After cleaning the data, I end up with a pandas DataFrame containing information on 1,875 athletes at the 2008 Olympics, namely their ``Gender``, the ``Sport`` they played, and the type of ``Medal`` they earned (i.e. gold, silver, or bronze). I then explore the relationships between these three categorical variables through pivot tables and visualizations, and I discuss some possible reasons for the patterns we discover. 
 
