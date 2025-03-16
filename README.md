@@ -5,7 +5,7 @@ This repository contains all of my data science-related projects completed over 
 ## Basic EDA
 <img align="left" width="250" height="150" src="Images/Penguins.jpg"> **[Palmer's Penguins Streamlit App 🐧❄️](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/basic-streamlit-app)**
 
-Basic streamlit app that allows users to filter and explore the Palmer's Penguins dataset. The project showcases my proficiency with the streamlit library, as well as my skills in working with pandas DataFrames. Dataset contains measurements on three different species of penguins living on the Palmer Archipelago in Antarctica. Navigate over to the [basic-streamlit-app](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/basic-streamlit-app) folder for more information and  instructions on how to run the app yourself! 
+Basic streamlit app allowing users to filter and explore the Palmer's Penguins dataset. Showcases my proficiency with the streamlit library, as well as my skills in working with pandas DataFrames. Dataset contains measurements on three different species of penguins living on the Palmer Archipelago in Antarctica. Navigate to the [basic-streamlit-app](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/basic-streamlit-app) folder for more information and  instructions on how to run the app yourself! 
 
 #
 
