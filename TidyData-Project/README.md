@@ -19,7 +19,7 @@ Thank you for checking out my project, and I hope you learn a thing or two about
 
 - [Overview](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project#overview-)
 - [Getting Started](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project#getting-started-)
-- [Project Data](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project#project-data-%EF%B8%8F)
+- [Data](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project#project-data-%EF%B8%8F)
 - [Project Insights](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project#project-insights-)
 - [References](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project#references-)
 
@@ -38,7 +38,7 @@ Right-click on the file (or double-click on a Mac) and extract the contents. Now
 
 Note: This Jupyter notebook uses the following Python libraries: ``pandas``, ``warnings``, ``seaborn``, and ``matplotlib``. If you have never used these libraries before or if they are not contained within your Python Standard Library, you may need to install them before you can run the code in the notebook. To do so, just hop over to the terminal in your IDE, and type: ``pip install package-name``. For example, to install pandas, just enter ``pip install pandas`` in the terminal and hit enter. Once all of these dependencies are installed, you should be good to go!
 
-## Project Data 🗄️
+## Data 🗄️
 
 The messy data for this mini-project has been adapted from a dataset found at [this link](https://edjnet.github.io/OlympicsGoNUTS/2008/), so thank you to Giorgio Comai from the European Data Journalism Network for the use of his data. You can download the data directly by heading over to the data folder linked [here](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project/data) and downloading the file called ``olympics_08_medalists.csv``. However, if you follow the steps in the "Getting Started" section, there is no need to download the data individually or to carry out any other pre-processing steps. Once cleaned, the dataset contains 1,875 observations across 4 variables relating to the athletes who earned Olympic medals at the 2008 games in Beijing.
 
