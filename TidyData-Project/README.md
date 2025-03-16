@@ -56,7 +56,7 @@ These pie charts show us the sports that were awarded the most medals at the 200
 
 ## References 📚
 
-For more information on Hadley Wickham's concept of "tidy data", check out his original article in the Journal of Statistical Software linked [here](https://edjnet.github.io/OlympicsGoNUTS/2008/).
+For more information on Hadley Wickham's concept of "tidy data", check out his original article in the Journal of Statistical Software linked [here](https://www.jstatsoft.org/article/view/v059i10).
 
 While you're at it, feel free to also take a look at the "Pandas Cheat Sheet" [here](https://pandas.pydata.org/Pandas_Cheat_Sheet.pdf). It contains descriptions and examples of many of the functions and methods I used in this project.
 
