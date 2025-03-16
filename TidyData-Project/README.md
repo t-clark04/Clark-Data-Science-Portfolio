@@ -19,3 +19,9 @@ Thank you for checking out my project, and I hope you learn a thing or two about
 To run the Jupyter notebook yourself, you will first need to download the "TidyData-Project" folder from my data science portfolio repository. To do that, first go to [this link](https://download-directory.github.io/). This will open up a page that looks like this:
 
 ![Getting Started 1](data/Getting_Started_1.png)
+
+Paste the following link into the box in the center of the page and press enter on the keyboard: https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project.
+
+The project files have now been downloaded to your computer as a zip file. Locate the zip file in your Downloads folder. It should look something like this:
+
+![Getting Started 2](data/Getting_Started_2.png)
