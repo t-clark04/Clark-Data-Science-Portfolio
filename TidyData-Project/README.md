@@ -15,6 +15,14 @@ After cleaning the data, I end up with a pandas DataFrame containing information
 
 Thank you for checking out my project, and I hope you learn a thing or two about data cleaning and visualization in Python!🐍
 
+## Table of Contents
+
+- [Overview](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project#overview-)
+- [Getting Started](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project#getting-started-)
+- [Project Data](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project#project-data-%EF%B8%8F)
+- [Project Insights](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project#project-insights-)
+- [References](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project#references-)
+
 ## Getting Started ✅
 To run the Jupyter notebook yourself, you first need to download the "TidyData-Project" folder from my data science portfolio repository. To do that, first go to [this link](https://download-directory.github.io/). This will open up a page that looks like this:
 
