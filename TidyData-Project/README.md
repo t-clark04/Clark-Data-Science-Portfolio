@@ -7,7 +7,7 @@ In this "tidy data" mini-project, I showcase my skills in data cleaning and visu
 
 (2) Every observation forms a separate row.
 
-(3) Every distinct type of observational unit has its own separate table
+(3) Every distinct type of observational unit has its own separate table.
 
 Following this universal standard for data formatting makes cleaning, modeling, and visualization much simpler, since many of the tools we use for facilitating data analysis in Python (such as those found in the [Pandas Cheat Sheet](https://pandas.pydata.org/Pandas_Cheat_Sheet.pdf)) expect data to be inputted in this format. It also cuts down the number of tools necessary to transform messy data into the tidy data we want.
 
