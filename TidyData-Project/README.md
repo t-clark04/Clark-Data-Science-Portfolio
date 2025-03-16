@@ -52,4 +52,4 @@ For more information on Hadley Wickham's concept of "tidy data", check out his o
 
 While you're at it, feel free to also take a look at the "Pandas Cheat Sheet" [here](https://pandas.pydata.org/Pandas_Cheat_Sheet.pdf). It contains descriptions and examples of many of the functions and methods I used in this project.
 
-Finally, the data used in this project has been adapted from the work of Giorgio Comai linked [here](https://edjnet.github.io/OlympicsGoNUTS/2008/).
+Finally, as stated above, the data for this project has been adapted from the work of Giorgio Comai from the European Data Journalism Network linked [here](https://edjnet.github.io/OlympicsGoNUTS/2008/).
