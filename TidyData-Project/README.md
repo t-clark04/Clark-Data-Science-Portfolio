@@ -24,7 +24,7 @@ Thank you for checking out my project, and I hope you learn a thing or two about
 - [References](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project#references-)
 
 ## Getting Started ✅
-To run the Jupyter notebook yourself, you first need to download the "TidyData-Project" folder from my data science portfolio repository. To do that, first go to [this link](https://download-directory.github.io/). This will open up a page that looks like this:
+To run the Jupyter notebook yourself, you first need to download the "TidyData-Project" folder from my data science portfolio repository. To do that, first go to [this link](https://download-directory.github.io/). It will open up a page that looks like this:
 
 ![Getting Started 1](data/Getting_Started_1.png)
 
