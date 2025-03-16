@@ -25,3 +25,7 @@ Paste the following link into the box in the center of the page and press enter 
 The project files have now been downloaded to your computer as a zip file. Locate the zip file in your Downloads folder. It should look something like this:
 
 ![Getting Started 2](data/Getting_Started_2.png)
+
+Right-click on the file (or double-click on a Mac) and extract the contents. Now, open up ``main.ipynb`` in your favorite IDE (mine is VSCode!), and you can run the whole notebook yourself!
+
+Note: This Jupyter notebook uses the following Python libraries: ``pandas``, ``warnings``, ``seaborn``, and ``matplotlib``. If you have never used these libraries before or they are not contained within your Python Standard Library, you may need to install these before you can run the notebook. To do so, just hop over to the "Terminal" or the "Command Line" of your IDE, and type: ``pip install package-name``. For example, to install pandas, just enter ``pip install pandas`` in the terminal and hit enter. Once all of these dependencies are installed, you should be good to go!
