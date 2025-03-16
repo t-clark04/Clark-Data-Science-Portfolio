@@ -10,6 +10,6 @@ Basic streamlit app allowing users to filter and explore the Palmer's Penguins d
 #
 
 ## Data Cleaning and Visualization
-<img align="left" width="250" height="150" src="Images/Olympics.webp"> **[Tidy Data Project 🧹 ✨](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project)**
+<img align="left" width="275" height="175" src="Images/Olympics.webp"> **[Tidy Data Project 🧹 ✨](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project)**
 
 Project demonstrating my expertise in data cleaning and visualization in Python using libraries like ``pandas``, ``seaborn``, and ``matplotlib``. Starting with a messy dataset on the medalists at the 2008 Summer Olympics, I re-format the data into a "tidy" data frame and explore relationships in variables (like `Gender` and `Sport`) through pivot tables and visualizations. Click [here](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project) to check it out for yourself! 
