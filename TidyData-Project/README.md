@@ -20,7 +20,7 @@ To run the Jupyter notebook yourself, you first need to download the "TidyData-P
 
 ![Getting Started 1](data/Getting_Started_1.png)
 
-Paste the following link into the box in the center of the page and press enter on the keyboard: https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project.
+Paste the following link into the box in the center of the page and hit enter on the keyboard: https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project.
 
 The project files have now been downloaded to your computer as a zip file. Locate the zip file in your Downloads folder:
 
@@ -28,7 +28,7 @@ The project files have now been downloaded to your computer as a zip file. Locat
 
 Right-click on the file (or double-click on a Mac) and extract the contents. Now, open up ``main.ipynb`` in your favorite IDE (mine is VSCode!), and run the whole notebook yourself!
 
-Note: This Jupyter notebook uses the following Python libraries: ``pandas``, ``warnings``, ``seaborn``, and ``matplotlib``. If you have never used these libraries before or they are not contained within your Python Standard Library, you may need to install them before you can run the notebook. To do so, just hop over to the terminal in your IDE, and type: ``pip install package-name``. For example, to install pandas, just enter ``pip install pandas`` in the terminal and hit enter. Once all of these dependencies are installed, you should be good to go!
+Note: This Jupyter notebook uses the following Python libraries: ``pandas``, ``warnings``, ``seaborn``, and ``matplotlib``. If you have never used these libraries before or if they are not contained within your Python Standard Library, you may need to install them before you can run the notebook. To do so, just hop over to the terminal in your IDE, and type: ``pip install package-name``. For example, to install pandas, just enter ``pip install pandas`` in the terminal and hit enter. Once all of these dependencies are installed, you should be good to go!
 
 ## Project Data 🗄️
 
