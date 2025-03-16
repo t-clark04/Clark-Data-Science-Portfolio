@@ -19,7 +19,7 @@ Thank you for checking out my project, and I hope you learn a thing or two about
 
 - [Overview](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project#overview-)
 - [Getting Started](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project#getting-started-)
-- [Data](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project#project-data-%EF%B8%8F)
+- [Data](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project#data-%EF%B8%8F)
 - [Project Insights](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project#project-insights-)
 - [References](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project#references-)
 
