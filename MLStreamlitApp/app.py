@@ -9,6 +9,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import roc_curve, roc_auc_score
 
 nba_data = pd.read_csv("data/NBA_Regular_Season.csv", sep = ";", encoding = 'latin-1')
 
@@ -49,7 +50,7 @@ path = st.radio("Choose your path!", ["Upload my own dataset", "Become an NBA Al
 if path == "Become an NBA All-Star":
     st.subheader("Predicting NBA All-Star Status with Machine Learning")
     st.write("Excellent choice! In this portion of the app, you get to pretend that you're a basketball player in the NBA during the 2023-24 season!")
-    st.write("You'll first input your position, as well as your season statistics for Points per Game, Assists per Game, and Rebounds per Game. Then, you'll choose what kind of classification model you'd like to use to predict your All-Star status -- either logistic regression, decision tree, or k-nearest neighbors. Finally, you'll tune the hyperparameters of the corresponding model and hit 'Go'!")
+    st.write("You'll first input your position, as well as your season statistics for Points per Game, Assists per Game, and Rebounds per Game. Then, you'll choose what kind of classification model you'd like to use to predict your All-Star status -- either logistic regression or decision tree. Finally, you'll tune the hyperparameters of the corresponding model and hit 'Go'!")
     st.write("The app will spit out your probability of being an All-Star, as well as display some of the model metrics to give you a sense of how accurate the prediction is. On your mark, get set, go!")
 
     position = st.selectbox("Select your position:", ['PG', 'SG', 'SF', 'PF', 'C'])   
@@ -60,7 +61,7 @@ if path == "Become an NBA All-Star":
 
     rebounds = st.slider("Enter your average rebounds per game:", min_value = 0.0, max_value = final_dataset['TRB'].max(), value = 4.0, step = 0.1)
 
-    model_choice = st.radio("Choose a classification model:", ['Logistic Regression', 'Decision Tree', 'K-Nearest Neighbors'])
+    model_choice = st.radio("Choose a classification model:", ['Logistic Regression', 'Decision Tree'])
 
     if model_choice == "Logistic Regression":
         scale_question = st.radio("Would you like to scale the data? (Scaling adjusts for unit bias)", ['Yes', 'No'])
@@ -80,22 +81,39 @@ if path == "Become an NBA All-Star":
             model = LogisticRegression()
             model.fit(X_train, y_train)
             prob = model.predict_proba(user_data)
-            st.write(f"Your probability of being an all-star is {prob[0][1]:.2%}!")
+            st.write(f"Your probability of being an all-star is **{prob[0][1]:.2%}**!")
             y_pred = model.predict(X_test)
             accuracy = accuracy_score(y_test, y_pred)
-            st.write(f"This model has an accuracy of {accuracy:.4f}. The give you a more complete picture of the model's accuracy, check out the confusion matrix and classification report below.")
+            st.write(f"This model has an accuracy of **{accuracy:.4f}**. To give you a more complete picture of the model's accuracy, check out the confusion matrix, classification report, and ROC Curve/AUC below.")
             col1, col2 = st.columns(2)
             with col1:
                 cm = confusion_matrix(y_test, y_pred)
                 sns.heatmap(cm, annot = True, cmap = "Blues")
-                st.subheader("Confusion Matrix for Logistic Regression")
+                st.write("### Confusion Matrix")
                 plt.xlabel("Predicted")
                 plt.ylabel("Actual")
                 st.pyplot(plt)
                 plt.clf()
             with col2:
-                st.subheader("Classification Report for Logistic Regression")
+                st.write("### Classification Report")
                 st.text(classification_report(y_test, y_pred))
+            y_probs = model.predict_proba(X_test)[:, 1]
+            fpr, tpr, threshold = roc_curve(y_test, y_probs)
+            roc_auc = roc_auc_score(y_test, y_probs)
+            col3, col4, col5 = st.columns([0.25,.5,.25])
+            with col4:
+                plt.figure(figsize = (4,4))
+                plt.plot(fpr, tpr, label = f'ROC Curve, AUC = {roc_auc:.4f}')
+                plt.plot([0,1], [0,1], linestyle = '--', label = "Random Guess")
+                plt.xlabel("False Positive Rate")
+                plt.ylabel("True Positive Rate")
+                st.write("### ROC Curve and AUC")
+                plt.legend(loc = "lower right")
+                st.pyplot(plt)
+    
+    if model_choice == 'Decision Tree':
+        
+            
 
 
     
