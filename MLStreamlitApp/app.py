@@ -231,20 +231,20 @@ if path == "Become an NBA All-Star":
 if path == "Upload my own dataset":
     st.subheader("Making Predictions with User-Provided Data")
     st.write("I love the curiosity! You'll be making predictions and gathering insights in no time!")
-    st.write("In this portion of the app, you will upload your own dataset containing one or more predictor variables (either numerical, categorical, or binary) and one **binary** target variable.")
+    st.write("In this portion of the app, you will upload your own tidy dataset containing one or more predictor variables (either numerical, categorical, or binary) and one **binary** target variable.")
     st.write("Then, you'll select different values of your predictor variables, as well as which classification model you'd like to use for prediction -- either logistic regression, decision tree, or k-nearest neighbors.")
     st.write("Finally, you'll tune the hyperparameters of your model (or let the computer tune it for you), and hit 'Run!'.")
     st.write("The app will spit out the probability of your binary target variable being a 1 with those predictor values, as well as some of the model metrics to give you a sense of the model's predictive power. On your mark, get set, go!")
 
-    uploaded_file = st.file_uploader("Please start by uploading a .csv file containing the dataset of interest with at least one binary predictor:", type = "csv")
+    uploaded_file = st.file_uploader("Please start by uploading a .csv file containing the tidy dataset of interest with at least one binary predictor:", type = "csv")
     if uploaded_file:
         input_data = pd.read_csv(uploaded_file)
         st.write("The first few rows of your dataset:")
         st.dataframe(input_data.head())
-        input_data_clean = input_data.dropna()
+        input_data = input_data.dropna()
         pos_binary = []
-        for var in input_data_clean.columns:
-            if input_data_clean[var].nunique() == 2:
+        for var in input_data.columns:
+            if input_data[var].nunique() == 2:
                 pos_binary.append(var)
         if len(pos_binary) == 1:
             target = pos_binary[0]
@@ -254,18 +254,35 @@ if path == "Upload my own dataset":
         else:
             st.write("This dataset contains no binary variables. Please select a new dataset.")
             st.stop()
-        vars = list(input_data_clean.columns)
+        if set(input_data[target].unique()) != {0,1}:
+            target_map = {input_data[target].unique()[0]:0,
+                   input_data[target].unique()[1]:1}
+            input_data[target] = input_data[target].map(target_map)
+        vars = list(input_data.columns)
         vars.remove(target)
         features = st.multiselect("Select variables from the dataset to build your model:", vars)
         if features:
             bools = []
             cats = []
             for var in features:
-                if input_data_clean[var].dtype == "bool":
+                if input_data[var].dtype == "bool":
                     bools.append(var)
-                elif input_data_clean[var].dtype == "object":
+                elif input_data[var].dtype == "object":
                     cats.append(var)
-                input_data_clean = pd.get_dummies(input_data_clean, columns= bools, drop_first=True)
+            for bool in bools:
+                map = {"False":0,
+                    "True":1}
+                input_data[bool] = input_data[bool].map(map)
+            cat_dict = {}
+            for cat in cats:
+                map = {}
+                for i in range(0, len(input_data[cat].unique())):
+                    map[input_data[cat].unique()[i]] = i
+                input_data[cat] = input_data[cat].map(map)
+                cat_dict[cat] = map
+
+
+
 
         
             
