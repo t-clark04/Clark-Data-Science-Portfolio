@@ -353,10 +353,9 @@ if path == "Upload my own dataset":
                         }
                     st.write("You're in good hands. Hit 'Run!' whenever you're ready! This may take a few seconds.")
                 if st.button('Run!'):
-                    X,y = data_prep(final_dataset, features, target)
+                    X,y = data_prep(input_data_numeric, features, target)
                     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2,
                                                                 random_state = 99)
-                    user_data = [[positions[position], points, assists, rebounds]]
                     if hyper_choice == "I'll tune them myself.":
                         model = DecisionTreeClassifier(random_state = 99,
                                                criterion = criterion,
@@ -372,7 +371,7 @@ if path == "Upload my own dataset":
                            scoring = 'accuracy')
                         grid_search.fit(X_train, y_train)
                         model = grid_search.best_estimator_
-                    model_prob(model, user_data)
+                    model_prob2(model, user_data)
                     y_pred = model.predict(X_test)
                     model_metrics(y_test, y_pred)
                     col1, col2 = st.columns(2)
