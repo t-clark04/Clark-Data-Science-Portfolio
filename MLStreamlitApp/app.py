@@ -24,7 +24,7 @@ def model_prob(model, user_data):
 
 def model_prob2(model, user_data):
     prob = model.predict_proba(user_data)
-    st.write(f"The probability that {target} has a value of {input_data[target].unique()[1]} is **{prob[0][1]:.2%}**!")
+    st.write(f"The probability that '{target}' is {input_data[target].unique()[1]} is **{prob[0][1]:.2%}**!")
 
 def model_metrics(y_test, y_pred):
     accuracy = accuracy_score(y_test, y_pred)
@@ -320,6 +320,59 @@ if path == "Upload my own dataset":
                     model = LogisticRegression()
                     model.fit(X_train, y_train)
                     model_prob2(model, user_data)
+                    y_pred = model.predict(X_test)
+                    model_metrics(y_test, y_pred)
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        plot_confusion(y_test, y_pred)
+                    with col2:
+                        show_classification(y_test, y_pred)
+                    y_probs = model.predict_proba(X_test)[:, 1]
+                    fpr, tpr, threshold = roc_curve(y_test, y_probs)
+                    roc_auc = roc_auc_score(y_test, y_probs)
+                    col3, col4, col5 = st.columns([0.25,.5,.25])
+                    with col4:
+                        plot_roc(fpr, tpr)
+
+            if model_choice == 'Decision Tree':
+                hyper_choice = st.radio("Would you like to choose your own model hyperparameters, or have the model optimize them for you?",
+                                ["I'll tune them myself.", "Tune them for me!"])
+                if hyper_choice == "I'll tune them myself.":
+                    criterion = st.radio("Select a criterion algorithm to optimize each split:", ['gini', 'entropy', 'log_loss'])
+                    max_depth = st.slider("Select a maximum tree depth:", min_value = 1, max_value = 10, step = 1)
+                    min_samples_split = st.slider("Select the minimum number of samples required to split an internal node:",
+                                          min_value = 2, max_value = 10, step = 1)
+                    min_samples_leaf = st.slider("Select the minimum number of samples required to be in a leaf node:",
+                                         min_value = 1, max_value = 10, step = 1)
+                else:
+                    param_grid = {
+                        'criterion': ['gini', 'entropy', 'log_loss'],
+                        'max_depth': [None,2,4,6,8],
+                        'min_samples_split': list(range(2,11,2)),
+                        'min_samples_leaf' : list(range(1,11,2))
+                        }
+                    st.write("You're in good hands. Hit 'Run!' whenever you're ready! This may take a few seconds.")
+                if st.button('Run!'):
+                    X,y = data_prep(final_dataset, features, target)
+                    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2,
+                                                                random_state = 99)
+                    user_data = [[positions[position], points, assists, rebounds]]
+                    if hyper_choice == "I'll tune them myself.":
+                        model = DecisionTreeClassifier(random_state = 99,
+                                               criterion = criterion,
+                                               max_depth = max_depth,
+                                               min_samples_split = min_samples_split,
+                                               min_samples_leaf = min_samples_leaf)
+                        model.fit(X_train, y_train)
+                    else:
+                        dtree = DecisionTreeClassifier(random_state = 99)
+                        grid_search = GridSearchCV(estimator = dtree, 
+                           param_grid = param_grid,
+                           cv = 3,
+                           scoring = 'accuracy')
+                        grid_search.fit(X_train, y_train)
+                        model = grid_search.best_estimator_
+                    model_prob(model, user_data)
                     y_pred = model.predict(X_test)
                     model_metrics(y_test, y_pred)
                     col1, col2 = st.columns(2)
