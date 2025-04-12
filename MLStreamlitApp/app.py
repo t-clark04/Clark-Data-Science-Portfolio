@@ -254,7 +254,19 @@ if path == "Upload my own dataset":
         else:
             st.write("This dataset contains no binary variables. Please select a new dataset.")
             st.stop()
-        features = st.multiselect("Select which ")
+        vars = list(input_data_clean.columns)
+        vars.remove(target)
+        features = st.multiselect("Select variables from the dataset to build your model:", vars)
+        if features:
+            bools = []
+            cats = []
+            for var in features:
+                if input_data_clean[var].dtype == "bool":
+                    bools.append(var)
+                elif input_data_clean[var].dtype == "object":
+                    cats.append(var)
+                input_data_clean = pd.get_dummies(input_data_clean, columns= bools, drop_first=True)
+
         
             
 
