@@ -13,15 +13,18 @@ from sklearn.metrics import roc_curve, roc_auc_score
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import GridSearchCV
 
-def data_prep():
-    features = ['Pos', 'PTS', 'AST', 'TRB']
-    X = final_dataset[features]
-    y = final_dataset['All-Star']
+def data_prep(dataset, features, target):
+    X = dataset[features]
+    y = dataset[target]
     return X,y
 
 def model_prob(model, user_data):
     prob = model.predict_proba(user_data)
     st.write(f"Your probability of being an all-star is **{prob[0][1]:.2%}**!")
+
+def model_prob2(model, user_data):
+    prob = model.predict_proba(user_data)
+    st.write(f"The probability that {target} has a value of {input_data[target].unique()[1]} is **{prob[0][1]:.2%}**!")
 
 def model_metrics(y_test, y_pred):
     accuracy = accuracy_score(y_test, y_pred)
@@ -100,11 +103,14 @@ if path == "Become an NBA All-Star":
     rebounds = st.slider("Enter your average rebounds per game:", min_value = 0.0, max_value = final_dataset['TRB'].max(), value = 4.0, step = 0.1)
     model_choice = st.radio("Choose a classification model:", ['Logistic Regression', 'Decision Tree', 'K-Nearest Neighbors'])
 
+    features = ['Pos', 'PTS', 'AST', 'TRB']
+    target = 'All-Star'
+
     if model_choice == "Logistic Regression":
         scale_question = st.radio("Would you like to scale the data? (Scaling adjusts for unit bias)", ['Yes', 'No'])
     
         if st.button("Run!"):
-            X,y = data_prep()
+            X,y = data_prep(final_dataset, features, target)
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2,
                                                                 random_state = 99)
             user_data = [[positions[position], points, assists, rebounds]]
@@ -149,7 +155,7 @@ if path == "Become an NBA All-Star":
 }
             st.write("You're in good hands. Hit 'Run!' whenever you're ready! This may take a few seconds.")
         if st.button('Run!'):
-            X,y = data_prep()
+            X,y = data_prep(final_dataset, features, target)
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2,
                                                                 random_state = 99)
             user_data = [[positions[position], points, assists, rebounds]]
@@ -198,7 +204,7 @@ if path == "Become an NBA All-Star":
             } 
             st.write("You're in good hands. Hit 'Run!' whenever you're ready! This may take a few seconds.")
         if st.button('Run!'):
-            X,y = data_prep()
+            X,y = data_prep(final_dataset, features, target)
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2,
                                                                 random_state = 99)
             user_data = [[positions[position], points, assists, rebounds]]
@@ -254,32 +260,79 @@ if path == "Upload my own dataset":
         else:
             st.write("This dataset contains no binary variables. Please select a new dataset.")
             st.stop()
+        input_data_numeric = input_data.copy()
         if set(input_data[target].unique()) != {0,1}:
             target_map = {input_data[target].unique()[0]:0,
                    input_data[target].unique()[1]:1}
-            input_data[target] = input_data[target].map(target_map)
+            input_data_numeric[target] = input_data[target].map(target_map)
         vars = list(input_data.columns)
         vars.remove(target)
         features = st.multiselect("Select variables from the dataset to build your model:", vars)
         if features:
-            bools = []
             cats = []
             for var in features:
                 if input_data[var].dtype == "bool":
-                    bools.append(var)
+                    map = {"False":0,
+                    "True":1}
+                    input_data_numeric[var] = input_data[var].map(map)
                 elif input_data[var].dtype == "object":
                     cats.append(var)
-            for bool in bools:
-                map = {"False":0,
-                    "True":1}
-                input_data[bool] = input_data[bool].map(map)
             cat_dict = {}
             for cat in cats:
                 map = {}
                 for i in range(0, len(input_data[cat].unique())):
                     map[input_data[cat].unique()[i]] = i
-                input_data[cat] = input_data[cat].map(map)
+                input_data_numeric[cat] = input_data[cat].map(map)
                 cat_dict[cat] = map
+            user_data = []
+            for var in features:
+                if input_data[var].dtype == "bool" or input_data[var].dtype == "object":
+                    val = st.selectbox(f"Please choose a value for {var}:", list(input_data[var].unique()))
+                    user_data.append(cat_dict[var][val])
+                elif (input_data[var] % 1 == 0).all():
+                    if len(input_data[var].unique()) <= 10:
+                        sorted_list = sorted([int(val) for val in input_data[var].unique()])
+                        options_list = list(range(min(sorted_list), max(sorted_list) + 1, 1))
+                        val = st.selectbox(f"Please choose a value for {var}:", options_list)
+                        user_data.append(val)
+                    else:
+                        val = st.slider(f"Please choose a value for {var}:", min_value = int(input_data[var].min()),
+                                        max_value = int(input_data[var].max()), step = 1)
+                        user_data.append(val)
+                elif input_data[var].dtype == "float64":
+                    val = st.number_input(f"Please enter a value for {var}:")
+                    user_data.append(val)
+            user_data = [user_data]
+            model_choice = st.radio("Choose a classification model:", ['Logistic Regression', 'Decision Tree', 'K-Nearest Neighbors'])
+
+            if model_choice == "Logistic Regression":
+                scale_question = st.radio("Would you like to scale the data? (Scaling adjusts for unit bias)", ['Yes', 'No'])
+    
+                if st.button("Run!"):
+                    X,y = data_prep(input_data_numeric, features, target)
+                    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2,
+                                                                random_state = 99)
+                    if scale_question == "Yes":
+                        scaler = StandardScaler()
+                        X_train = scaler.fit_transform(X_train)
+                        X_test = scaler.transform(X_test)
+                        user_data = scaler.transform(user_data)
+                    model = LogisticRegression()
+                    model.fit(X_train, y_train)
+                    model_prob2(model, user_data)
+                    y_pred = model.predict(X_test)
+                    model_metrics(y_test, y_pred)
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        plot_confusion(y_test, y_pred)
+                    with col2:
+                        show_classification(y_test, y_pred)
+                    y_probs = model.predict_proba(X_test)[:, 1]
+                    fpr, tpr, threshold = roc_curve(y_test, y_probs)
+                    roc_auc = roc_auc_score(y_test, y_probs)
+                    col3, col4, col5 = st.columns([0.25,.5,.25])
+                    with col4:
+                        plot_roc(fpr, tpr)
 
 
 
