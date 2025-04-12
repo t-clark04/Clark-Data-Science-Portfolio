@@ -322,6 +322,7 @@ if path == "Upload my own dataset":
                     model_prob2(model, user_data)
                     y_pred = model.predict(X_test)
                     model_metrics(y_test, y_pred)
+                    st.write(f"(Here, 0 represents {input_data[target].unique()[0]}, and 1 represents {input_data[target].unique()[1]}.)")
                     col1, col2 = st.columns(2)
                     with col1:
                         plot_confusion(y_test, y_pred)
@@ -374,6 +375,53 @@ if path == "Upload my own dataset":
                     model_prob2(model, user_data)
                     y_pred = model.predict(X_test)
                     model_metrics(y_test, y_pred)
+                    st.write(f"(Here, 0 represents {input_data[target].unique()[0]}, and 1 represents {input_data[target].unique()[1]}.)")
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        plot_confusion(y_test, y_pred)
+                    with col2:
+                        show_classification(y_test, y_pred)
+                    y_probs = model.predict_proba(X_test)[:, 1]
+                    fpr, tpr, threshold = roc_curve(y_test, y_probs)
+                    roc_auc = roc_auc_score(y_test, y_probs)
+                    col3, col4, col5 = st.columns([0.25,.5,.25])
+                    with col4:
+                        plot_roc(fpr, tpr)
+
+            if model_choice == "K-Nearest Neighbors":
+                hyper_choice = st.radio("Would you like to choose your own model hyperparameters, or have the model optimize them for you?",
+                                ["I'll tune them myself.", "Tune them for me!"])
+                if hyper_choice == "I'll tune them myself.":
+                    n_neighbors = st.slider("Please choose the number of neighbors to use:", 
+                                    min_value = 1, max_value = 19, step = 2)
+                    metric = st.radio("Please choose the metric to use for distance computation:",
+                              ["minkowski", "euclidean", "manhattan"])
+                else:
+                    param_grid = {
+                        'n_neighbors': list(range(1, 20, 2)),
+                        'metric': ['minkowski', 'euclidean', 'manhattan'],
+                    } 
+                    st.write("You're in good hands. Hit 'Run!' whenever you're ready! This may take a few seconds.")
+                if st.button('Run!'):
+                    X,y = data_prep(input_data_numeric, features, target)
+                    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2,
+                                                                random_state = 99)
+                    if hyper_choice == "I'll tune them myself.":
+                        model = KNeighborsClassifier(n_neighbors = n_neighbors,
+                                             metric = metric)
+                        model.fit(X_train, y_train)
+                    else:
+                        knn = KNeighborsClassifier()
+                        grid_search = GridSearchCV(estimator = knn, 
+                           param_grid = param_grid,
+                           cv = 5,
+                           scoring = 'accuracy')
+                        grid_search.fit(X_train, y_train)
+                        model = grid_search.best_estimator_
+                    model_prob2(model, user_data)
+                    y_pred = model.predict(X_test)
+                    model_metrics(y_test, y_pred)
+                    st.write(f"(Here, 0 represents {input_data[target].unique()[0]}, and 1 represents {input_data[target].unique()[1]}.)")
                     col1, col2 = st.columns(2)
                     with col1:
                         plot_confusion(y_test, y_pred)
