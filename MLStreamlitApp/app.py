@@ -6,13 +6,55 @@ import matplotlib.pyplot as plt
 
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, precision_score, recall_score
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_curve, roc_auc_score
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import GridSearchCV
 
+def data_prep():
+    features = ['Pos', 'PTS', 'AST', 'TRB']
+    X = final_dataset[features]
+    y = final_dataset['All-Star']
+    return X,y
+
+def model_prob(model, user_data):
+    prob = model.predict_proba(user_data)
+    st.write(f"Your probability of being an all-star is **{prob[0][1]:.2%}**!")
+
+def model_metrics(y_test, y_pred):
+    accuracy = accuracy_score(y_test, y_pred)
+    precision = precision_score(y_test, y_pred)
+    recall = recall_score(y_test, y_pred)
+    st.write(f"This model has an accuracy of **{accuracy:.4f}**, a precision of **{precision:.4f}**, and a recall of **{recall:.4f}**. To give you a more complete picture of the model's predictive power, check out the confusion matrix, classification report, and ROC Curve/AUC below.")
+
+def plot_confusion(y_test, y_pred):
+    cm = confusion_matrix(y_test, y_pred)
+    sns.heatmap(cm, annot = True, cmap = "Blues", fmt = 'g')
+    st.write("### Confusion Matrix")
+    plt.xlabel("Predicted")
+    plt.ylabel("Actual")
+    st.pyplot(plt)
+    plt.clf()
+
+def show_classification(y_test, y_pred):
+    st.write("### Classification Report")
+    st.text(classification_report(y_test, y_pred))
+
+def plot_roc(fpr, tpr):
+    plt.figure(figsize = (4,4))
+    plt.plot(fpr, tpr, label = f'ROC Curve, AUC = {roc_auc:.4f}')
+    plt.plot([0,1], [0,1], linestyle = '--', label = "Random Guess")
+    plt.xlabel("False Positive Rate")
+    plt.ylabel("True Positive Rate")
+    st.write("### ROC Curve and AUC")
+    plt.legend(loc = "lower right")
+    st.pyplot(plt)
+
+
+# Loading in and re-formatting the sample dataset.
 nba_data = pd.read_csv("data/NBA_Regular_Season.csv", sep = ";", encoding = 'latin-1')
-
 new_data = (nba_data[['Rk', 'Player', 'Pos', 'PTS', 'AST' ,'TRB']].groupby('Rk', as_index=False).agg({
     'Player': 'first',  
     'Pos': 'first',
@@ -20,17 +62,15 @@ new_data = (nba_data[['Rk', 'Player', 'Pos', 'PTS', 'AST' ,'TRB']].groupby('Rk',
     'AST': 'mean',
     'TRB': 'mean'
 }))
-
 new_data = new_data[new_data['Pos'].isin(['PG', 'SG', 'SF', 'PF', 'C'])].reset_index(drop = True)
 
+# Merging the NBA dataset with another handmade dataset, which specifies the players who were all-stars during the 2023-24 season.
 all_star_dict = {"Player": ["Tyrese Haliburton", "Damian Lillard", "Giannis Antetokounmpo", "Jayson Tatum", "Joel Embiid",
                  "Jalen Brunson", "Tyrese Maxey", "Donovan Mitchell", "Trae Young", "Paolo Banchero", "Scottie Barnes", "Jaylen Brown",
                  "Julius Randle", "Bam Adebayo", "Luka Don?i?", "Shai Gilgeous-Alexander", "Kevin Durant", "LeBron James", "Nikola Joki?",
                  "Devin Booker", "Stephen Curry", "Anthony Edwards", "Paul George", "Kawhi Leonard", "Karl-Anthony Towns", "Anthony Davis"],
                  "All-Star": [int(1)]*26}
-
 all_star_data = pd.DataFrame(all_star_dict)
-
 final_dataset = (pd.merge(new_data, all_star_data, how = "outer", on = "Player").fillna(0))
 final_dataset['Rk'] = final_dataset['Rk'].astype(int)
 final_dataset['All-Star'] = final_dataset['All-Star'].astype(int)
@@ -43,33 +83,28 @@ positions = {
 }
 final_dataset['Pos'] = final_dataset['Pos'].map(positions)
 
+# Main text of the app
 st.title("Exploring Machine Learning Classification Models")
-
 path = st.radio("Choose your path!", ["Upload my own dataset", "Become an NBA All-Star"])
 
+# If the person decides to play around with the NBA dataset...
 if path == "Become an NBA All-Star":
     st.subheader("Predicting NBA All-Star Status with Machine Learning")
     st.write("Excellent choice! In this portion of the app, you get to pretend that you're a basketball player in the NBA during the 2023-24 season!")
-    st.write("You'll first input your position, as well as your season statistics for Points per Game, Assists per Game, and Rebounds per Game. Then, you'll choose what kind of classification model you'd like to use to predict your All-Star status -- either logistic regression or decision tree. Finally, you'll tune the hyperparameters of the corresponding model and hit 'Go'!")
+    st.write("You'll first input your position, as well as your season statistics for Points per Game, Assists per Game, and Rebounds per Game. Then, you'll choose what kind of classification model you'd like to use to predict your All-Star status -- either logistic regression, decision tree, or k-nearest neighbors. Finally, you'll tune the hyperparameters of the corresponding model and hit 'Run'!")
     st.write("The app will spit out your probability of being an All-Star, as well as display some of the model metrics to give you a sense of how accurate the prediction is. On your mark, get set, go!")
 
-    position = st.selectbox("Select your position:", ['PG', 'SG', 'SF', 'PF', 'C'])   
-
+    position = st.selectbox("Select your position:", ['PG', 'SG', 'SF', 'PF', 'C'])  
     points = st.slider("Enter your average points per game:", min_value = 0.0, max_value = final_dataset['PTS'].max(), value = 10.0, step = 0.1)
-
     assists = st.slider("Enter your average assists per game:", min_value = 0.0, max_value = final_dataset['AST'].max(), value = 3.0, step = 0.1)
-
     rebounds = st.slider("Enter your average rebounds per game:", min_value = 0.0, max_value = final_dataset['TRB'].max(), value = 4.0, step = 0.1)
-
-    model_choice = st.radio("Choose a classification model:", ['Logistic Regression', 'Decision Tree'])
+    model_choice = st.radio("Choose a classification model:", ['Logistic Regression', 'Decision Tree', 'K-Nearest Neighbors'])
 
     if model_choice == "Logistic Regression":
         scale_question = st.radio("Would you like to scale the data? (Scaling adjusts for unit bias)", ['Yes', 'No'])
     
         if st.button("Run!"):
-            features = ['Pos', 'PTS', 'AST', 'TRB']
-            X = final_dataset[features]
-            y = final_dataset['All-Star']
+            X,y = data_prep()
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2,
                                                                 random_state = 99)
             user_data = [[positions[position], points, assists, rebounds]]
@@ -80,41 +115,147 @@ if path == "Become an NBA All-Star":
                 user_data = scaler.transform(user_data)
             model = LogisticRegression()
             model.fit(X_train, y_train)
-            prob = model.predict_proba(user_data)
-            st.write(f"Your probability of being an all-star is **{prob[0][1]:.2%}**!")
+            model_prob(model, user_data)
             y_pred = model.predict(X_test)
-            accuracy = accuracy_score(y_test, y_pred)
-            st.write(f"This model has an accuracy of **{accuracy:.4f}**. To give you a more complete picture of the model's accuracy, check out the confusion matrix, classification report, and ROC Curve/AUC below.")
+            model_metrics(y_test, y_pred)
             col1, col2 = st.columns(2)
             with col1:
-                cm = confusion_matrix(y_test, y_pred)
-                sns.heatmap(cm, annot = True, cmap = "Blues")
-                st.write("### Confusion Matrix")
-                plt.xlabel("Predicted")
-                plt.ylabel("Actual")
-                st.pyplot(plt)
-                plt.clf()
+                plot_confusion(y_test, y_pred)
             with col2:
-                st.write("### Classification Report")
-                st.text(classification_report(y_test, y_pred))
+                show_classification(y_test, y_pred)
             y_probs = model.predict_proba(X_test)[:, 1]
             fpr, tpr, threshold = roc_curve(y_test, y_probs)
             roc_auc = roc_auc_score(y_test, y_probs)
             col3, col4, col5 = st.columns([0.25,.5,.25])
             with col4:
-                plt.figure(figsize = (4,4))
-                plt.plot(fpr, tpr, label = f'ROC Curve, AUC = {roc_auc:.4f}')
-                plt.plot([0,1], [0,1], linestyle = '--', label = "Random Guess")
-                plt.xlabel("False Positive Rate")
-                plt.ylabel("True Positive Rate")
-                st.write("### ROC Curve and AUC")
-                plt.legend(loc = "lower right")
-                st.pyplot(plt)
+                plot_roc(fpr, tpr)
     
     if model_choice == 'Decision Tree':
+        hyper_choice = st.radio("Would you like to choose your own model hyperparameters, or have the model optimize them for you?",
+                                ["I'll tune them myself.", "Tune them for me!"])
+        if hyper_choice == "I'll tune them myself.":
+            criterion = st.radio("Select a criterion algorithm to optimize each split:", ['gini', 'entropy', 'log_loss'])
+            max_depth = st.slider("Select a maximum tree depth:", min_value = 1, max_value = 10, step = 1)
+            min_samples_split = st.slider("Select the minimum number of samples required to split an internal node:",
+                                          min_value = 2, max_value = 10, step = 1)
+            min_samples_leaf = st.slider("Select the minimum number of samples required to be in a leaf node:",
+                                         min_value = 1, max_value = 10, step = 1)
+        else:
+            param_grid = {
+                        'criterion': ['gini', 'entropy', 'log_loss'],
+                        'max_depth': [None,2,4,6,8],
+                        'min_samples_split': list(range(2,11,2)),
+                        'min_samples_leaf' : list(range(1,11,2))
+}
+            st.write("You're in good hands. Hit 'Run!' whenever you're ready! This may take a few seconds.")
+        if st.button('Run!'):
+            X,y = data_prep()
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2,
+                                                                random_state = 99)
+            user_data = [[positions[position], points, assists, rebounds]]
+            if hyper_choice == "I'll tune them myself.":
+                model = DecisionTreeClassifier(random_state = 99,
+                                               criterion = criterion,
+                                               max_depth = max_depth,
+                                               min_samples_split = min_samples_split,
+                                               min_samples_leaf = min_samples_leaf)
+                model.fit(X_train, y_train)
+            else:
+                dtree = DecisionTreeClassifier(random_state = 99)
+                grid_search = GridSearchCV(estimator = dtree, 
+                           param_grid = param_grid,
+                           cv = 3,
+                           scoring = 'accuracy')
+                grid_search.fit(X_train, y_train)
+                model = grid_search.best_estimator_
+            model_prob(model, user_data)
+            y_pred = model.predict(X_test)
+            model_metrics(y_test, y_pred)
+            col1, col2 = st.columns(2)
+            with col1:
+                plot_confusion(y_test, y_pred)
+            with col2:
+                show_classification(y_test, y_pred)
+            y_probs = model.predict_proba(X_test)[:, 1]
+            fpr, tpr, threshold = roc_curve(y_test, y_probs)
+            roc_auc = roc_auc_score(y_test, y_probs)
+            col3, col4, col5 = st.columns([0.25,.5,.25])
+            with col4:
+                plot_roc(fpr, tpr)
+
+    if model_choice == "K-Nearest Neighbors":
+        hyper_choice = st.radio("Would you like to choose your own model hyperparameters, or have the model optimize them for you?",
+                                ["I'll tune them myself.", "Tune them for me!"])
+        if hyper_choice == "I'll tune them myself.":
+            n_neighbors = st.slider("Please choose the number of neighbors to use:", 
+                                    min_value = 1, max_value = 19, step = 2)
+            metric = st.radio("Please choose the metric to use for distance computation:",
+                              ["minkowski", "euclidean", "manhattan"])
+        else:
+            param_grid = {
+                        'n_neighbors': list(range(1, 20, 2)),
+                        'metric': ['minkowski', 'euclidean', 'manhattan'],
+            } 
+            st.write("You're in good hands. Hit 'Run!' whenever you're ready! This may take a few seconds.")
+        if st.button('Run!'):
+            X,y = data_prep()
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2,
+                                                                random_state = 99)
+            user_data = [[positions[position], points, assists, rebounds]]
+            if hyper_choice == "I'll tune them myself.":
+                model = KNeighborsClassifier(n_neighbors = n_neighbors,
+                                             metric = metric)
+                model.fit(X_train, y_train)
+            else:
+                knn = KNeighborsClassifier()
+                grid_search = GridSearchCV(estimator = knn, 
+                           param_grid = param_grid,
+                           cv = 5,
+                           scoring = 'accuracy')
+                grid_search.fit(X_train, y_train)
+                model = grid_search.best_estimator_
+            model_prob(model, user_data)
+            y_pred = model.predict(X_test)
+            model_metrics(y_test, y_pred)
+            col1, col2 = st.columns(2)
+            with col1:
+                plot_confusion(y_test, y_pred)
+            with col2:
+                show_classification(y_test, y_pred)
+            y_probs = model.predict_proba(X_test)[:, 1]
+            fpr, tpr, threshold = roc_curve(y_test, y_probs)
+            roc_auc = roc_auc_score(y_test, y_probs)
+            col3, col4, col5 = st.columns([0.25,.5,.25])
+            with col4:
+                plot_roc(fpr, tpr)
+if path == "Upload my own dataset":
+    st.subheader("Making Predictions with User-Provided Data")
+    st.write("I love the curiosity! You'll be making predictions and gathering insights in no time!")
+    st.write("In this portion of the app, you will upload your own dataset containing one or more predictor variables (either numerical, categorical, or binary) and one **binary** target variable.")
+    st.write("Then, you'll select different values of your predictor variables, as well as which classification model you'd like to use for prediction -- either logistic regression, decision tree, or k-nearest neighbors.")
+    st.write("Finally, you'll tune the hyperparameters of your model (or let the computer tune it for you), and hit 'Run!'.")
+    st.write("The app will spit out the probability of your binary target variable being a 1 with those predictor values, as well as some of the model metrics to give you a sense of the model's predictive power. On your mark, get set, go!")
+
+    uploaded_file = st.file_uploader("Please start by uploading a .csv file containing the dataset of interest with at least one binary predictor:", type = "csv")
+    if uploaded_file:
+        input_data = pd.read_csv(uploaded_file)
+        st.write("The first few rows of your dataset:")
+        st.dataframe(input_data.head())
+        input_data_clean = input_data.dropna()
+        pos_binary = []
+        for var in input_data_clean.columns:
+            if input_data_clean[var].nunique() == 2:
+                pos_binary.append(var)
+        if len(pos_binary) == 1:
+            target = pos_binary[0]
+            st.write(f"The only binary variable in your dataset is {target}. This will be used as your target variable.")
+        elif len(pos_binary) > 1:
+            target = st.selectbox("Please select which binary variable you would like to use as your target:", pos_binary)
+        else:
+            st.write("This dataset contains no binary variables. Please select a new dataset.")
+            st.stop()
+        features = st.multiselect("Select which ")
         
             
 
-
     
-
