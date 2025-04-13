@@ -9,7 +9,7 @@ Powered by the Python library "sklearn", my app provides the user with two possi
 3. Observe the outputted probability given the selected values of the predictor variables.
 4. Evaluate the model's predictive power based on the displayed model metrics and visualizations.
 
-Machine learning is the future! Try out the app for yourself, and see how easy yet powerful machine learning can be.
+Machine learning is the future! Try out the app for yourself, and see how easy yet powerful machine learning can be!
 
 Thank you very much for checking out my project, and happy exploring! 📈
 
@@ -26,12 +26,14 @@ As with most things in life, there's an easy way and a hard way to run the app.
 
 To run it the easy way, simply click [here](https://clark-machine-learning.streamlit.app/). This link should bring up the deployed version of the app on the Streamlit website. No further steps necessary -- just choose your path and start exploring! The only downside of the easy way is that you won't be able to see the underlying Python code.
 
-For the hard way, you'll need to start by downloading the "MLStreamlitApp" folder from my data science portfolio repository. To do that, first go to 
+For the hard way, you'll need to start by downloading the "MLStreamlitApp" folder from my data science portfolio repository. To do that, first go to [this link](https://download-directory.github.io/). It will open up a page that looks like this:
+
+
 
 ### Easy Way
 
 
-you first need to download the "TidyData-Project" folder from my data science portfolio repository. To do that, first go to [this link](https://download-directory.github.io/). It will open up a page that looks like this:
+you first need to download the "TidyData-Project" folder from my data science portfolio repository. To do that, first go to [this link](https://download-directory.github.io/). It will open up this page:
 
 ![Getting Started 1](data/Getting_Started_1.png)
 
