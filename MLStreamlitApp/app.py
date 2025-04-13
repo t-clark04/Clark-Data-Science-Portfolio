@@ -15,6 +15,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_curve, roc_auc_score
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import GridSearchCV
+from pathlib import Path # Needed for relative path when deploying app online
 
 # -----------------------------------------------
 # Helper Functions
@@ -123,6 +124,8 @@ def data_info():
 # -----------------------------------------------
 # Loading and Re-formatting the NBA Dataset
 # -----------------------------------------------
+# Set the proper path for deploying the app online.
+DATA_PATH = Path(__file__).parent / "data" / "NBA_Regular_Season.csv"
 # Read in the data from the 'data' folder.
 nba_data = pd.read_csv("data/NBA_Regular_Season.csv", sep = ";", encoding = 'latin-1')
 # Take a subset of the variables and combine rows with the same player.
