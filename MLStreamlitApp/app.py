@@ -1,11 +1,12 @@
 # -----------------------------------------------
-# Loading in all dependencies for my Streamlit application.
+# Loading in dependencies
 # -----------------------------------------------
-import streamlit as st 
-import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
+import streamlit as st
+import pandas as pd 
+import seaborn as sns 
+import matplotlib.pyplot as plt 
 
+# All of these required for executing machine learning algorithms.
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, precision_score, recall_score
@@ -15,23 +16,32 @@ from sklearn.metrics import roc_curve, roc_auc_score
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import GridSearchCV
 
-def data_prep(dataset, features, target):
+# -----------------------------------------------
+# Helper Functions
+# -----------------------------------------------
+def data_prep(dataset, features, target): # Gives the X and y subsets of the data.
     X = dataset[features]
     y = dataset[target]
     return X,y
 
 def model_prob(model, user_data):
+    # Calculate the probability of being an All-Star given the inputted season statistics.
     prob = model.predict_proba(user_data)
+    # Return that probability.
     st.write(f"Your probability of being an all-star is **{prob[0][1]:.2%}**!")
 
 def model_prob2(model, user_data):
+    # Calculate the general probability of a '1' given the user's data.
     prob = model.predict_proba(user_data)
+    # Return that probability.
     st.write(f"The probability that '{target}' is '{input_data[target].unique()[1]}' is **{prob[0][1]:.2%}**!")
 
 def model_metrics(y_test, y_pred):
+    # Calculate accuracy, precision, and recall.
     accuracy = accuracy_score(y_test, y_pred)
     precision = precision_score(y_test, y_pred)
     recall = recall_score(y_test, y_pred)
+    # Define these three metrics and return them for this model.
     st.markdown(f"""
                 Main model metrics:
                 - Accuracy is the percentage of correct predictions made by the model. This model has an accuracy of **{accuracy:.2%}**.
@@ -41,23 +51,30 @@ def model_metrics(y_test, y_pred):
     st.write("For a more complete picture of the model's predictive power, check out the confusion matrix, classification report, and ROC Curve/AUC below.")
 
 def plot_confusion(y_test, y_pred):
+    # Calculate the confusion matrix for this model.
     cm = confusion_matrix(y_test, y_pred)
-    sns.heatmap(cm, annot = True, cmap = "Blues", fmt = 'g')
+    # Build a heatmap with the confusion matrix data.
+    sns.heatmap(cm, annot = True, cmap = "Blues", fmt = 'g') #'fmt' argument ensures that full values are displayed.
+    # Title and labels
     st.write("### Confusion Matrix")
     plt.xlabel("Predicted")
     plt.ylabel("Actual")
     st.pyplot(plt)
-    plt.clf()
+    plt.clf() # Ensures we start fresh before plotting again.
 
 def show_classification(y_test, y_pred):
     st.write("### Classification Report")
+    # Build and display the classification report.
     st.text(classification_report(y_test, y_pred))
     st.write("Note: F1-score gives the harmonic mean of precision and recall.")
 
 def plot_roc(fpr, tpr, roc_auc):
+    # Set the canvas.
     plt.figure(figsize = (4,4))
+    # Plot the ROC curve and random guess lines on the same plot.
     plt.plot(fpr, tpr, label = f'ROC Curve, AUC = {roc_auc:.4f}')
     plt.plot([0,1], [0,1], linestyle = '--', label = "Random Guess")
+    # Title, labels, and legend.
     plt.xlabel("False Positive Rate")
     plt.ylabel("True Positive Rate")
     st.write("### ROC Curve and AUC (Area Under Curve)")
@@ -65,20 +82,25 @@ def plot_roc(fpr, tpr, roc_auc):
     st.pyplot(plt)
     st.write("Note: Generally, a model with an AUC of 0.80 or above is considered to have good predictive power.")
 
-def display_visuals(y_test, y_pred, X_test):
+def display_visuals(y_test, y_pred, X_test): # Calls on the above three helper functions to format the visualizations.
+    # Plot the confusion matrix and classification report in two different columns.
     col1, col2 = st.columns(2)
     with col1:
         plot_confusion(y_test, y_pred)
     with col2:
         show_classification(y_test, y_pred)
+    # Calculate all of the required inputs to the plot_roc helper function.
     y_probs = model.predict_proba(X_test)[:, 1]
     fpr, tpr, threshold = roc_curve(y_test, y_probs)
     roc_auc = roc_auc_score(y_test, y_probs)
+    # Using columns to center the ROC curve.
     col3, col4, col5 = st.columns([0.25,.5,.25])
     with col4:
         plot_roc(fpr, tpr, roc_auc)
 
 def scale_data(X_train, X_test, user_data):
+    # Set the scalar based on the X_train data, then
+    # use it to transform X_train, X_test, and the inputted data.
     scaler = StandardScaler()
     X_train = scaler.fit_transform(X_train)
     X_test = scaler.transform(X_test)
@@ -86,18 +108,25 @@ def scale_data(X_train, X_test, user_data):
     return X_train, X_test, user_data
 
 def data_info():
+    # Create an expander for more information on the original NBA dataset.
     with st.expander("Want to learn more about the data?"):
         st.markdown("### 2023-24 NBA Statistics Dataset")
+        # Provide a description and link to the full dataset.
         st.markdown("""
                  The data for this portion of the app was adapted from a dataset on Kaggle linked [here](https://www.kaggle.com/datasets/vivovinco/2023-2024-nba-player-stats?resource=download&select=2023-2024+NBA+Player+Stats+-+Regular.csv).
-                 The original dataset contains 30 columns of data on the NBA players who took part in the 2023-24 season, though only 5 were used in this app.
+                 The original dataset contains 30 columns of data on the NBA players who took part in the 2023-24 season, though only six were used in this app.
                  To explore variables like player name, team, games played, field goals, and more, clink the link to the full dataset above, or check out the first few rows of the dataset below:
                 """)
+        # Display the first ten rows of the full dataset.
         st.dataframe(nba_data.head(10))
 
-
-# Loading in and re-formatting the sample dataset.
+# -----------------------------------------------
+# Loading and Re-formatting the NBA Dataset
+# -----------------------------------------------
+# Read in the data from the 'data' folder.
 nba_data = pd.read_csv("data/NBA_Regular_Season.csv", sep = ";", encoding = 'latin-1')
+# Take a subset of the variables and combine rows with the same player.
+# Keep the first instance of their name and position, and average over their points, assists, and rebounds.
 new_data = (nba_data[['Rk', 'Player', 'Pos', 'PTS', 'AST' ,'TRB']].groupby('Rk', as_index=False).agg({
     'Player': 'first',  
     'Pos': 'first',
@@ -105,9 +134,10 @@ new_data = (nba_data[['Rk', 'Player', 'Pos', 'PTS', 'AST' ,'TRB']].groupby('Rk',
     'AST': 'mean',
     'TRB': 'mean'
 }))
+# Exclude rows with multiple positions listed.
 new_data = new_data[new_data['Pos'].isin(['PG', 'SG', 'SF', 'PF', 'C'])].reset_index(drop = True)
 
-# Merging the NBA dataset with another handmade dataset, which specifies the players who were all-stars during the 2023-24 season.
+# Merge the NBA dataset with another handmade dataset, which specifies the players who were all-stars during the 2023-24 season.
 all_star_dict = {"Player": ["Tyrese Haliburton", "Damian Lillard", "Giannis Antetokounmpo", "Jayson Tatum", "Joel Embiid",
                  "Jalen Brunson", "Tyrese Maxey", "Donovan Mitchell", "Trae Young", "Paolo Banchero", "Scottie Barnes", "Jaylen Brown",
                  "Julius Randle", "Bam Adebayo", "Luka Don?i?", "Shai Gilgeous-Alexander", "Kevin Durant", "LeBron James", "Nikola Joki?",
@@ -115,8 +145,12 @@ all_star_dict = {"Player": ["Tyrese Haliburton", "Damian Lillard", "Giannis Ante
                  "All-Star": [int(1)]*26}
 all_star_data = pd.DataFrame(all_star_dict)
 final_dataset = (pd.merge(new_data, all_star_data, how = "outer", on = "Player").fillna(0))
+
+# Convert the 'Rk' and 'All-Star' variables to integers
 final_dataset['Rk'] = final_dataset['Rk'].astype(int)
 final_dataset['All-Star'] = final_dataset['All-Star'].astype(int)
+
+# Convert the categorical position values to integers as well.
 positions = {
     'PG':1,
     'SG':2,
@@ -126,13 +160,18 @@ positions = {
 }
 final_dataset['Pos'] = final_dataset['Pos'].map(positions)
 
-# Main text of the app
+# -----------------------------------------------
+# App Title and Path Options
+# -----------------------------------------------
 st.title("Exploring Machine Learning Classification Models")
 path = st.radio("Choose a path!", ["Upload my own dataset!", "Become an NBA All-Star!"])
 
-# If the person decides to play around with the NBA dataset...
+# -----------------------------------------------
+# NBA All-Star Path Information
+# -----------------------------------------------
 if path == "Become an NBA All-Star!":
     st.subheader("Predicting NBA All-Star Status with Machine Learning 🏀")
+    # Instructions
     st.write("Excellent choice! In this portion of the app, you get to pretend that you're a basketball player in the NBA during the 2023-24 season! Here's how it works:")
     st.markdown("""
                 1. Input your position, as well as your season statistics for Points per Game, Assists per Game, and Rebounds per Game.
@@ -142,44 +181,52 @@ if path == "Become an NBA All-Star!":
                 """)
     st.write("On your mark, get set, go!")
     
+    # Obtaining and storing the user-inputted NBA data.
     position = st.selectbox("Select your position:", ['PG', 'SG', 'SF', 'PF', 'C'])  
     points = st.slider("Enter your average points per game:", min_value = 0.0, max_value = final_dataset['PTS'].max(), value = 10.0, step = 0.1)
     assists = st.slider("Enter your average assists per game:", min_value = 0.0, max_value = final_dataset['AST'].max(), value = 3.0, step = 0.1)
     rebounds = st.slider("Enter your average rebounds per game:", min_value = 0.0, max_value = final_dataset['TRB'].max(), value = 4.0, step = 0.1)
     model_choice = st.radio("Choose a classification model:", ['Logistic Regression', 'Decision Tree', 'K-Nearest Neighbors'])
 
+    # Defining our feature and target variables, and storing the inputs as 'user_data'.
     features = ['Pos', 'PTS', 'AST', 'TRB']
     target = 'All-Star'
     user_data = [[positions[position], points, assists, rebounds]]
 
+    # Logistic Regression path
     if model_choice == "Logistic Regression":
+        # Only "hyperparameter" for logistic regression in this model is scaled/unscaled data.
         scale_question = st.radio("Would you like to scale the data? (Scaling adjusts for unit bias.)", ['Yes', 'No'])
+        # Where model execution starts.
         if st.button("Run!"):
-            X,y = data_prep(final_dataset, features, target)
-            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2,
-                                                                random_state = 99)
-            if scale_question == "Yes":
+            X,y = data_prep(final_dataset, features, target) # Subset the data into X,y.
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 99) # Split into training and testing sets.
+            if scale_question == "Yes": # Re-scale the data if desired by user.
                 X_train, X_test, user_data = scale_data(X_train, X_test, user_data)
             model = LogisticRegression()
-            model.fit(X_train, y_train)
-            model_prob(model, user_data)
+            model.fit(X_train, y_train) # Fit the logistic regression model.
+            model_prob(model, user_data) # Use it to make and display predictions on the user's data.
             y_pred = model.predict(X_test)
-            model_metrics(y_test, y_pred)
+            model_metrics(y_test, y_pred) # Calculate and display the model's evaluation metrics.
             st.write(f"(Here, a '1' represents an All-Star.)")
-            display_visuals(y_test, y_pred, X_test)
-            data_info()
-    
+            display_visuals(y_test, y_pred, X_test) # Display confusion matrix, classification report, and ROC curve.
+            data_info() # Provide an expander with more information on the data.
+
+    # Decision Tree path
     if model_choice == 'Decision Tree':
+        # Offers user the option to tune the hyperparameters or let the algorithm do it.
         hyper_choice = st.radio("Would you like to choose your own model hyperparameters, or have the model optimize them for you?",
                                 ["I'll tune them myself.", "Tune them for me!"])
         if hyper_choice == "I'll tune them myself.":
+            # Gathering and storing the user's hyperparameter choices, since they have chosen to tune them.
             criterion = st.radio("Select a criterion algorithm for optimizing each split (gini is simpler but slightly faster):", ['gini', 'entropy'])
             max_depth = st.slider("Select a maximum tree depth (higher = more precise, but risk overfitting):", min_value = 1, max_value = 10, step = 1)
             min_samples_split = st.slider("Select the minimum number of samples required to split an internal node (lower = more precise, but risk overfitting):",
                                           min_value = 2, max_value = 10, step = 1)
             min_samples_leaf = st.slider("Select the minimum number of samples required to be in a leaf node (lower = more precise, but risk overfitting):",
                                          min_value = 1, max_value = 10, step = 1)
-        else:
+        else: # User wants the computer to optimize the hyperparameter choices.
+            # Defining the parameter grid for the GridSearchCV algorithm to cycle through.
             param_grid = {
                         'criterion': ['gini', 'entropy'],
                         'max_depth': [None,2,4,6,8],
@@ -187,25 +234,26 @@ if path == "Become an NBA All-Star!":
                         'min_samples_leaf' : list(range(1,11,2))
                         }           
             st.write("You're in good hands. Hit 'Run!' whenever you're ready! This may take a few seconds.")
+        # Where model execution starts.
         if st.button('Run!'):
-            X,y = data_prep(final_dataset, features, target)
-            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2,
-                                                                random_state = 99)
-            if hyper_choice == "I'll tune them myself.":
+            X,y = data_prep(final_dataset, features, target) # Subset the data into X,y.
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 99) # Split into training and testing sets.
+            if hyper_choice == "I'll tune them myself.": # If the user supplied hyperparameters...
+                # Create and fit the decision tree model with the user's hyperparameter choices.
                 model = DecisionTreeClassifier(random_state = 99, criterion = criterion, max_depth = max_depth,
                                                min_samples_split = min_samples_split, min_samples_leaf = min_samples_leaf)
                 model.fit(X_train, y_train)
-            else:
+            else: # Otherwise, carry out a grid search and select the model with the best hyperparameter choices.
                 dtree = DecisionTreeClassifier(random_state = 99)
                 grid_search = GridSearchCV(estimator = dtree, param_grid = param_grid, cv = 3, scoring = 'accuracy')
                 grid_search.fit(X_train, y_train)
                 model = grid_search.best_estimator_
-            model_prob(model, user_data)
+            model_prob(model, user_data) # Use the model to make and display predictions on the user's data.
             y_pred = model.predict(X_test)
-            model_metrics(y_test, y_pred)
+            model_metrics(y_test, y_pred) # Calculate and display the model metrics.
             st.write(f"(Here, a '1' represents an All-Star.)")
-            display_visuals(y_test, y_pred, X_test)
-            data_info()
+            display_visuals(y_test, y_pred, X_test) # Display the confusion matrix, classification report, and ROC curve.
+            data_info() # Provide more information on the NBA dataset.
 
     if model_choice == "K-Nearest Neighbors":
         scale_question = st.radio("Would you like to scale the data? (Scaling adjusts for unit bias.)", ['Yes', 'No'])
