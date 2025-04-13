@@ -1,5 +1,7 @@
-import streamlit as st
-import numpy as np
+# -----------------------------------------------
+# Loading in all dependencies for my Streamlit application.
+# -----------------------------------------------
+import streamlit as st 
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -61,7 +63,7 @@ def plot_roc(fpr, tpr, roc_auc):
     st.write("### ROC Curve and AUC (Area Under Curve)")
     plt.legend(loc = "lower right")
     st.pyplot(plt)
-    st.write("Note: A model with an AUC of 0.80 or above generally has good predictive power.")
+    st.write("Note: Generally, a model with an AUC of 0.80 or above is considered to have good predictive power.")
 
 def display_visuals(y_test, y_pred, X_test):
     col1, col2 = st.columns(2)
@@ -82,6 +84,16 @@ def scale_data(X_train, X_test, user_data):
     X_test = scaler.transform(X_test)
     user_data = scaler.transform(user_data)
     return X_train, X_test, user_data
+
+def data_info():
+    with st.expander("Want to learn more about the data?"):
+        st.markdown("### 2023-24 NBA Statistics Dataset")
+        st.markdown("""
+                 The data for this portion of the app was adapted from a dataset on Kaggle linked [here](https://www.kaggle.com/datasets/vivovinco/2023-2024-nba-player-stats?resource=download&select=2023-2024+NBA+Player+Stats+-+Regular.csv).
+                 The original dataset contains 30 columns of data on the NBA players who took part in the 2023-24 season, though only 5 were used in this app.
+                 To explore variables like player name, team, games played, field goals, and more, clink the link to the full dataset above, or check out the first few rows of the dataset below:
+                """)
+        st.dataframe(nba_data.head(10))
 
 
 # Loading in and re-formatting the sample dataset.
@@ -121,10 +133,15 @@ path = st.radio("Choose a path!", ["Upload my own dataset!", "Become an NBA All-
 # If the person decides to play around with the NBA dataset...
 if path == "Become an NBA All-Star!":
     st.subheader("Predicting NBA All-Star Status with Machine Learning 🏀")
-    st.write("Excellent choice! In this portion of the app, you get to pretend that you're a basketball player in the NBA during the 2023-24 season!")
-    st.write("You'll first input your position, as well as your season statistics for Points per Game, Assists per Game, and Rebounds per Game. Then, you'll choose what kind of classification model you'd like to use to predict your All-Star status -- either logistic regression, decision tree, or k-nearest neighbors. Finally, you'll tune the hyperparameters of the corresponding model and hit 'Run'!")
-    st.write("The app will spit out your probability of being an All-Star, as well as display some of the model metrics to give you a sense of how accurate the prediction is. On your mark, get set, go!")
-
+    st.write("Excellent choice! In this portion of the app, you get to pretend that you're a basketball player in the NBA during the 2023-24 season! Here's how it works:")
+    st.markdown("""
+                1. Input your position, as well as your season statistics for Points per Game, Assists per Game, and Rebounds per Game.
+                2. Choose what kind of classification model you'd like to use to predict your All-Star status -- either logistic regression, decision tree, or k-nearest neighbors.
+                3. Tune the hyperparameters of the corresponding model and hit 'Run!'.
+                4. Observe your probability of being an All-Star, and evaluate the model's predictive power using the given metrics and visualizations.
+                """)
+    st.write("On your mark, get set, go!")
+    
     position = st.selectbox("Select your position:", ['PG', 'SG', 'SF', 'PF', 'C'])  
     points = st.slider("Enter your average points per game:", min_value = 0.0, max_value = final_dataset['PTS'].max(), value = 10.0, step = 0.1)
     assists = st.slider("Enter your average assists per game:", min_value = 0.0, max_value = final_dataset['AST'].max(), value = 3.0, step = 0.1)
@@ -148,7 +165,9 @@ if path == "Become an NBA All-Star!":
             model_prob(model, user_data)
             y_pred = model.predict(X_test)
             model_metrics(y_test, y_pred)
+            st.write(f"(Here, a '1' represents an All-Star.)")
             display_visuals(y_test, y_pred, X_test)
+            data_info()
     
     if model_choice == 'Decision Tree':
         hyper_choice = st.radio("Would you like to choose your own model hyperparameters, or have the model optimize them for you?",
@@ -184,7 +203,9 @@ if path == "Become an NBA All-Star!":
             model_prob(model, user_data)
             y_pred = model.predict(X_test)
             model_metrics(y_test, y_pred)
+            st.write(f"(Here, a '1' represents an All-Star.)")
             display_visuals(y_test, y_pred, X_test)
+            data_info()
 
     if model_choice == "K-Nearest Neighbors":
         scale_question = st.radio("Would you like to scale the data? (Scaling adjusts for unit bias.)", ['Yes', 'No'])
@@ -218,7 +239,9 @@ if path == "Become an NBA All-Star!":
             model_prob(model, user_data)
             y_pred = model.predict(X_test)
             model_metrics(y_test, y_pred)
+            st.write(f"(Here, a '1' represents an All-Star.)")
             display_visuals(y_test, y_pred, X_test)
+            data_info()
 
 
 if path == "Upload my own dataset!":
