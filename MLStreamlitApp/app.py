@@ -415,16 +415,19 @@ if path == "Upload my own dataset!":
 
             # Decision Tree path
             if model_choice == 'Decision Tree':
+                # Offers user the option to tune the hyperparameters or let the algorithm do it.
                 hyper_choice = st.radio("Would you like to choose your own model hyperparameters, or have the model optimize them for you?",
                                 ["I'll tune them myself.", "Tune them for me!"])
                 if hyper_choice == "I'll tune them myself.":
+                    # Gathering and storing the user's hyperparameter choices, since they have chosen to tune them.
                     criterion = st.radio("Select a criterion algorithm for optimizing each split (gini is simpler but slightly faster):", ['gini', 'entropy'])
                     max_depth = st.slider("Select a maximum tree depth (higher = more precise, but risk overfitting):", min_value = 1, max_value = 10, step = 1)
                     min_samples_split = st.slider("Select the minimum number of samples required to split an internal node (lower = more precise, but risk overfitting):",
                                           min_value = 2, max_value = 10, step = 1)
                     min_samples_leaf = st.slider("Select the minimum number of samples required to be in a leaf node (lower = more precise, but risk overfitting):",
                                          min_value = 1, max_value = 10, step = 1)
-                else:
+                else: # User wants the computer to optimize the hyperparameter choices.
+                    # Defining the parameter grid for the GridSearchCV algorithm to cycle through.
                     param_grid = {
                         'criterion': ['gini', 'entropy'],
                         'max_depth': [None,2,4,6,8],
@@ -432,61 +435,68 @@ if path == "Upload my own dataset!":
                         'min_samples_leaf' : list(range(1,11,2))
                         }
                     st.write("You're in good hands. Hit 'Run!' whenever you're ready! This may take a few seconds.")
+                # Where model execution starts.
                 if st.button('Run!'):
-                    X,y = data_prep(input_data_numeric, features, target)
-                    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2,
-                                                                random_state = 99)
-                    if hyper_choice == "I'll tune them myself.":
+                    X,y = data_prep(input_data_numeric, features, target) # Subset the data into X,y.
+                    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 99) # Split into training and testing sets.
+                    if hyper_choice == "I'll tune them myself.": # If the user supplied hyperparameters...
+                        # Create and fit the decision tree with the user's hyperparameter choices.
                         model = DecisionTreeClassifier(random_state = 99, criterion = criterion, max_depth = max_depth,
                                                        min_samples_split = min_samples_split, min_samples_leaf = min_samples_leaf)
                         model.fit(X_train, y_train)
-                    else:
+                    else: # Otherwise, carry out a grid search and select the model with the best hyperparameter choices.
                         dtree = DecisionTreeClassifier(random_state = 99)
                         grid_search = GridSearchCV(estimator = dtree, param_grid = param_grid, cv = 3, scoring = 'accuracy')
                         grid_search.fit(X_train, y_train)
                         model = grid_search.best_estimator_
-                    model_prob2(model, user_data)
+                    model_prob2(model, user_data) # Use the model to make and display predictions on the user's data.
                     y_pred = model.predict(X_test)
-                    model_metrics(y_test, y_pred)
-                    if set(input_data[target].unique()) != {0,1}:
+                    model_metrics(y_test, y_pred) # Calculate and display the model metrics.
+                    if set(input_data[target].unique()) != {0,1}: # Specify what 0 and 1 represent in the confusion matrix and classification report.
                         st.write(f"(Here, 0 represents {input_data[target].unique()[0]} and 1 represents {input_data[target].unique()[1]}.)")
-                    display_visuals(y_test, y_pred, X_test)
-
+                    display_visuals(y_test, y_pred, X_test) # Display confusion matrix, classification report, and ROC curve.
+            
+            # K-Nearest Neighbors Path
             if model_choice == "K-Nearest Neighbors":
+                # Allow the user to scale the data if they desire.
                 scale_question = st.radio("Would you like to scale the data? (Scaling adjusts for unit bias.)", ['Yes', 'No'])
+                # Offer user the option to tune the hyperparameters or let the algorithm do it.
                 hyper_choice = st.radio("Would you like to choose your own model hyperparameters, or have the model optimize them for you?",
                                 ["I'll tune them myself.", "Tune them for me!"])
                 if hyper_choice == "I'll tune them myself.":
+                    # Gathering and storing the user's hyperparameter choices, since they have chosen to tune them.
                     n_neighbors = st.slider("Please choose the number of neighbors to use (fewer neighbors = more precise, but risk overfitting):", 
                                     min_value = 1, max_value = 19, step = 2)
                     metric = st.radio("Please choose the metric to use for distance computation (use 'euclidean' for continuous data, 'manhattan' for discrete data, and 'minkowski' for flexibility):",
                               ["minkowski", "euclidean", "manhattan"])
-                else:
+                else: # User wants the computer to optimize the hyperparameter choices.
+                    # Defining the parameter grid for the GridSearchCV algorithm to cycle through.
                     param_grid = {
                         'n_neighbors': list(range(1, 20, 2)),
                         'metric': ['minkowski', 'euclidean', 'manhattan'],
                     } 
                     st.write("You're in good hands. Hit 'Run!' whenever you're ready! This may take a few seconds.")
+                # Where execution starts.
                 if st.button('Run!'):
-                    X,y = data_prep(input_data_numeric, features, target)
-                    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2,
-                                                                random_state = 99)
-                    if scale_question == "Yes":
+                    X,y = data_prep(input_data_numeric, features, target) # Subset the data into X,y.
+                    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 99) # Split into training and testing sets.
+                    if scale_question == "Yes": # Re-scale the data if the user desires.
                         X_train, X_test, user_data = scale_data(X_train, X_test, user_data)
-                    if hyper_choice == "I'll tune them myself.":
+                    if hyper_choice == "I'll tune them myself.": # If the user supplied hyperparameters...
+                        # Create and fit the K-nearest neighbors model with the user's hyperparameter choices.
                         model = KNeighborsClassifier(n_neighbors, metric = metric)
                         model.fit(X_train, y_train)
-                    else:
+                    else: # Otherwise, carry out a grid search and select the model with the best hyperparameter choices.
                         knn = KNeighborsClassifier()
                         grid_search = GridSearchCV(estimator = knn, param_grid = param_grid, cv = 5, scoring = 'accuracy')
                         grid_search.fit(X_train, y_train)
                         model = grid_search.best_estimator_
-                    model_prob2(model, user_data)
+                    model_prob2(model, user_data) # Use the model to make and display predictions on the user's data.
                     y_pred = model.predict(X_test)
-                    model_metrics(y_test, y_pred)
-                    if set(input_data[target].unique()) != {0,1}:
+                    model_metrics(y_test, y_pred) # Calculate and display the model metrics.
+                    if set(input_data[target].unique()) != {0,1}: # Specify what 0 and 1 represent in the confusion matrix and classification report.
                         st.write(f"(Here, 0 represents {input_data[target].unique()[0]} and 1 represents {input_data[target].unique()[1]}.)")
-                    display_visuals(y_test, y_pred, X_test)
+                    display_visuals(y_test, y_pred, X_test) # Display confusion matrix, classification report, and ROC curve.
 
 
 
