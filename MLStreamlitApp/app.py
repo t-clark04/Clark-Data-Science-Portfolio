@@ -24,7 +24,7 @@ def model_prob(model, user_data):
 
 def model_prob2(model, user_data):
     prob = model.predict_proba(user_data)
-    st.write(f"The probability that '{target}' is {input_data[target].unique()[1]} is **{prob[0][1]:.2%}**!")
+    st.write(f"The probability that '{target}' is '{input_data[target].unique()[1]}' is **{prob[0][1]:.2%}**!")
 
 def model_metrics(y_test, y_pred):
     accuracy = accuracy_score(y_test, y_pred)
@@ -45,7 +45,7 @@ def show_classification(y_test, y_pred):
     st.write("### Classification Report")
     st.text(classification_report(y_test, y_pred))
 
-def plot_roc(fpr, tpr):
+def plot_roc(fpr, tpr, roc_auc):
     plt.figure(figsize = (4,4))
     plt.plot(fpr, tpr, label = f'ROC Curve, AUC = {roc_auc:.4f}')
     plt.plot([0,1], [0,1], linestyle = '--', label = "Random Guess")
@@ -54,6 +54,19 @@ def plot_roc(fpr, tpr):
     st.write("### ROC Curve and AUC")
     plt.legend(loc = "lower right")
     st.pyplot(plt)
+
+def display_visuals(y_test, y_pred, X_test):
+    col1, col2 = st.columns(2)
+    with col1:
+        plot_confusion(y_test, y_pred)
+    with col2:
+        show_classification(y_test, y_pred)
+    y_probs = model.predict_proba(X_test)[:, 1]
+    fpr, tpr, threshold = roc_curve(y_test, y_probs)
+    roc_auc = roc_auc_score(y_test, y_probs)
+    col3, col4, col5 = st.columns([0.25,.5,.25])
+    with col4:
+        plot_roc(fpr, tpr, roc_auc)
 
 
 # Loading in and re-formatting the sample dataset.
@@ -105,15 +118,14 @@ if path == "Become an NBA All-Star":
 
     features = ['Pos', 'PTS', 'AST', 'TRB']
     target = 'All-Star'
+    user_data = [[positions[position], points, assists, rebounds]]
 
     if model_choice == "Logistic Regression":
         scale_question = st.radio("Would you like to scale the data? (Scaling adjusts for unit bias)", ['Yes', 'No'])
-    
         if st.button("Run!"):
             X,y = data_prep(final_dataset, features, target)
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2,
                                                                 random_state = 99)
-            user_data = [[positions[position], points, assists, rebounds]]
             if scale_question == "Yes":
                 scaler = StandardScaler()
                 X_train = scaler.fit_transform(X_train)
@@ -124,17 +136,7 @@ if path == "Become an NBA All-Star":
             model_prob(model, user_data)
             y_pred = model.predict(X_test)
             model_metrics(y_test, y_pred)
-            col1, col2 = st.columns(2)
-            with col1:
-                plot_confusion(y_test, y_pred)
-            with col2:
-                show_classification(y_test, y_pred)
-            y_probs = model.predict_proba(X_test)[:, 1]
-            fpr, tpr, threshold = roc_curve(y_test, y_probs)
-            roc_auc = roc_auc_score(y_test, y_probs)
-            col3, col4, col5 = st.columns([0.25,.5,.25])
-            with col4:
-                plot_roc(fpr, tpr)
+            display_visuals(y_test, y_pred, X_test)
     
     if model_choice == 'Decision Tree':
         hyper_choice = st.radio("Would you like to choose your own model hyperparameters, or have the model optimize them for you?",
@@ -158,7 +160,6 @@ if path == "Become an NBA All-Star":
             X,y = data_prep(final_dataset, features, target)
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2,
                                                                 random_state = 99)
-            user_data = [[positions[position], points, assists, rebounds]]
             if hyper_choice == "I'll tune them myself.":
                 model = DecisionTreeClassifier(random_state = 99,
                                                criterion = criterion,
@@ -177,17 +178,7 @@ if path == "Become an NBA All-Star":
             model_prob(model, user_data)
             y_pred = model.predict(X_test)
             model_metrics(y_test, y_pred)
-            col1, col2 = st.columns(2)
-            with col1:
-                plot_confusion(y_test, y_pred)
-            with col2:
-                show_classification(y_test, y_pred)
-            y_probs = model.predict_proba(X_test)[:, 1]
-            fpr, tpr, threshold = roc_curve(y_test, y_probs)
-            roc_auc = roc_auc_score(y_test, y_probs)
-            col3, col4, col5 = st.columns([0.25,.5,.25])
-            with col4:
-                plot_roc(fpr, tpr)
+            display_visuals(y_test, y_pred, X_test)
 
     if model_choice == "K-Nearest Neighbors":
         hyper_choice = st.radio("Would you like to choose your own model hyperparameters, or have the model optimize them for you?",
@@ -207,7 +198,6 @@ if path == "Become an NBA All-Star":
             X,y = data_prep(final_dataset, features, target)
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2,
                                                                 random_state = 99)
-            user_data = [[positions[position], points, assists, rebounds]]
             if hyper_choice == "I'll tune them myself.":
                 model = KNeighborsClassifier(n_neighbors = n_neighbors,
                                              metric = metric)
@@ -223,17 +213,9 @@ if path == "Become an NBA All-Star":
             model_prob(model, user_data)
             y_pred = model.predict(X_test)
             model_metrics(y_test, y_pred)
-            col1, col2 = st.columns(2)
-            with col1:
-                plot_confusion(y_test, y_pred)
-            with col2:
-                show_classification(y_test, y_pred)
-            y_probs = model.predict_proba(X_test)[:, 1]
-            fpr, tpr, threshold = roc_curve(y_test, y_probs)
-            roc_auc = roc_auc_score(y_test, y_probs)
-            col3, col4, col5 = st.columns([0.25,.5,.25])
-            with col4:
-                plot_roc(fpr, tpr)
+            display_visuals(y_test, y_pred, X_test)
+
+
 if path == "Upload my own dataset":
     st.subheader("Making Predictions with User-Provided Data")
     st.write("I love the curiosity! You'll be making predictions and gathering insights in no time!")
@@ -242,7 +224,7 @@ if path == "Upload my own dataset":
     st.write("Finally, you'll tune the hyperparameters of your model (or let the computer tune it for you), and hit 'Run!'.")
     st.write("The app will spit out the probability of your binary target variable being a 1 with those predictor values, as well as some of the model metrics to give you a sense of the model's predictive power. On your mark, get set, go!")
 
-    uploaded_file = st.file_uploader("Please start by uploading a .csv file containing the tidy dataset of interest with at least one binary predictor:", type = "csv")
+    uploaded_file = st.file_uploader("Please start by uploading a .csv file containing the tidy dataset of interest with at least one binary predictor (and no dates!):", type = "csv")
     if uploaded_file:
         input_data = pd.read_csv(uploaded_file)
         st.write("The first few rows of your dataset:")
@@ -323,17 +305,7 @@ if path == "Upload my own dataset":
                     y_pred = model.predict(X_test)
                     model_metrics(y_test, y_pred)
                     st.write(f"(Here, 0 represents {input_data[target].unique()[0]}, and 1 represents {input_data[target].unique()[1]}.)")
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        plot_confusion(y_test, y_pred)
-                    with col2:
-                        show_classification(y_test, y_pred)
-                    y_probs = model.predict_proba(X_test)[:, 1]
-                    fpr, tpr, threshold = roc_curve(y_test, y_probs)
-                    roc_auc = roc_auc_score(y_test, y_probs)
-                    col3, col4, col5 = st.columns([0.25,.5,.25])
-                    with col4:
-                        plot_roc(fpr, tpr)
+                    display_visuals(y_test, y_pred, X_test)
 
             if model_choice == 'Decision Tree':
                 hyper_choice = st.radio("Would you like to choose your own model hyperparameters, or have the model optimize them for you?",
@@ -376,17 +348,7 @@ if path == "Upload my own dataset":
                     y_pred = model.predict(X_test)
                     model_metrics(y_test, y_pred)
                     st.write(f"(Here, 0 represents {input_data[target].unique()[0]}, and 1 represents {input_data[target].unique()[1]}.)")
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        plot_confusion(y_test, y_pred)
-                    with col2:
-                        show_classification(y_test, y_pred)
-                    y_probs = model.predict_proba(X_test)[:, 1]
-                    fpr, tpr, threshold = roc_curve(y_test, y_probs)
-                    roc_auc = roc_auc_score(y_test, y_probs)
-                    col3, col4, col5 = st.columns([0.25,.5,.25])
-                    with col4:
-                        plot_roc(fpr, tpr)
+                    display_visuals(y_test, y_pred, X_test)
 
             if model_choice == "K-Nearest Neighbors":
                 hyper_choice = st.radio("Would you like to choose your own model hyperparameters, or have the model optimize them for you?",
@@ -421,18 +383,7 @@ if path == "Upload my own dataset":
                     model_prob2(model, user_data)
                     y_pred = model.predict(X_test)
                     model_metrics(y_test, y_pred)
-                    st.write(f"(Here, 0 represents {input_data[target].unique()[0]}, and 1 represents {input_data[target].unique()[1]}.)")
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        plot_confusion(y_test, y_pred)
-                    with col2:
-                        show_classification(y_test, y_pred)
-                    y_probs = model.predict_proba(X_test)[:, 1]
-                    fpr, tpr, threshold = roc_curve(y_test, y_probs)
-                    roc_auc = roc_auc_score(y_test, y_probs)
-                    col3, col4, col5 = st.columns([0.25,.5,.25])
-                    with col4:
-                        plot_roc(fpr, tpr)
+                    display_visuals(y_test, y_pred, X_test)
 
 
 
