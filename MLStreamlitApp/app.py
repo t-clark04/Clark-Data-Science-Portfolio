@@ -30,7 +30,13 @@ def model_metrics(y_test, y_pred):
     accuracy = accuracy_score(y_test, y_pred)
     precision = precision_score(y_test, y_pred)
     recall = recall_score(y_test, y_pred)
-    st.write(f"This model has an accuracy of **{accuracy:.4f}**, a precision of **{precision:.4f}**, and a recall of **{recall:.4f}**. To give you a more complete picture of the model's predictive power, check out the confusion matrix, classification report, and ROC Curve/AUC below.")
+    st.markdown(f"""
+                Main model metrics:
+                - Accuracy is the percentage of correct predictions made by the model. This model has an accuracy of **{accuracy:.2%}**.
+                - Precision answers the question: 'Out of all datapoints classified as positive, what percentage were actually positive?' This model's precision is **{precision:.2%}**.
+                - Recall answers the question: 'Out of all datapoints that were actually positive, what percentage did we catch?' This model has a recall of **{recall:.2%}**.
+                """)
+    st.write("For a more complete picture of the model's predictive power, check out the confusion matrix, classification report, and ROC Curve/AUC below.")
 
 def plot_confusion(y_test, y_pred):
     cm = confusion_matrix(y_test, y_pred)
@@ -44,6 +50,7 @@ def plot_confusion(y_test, y_pred):
 def show_classification(y_test, y_pred):
     st.write("### Classification Report")
     st.text(classification_report(y_test, y_pred))
+    st.write("Note: F1-score gives the harmonic mean of precision and recall.")
 
 def plot_roc(fpr, tpr, roc_auc):
     plt.figure(figsize = (4,4))
@@ -51,9 +58,10 @@ def plot_roc(fpr, tpr, roc_auc):
     plt.plot([0,1], [0,1], linestyle = '--', label = "Random Guess")
     plt.xlabel("False Positive Rate")
     plt.ylabel("True Positive Rate")
-    st.write("### ROC Curve and AUC")
+    st.write("### ROC Curve and AUC (Area Under Curve)")
     plt.legend(loc = "lower right")
     st.pyplot(plt)
+    st.write("Note: A model with an AUC of 0.80 or above generally has good predictive power.")
 
 def display_visuals(y_test, y_pred, X_test):
     col1, col2 = st.columns(2)
