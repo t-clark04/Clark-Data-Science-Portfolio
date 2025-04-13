@@ -127,7 +127,7 @@ def data_info():
 # Set the proper path for deploying the app online.
 DATA_PATH = Path(__file__).parent / "data" / "NBA_Regular_Season.csv"
 # Read in the data from the 'data' folder.
-nba_data = pd.read_csv("data/NBA_Regular_Season.csv", sep = ";", encoding = 'latin-1')
+nba_data = pd.read_csv(DATA_PATH, sep = ";", encoding = 'latin-1')
 # Take a subset of the variables and combine rows with the same player.
 # Keep the first instance of their name and position, and average over their points, assists, and rebounds.
 new_data = (nba_data[['Rk', 'Player', 'Pos', 'PTS', 'AST' ,'TRB']].groupby('Rk', as_index=False).agg({
