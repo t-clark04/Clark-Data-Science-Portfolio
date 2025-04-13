@@ -254,46 +254,55 @@ if path == "Become an NBA All-Star!":
             st.write(f"(Here, a '1' represents an All-Star.)")
             display_visuals(y_test, y_pred, X_test) # Display the confusion matrix, classification report, and ROC curve.
             data_info() # Provide more information on the NBA dataset.
-
+    
+    # K-Nearest Neighbors path
     if model_choice == "K-Nearest Neighbors":
+        # Allow the user to scale the data if they desire.
         scale_question = st.radio("Would you like to scale the data? (Scaling adjusts for unit bias.)", ['Yes', 'No'])
+        # Offer user the option to tune the hyperparameters or let the algorithm do it.
         hyper_choice = st.radio("Would you like to choose your own model hyperparameters, or have the model optimize them for you?",
                                 ["I'll tune them myself.", "Tune them for me!"])
         if hyper_choice == "I'll tune them myself.":
+            # Gathering and storing the user's hyperparameter choices, since they have chosen to tune them.
             n_neighbors = st.slider("Please choose the number of neighbors to use (fewer neighbors = more precise, but risk overfitting):", 
                                     min_value = 1, max_value = 19, step = 2)
             metric = st.radio("Please choose the metric to use for distance computation (use 'euclidean' for continuous data, 'manhattan' for discrete data, and 'minkowski' for flexibility):",
                               ["minkowski", "euclidean", "manhattan"])
-        else:
+        else: # User wants the computer to optimize the hyperparameter choices.
+            # Defining the parameter grid for the GridSearchCV algorithm to cycle through.
             param_grid = {
                         'n_neighbors': list(range(1, 20, 2)),
                         'metric': ['minkowski', 'euclidean', 'manhattan'],
             } 
             st.write("You're in good hands. Hit 'Run!' whenever you're ready! This may take a few seconds.")
+        # Where model execution starts.
         if st.button('Run!'):
-            X,y = data_prep(final_dataset, features, target)
-            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2,
-                                                                random_state = 99)
-            if scale_question == "Yes":
+            X,y = data_prep(final_dataset, features, target) # Subset the data into X,y.
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 99) # Split into training and testing sets.
+            if scale_question == "Yes": # Re-scale the data if the user desires.
                 X_train, X_test, user_data = scale_data(X_train, X_test, user_data)
-            if hyper_choice == "I'll tune them myself.":
+            if hyper_choice == "I'll tune them myself.": # If the user supplied hyperparameters...
+                # Create and fit the K-nearest neighbors model with the user's hyperparameter choices.
                 model = KNeighborsClassifier(n_neighbors = n_neighbors, metric = metric)
                 model.fit(X_train, y_train)
-            else:
+            else: # Otherwise, carry out a grid search and select the model with the best hyperparameter choices.
                 knn = KNeighborsClassifier()
                 grid_search = GridSearchCV(estimator = knn, param_grid = param_grid, cv = 5, scoring = 'accuracy')
                 grid_search.fit(X_train, y_train)
                 model = grid_search.best_estimator_
-            model_prob(model, user_data)
+            model_prob(model, user_data) # Use the model to make and display predictions on the user's data.
             y_pred = model.predict(X_test)
-            model_metrics(y_test, y_pred)
+            model_metrics(y_test, y_pred) # Calculate and display the model metrics.
             st.write(f"(Here, a '1' represents an All-Star.)")
-            display_visuals(y_test, y_pred, X_test)
-            data_info()
+            display_visuals(y_test, y_pred, X_test) # Display the confusion matrix, classification report, and ROC curve.
+            data_info() # Provide more information on the NBA dataset.
 
-
+# -----------------------------------------------
+# User-Provided Data Path Information
+# -----------------------------------------------
 if path == "Upload my own dataset!":
     st.subheader("Making Predictions with User-Provided Data 📈📊")
+    # Instructions
     st.markdown("Love the curiosity! You'll be making predictions and gathering insights in no time! Here's your job:")
     st.markdown("""
                 1. Upload your own tidy dataset containing one or more predictor variables (either numerical, categorical, or binary) and one **binary** target variable.
