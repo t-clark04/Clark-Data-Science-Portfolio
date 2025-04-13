@@ -108,11 +108,11 @@ final_dataset['Pos'] = final_dataset['Pos'].map(positions)
 
 # Main text of the app
 st.title("Exploring Machine Learning Classification Models")
-path = st.radio("Choose your path!", ["Upload my own dataset", "Become an NBA All-Star"])
+path = st.radio("Choose a path!", ["Upload my own dataset!", "Become an NBA All-Star!"])
 
 # If the person decides to play around with the NBA dataset...
-if path == "Become an NBA All-Star":
-    st.subheader("Predicting NBA All-Star Status with Machine Learning")
+if path == "Become an NBA All-Star!":
+    st.subheader("Predicting NBA All-Star Status with Machine Learning 🏀")
     st.write("Excellent choice! In this portion of the app, you get to pretend that you're a basketball player in the NBA during the 2023-24 season!")
     st.write("You'll first input your position, as well as your season statistics for Points per Game, Assists per Game, and Rebounds per Game. Then, you'll choose what kind of classification model you'd like to use to predict your All-Star status -- either logistic regression, decision tree, or k-nearest neighbors. Finally, you'll tune the hyperparameters of the corresponding model and hit 'Run'!")
     st.write("The app will spit out your probability of being an All-Star, as well as display some of the model metrics to give you a sense of how accurate the prediction is. On your mark, get set, go!")
@@ -128,7 +128,7 @@ if path == "Become an NBA All-Star":
     user_data = [[positions[position], points, assists, rebounds]]
 
     if model_choice == "Logistic Regression":
-        scale_question = st.radio("Would you like to scale the data? (Scaling adjusts for unit bias)", ['Yes', 'No'])
+        scale_question = st.radio("Would you like to scale the data? (Scaling adjusts for unit bias.)", ['Yes', 'No'])
         if st.button("Run!"):
             X,y = data_prep(final_dataset, features, target)
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2,
@@ -146,15 +146,15 @@ if path == "Become an NBA All-Star":
         hyper_choice = st.radio("Would you like to choose your own model hyperparameters, or have the model optimize them for you?",
                                 ["I'll tune them myself.", "Tune them for me!"])
         if hyper_choice == "I'll tune them myself.":
-            criterion = st.radio("Select a criterion algorithm to optimize each split:", ['gini', 'entropy', 'log_loss'])
-            max_depth = st.slider("Select a maximum tree depth:", min_value = 1, max_value = 10, step = 1)
-            min_samples_split = st.slider("Select the minimum number of samples required to split an internal node:",
+            criterion = st.radio("Select a criterion algorithm for optimizing each split (gini is simpler but slightly faster):", ['gini', 'entropy'])
+            max_depth = st.slider("Select a maximum tree depth (higher = more precise, but risk overfitting):", min_value = 1, max_value = 10, step = 1)
+            min_samples_split = st.slider("Select the minimum number of samples required to split an internal node (lower = more precise, but risk overfitting):",
                                           min_value = 2, max_value = 10, step = 1)
-            min_samples_leaf = st.slider("Select the minimum number of samples required to be in a leaf node:",
+            min_samples_leaf = st.slider("Select the minimum number of samples required to be in a leaf node (lower = more precise, but risk overfitting):",
                                          min_value = 1, max_value = 10, step = 1)
         else:
             param_grid = {
-                        'criterion': ['gini', 'entropy', 'log_loss'],
+                        'criterion': ['gini', 'entropy'],
                         'max_depth': [None,2,4,6,8],
                         'min_samples_split': list(range(2,11,2)),
                         'min_samples_leaf' : list(range(1,11,2))
@@ -179,13 +179,13 @@ if path == "Become an NBA All-Star":
             display_visuals(y_test, y_pred, X_test)
 
     if model_choice == "K-Nearest Neighbors":
-        scale_question = st.radio("Would you like to scale the data? (Scaling adjusts for unit bias)", ['Yes', 'No'])
+        scale_question = st.radio("Would you like to scale the data? (Scaling adjusts for unit bias.)", ['Yes', 'No'])
         hyper_choice = st.radio("Would you like to choose your own model hyperparameters, or have the model optimize them for you?",
                                 ["I'll tune them myself.", "Tune them for me!"])
         if hyper_choice == "I'll tune them myself.":
-            n_neighbors = st.slider("Please choose the number of neighbors to use:", 
+            n_neighbors = st.slider("Please choose the number of neighbors to use (fewer neighbors = more precise, but risk overfitting):", 
                                     min_value = 1, max_value = 19, step = 2)
-            metric = st.radio("Please choose the metric to use for distance computation:",
+            metric = st.radio("Please choose the metric to use for distance computation (use 'euclidean' for continuous data, 'manhattan' for discrete data, and 'minkowski' for flexibility):",
                               ["minkowski", "euclidean", "manhattan"])
         else:
             param_grid = {
@@ -213,18 +213,21 @@ if path == "Become an NBA All-Star":
             display_visuals(y_test, y_pred, X_test)
 
 
-if path == "Upload my own dataset":
-    st.subheader("Making Predictions with User-Provided Data")
-    st.write("I love the curiosity! You'll be making predictions and gathering insights in no time!")
-    st.write("In this portion of the app, you will upload your own tidy dataset containing one or more predictor variables (either numerical, categorical, or binary) and one **binary** target variable.")
-    st.write("Then, you'll select different values of your predictor variables, as well as which classification model you'd like to use for prediction -- either logistic regression, decision tree, or k-nearest neighbors.")
-    st.write("Finally, you'll tune the hyperparameters of your model (or let the computer tune it for you), and hit 'Run!'.")
-    st.write("The app will spit out the probability of your binary target variable being a 1 with those predictor values, as well as some of the model metrics to give you a sense of the model's predictive power. On your mark, get set, go!")
+if path == "Upload my own dataset!":
+    st.subheader("Making Predictions with User-Provided Data 📈📊")
+    st.markdown("Love the curiosity! You'll be making predictions and gathering insights in no time! Here's your job:")
+    st.markdown("""
+                1. Upload your own tidy dataset containing one or more predictor variables (either numerical, categorical, or binary) and one **binary** target variable.
+                2. Select different values of your predictor variables, as well as which classification model you'd like to use for prediction -- either logistic regression, decision tree, or k-nearest neighbors.
+                3. Tune the hyperparameters of your model (or let the computer tune it for you), and hit 'Run!'.
+                4. Observe the probability given by the model, and evaluate the model's predictive power using the given metrics and visualizations.
+                """)
+    st.write("On your mark, get set, go!")
 
-    uploaded_file = st.file_uploader("Please start by uploading a .csv file containing the tidy dataset of interest with at least one binary predictor (and no dates!):", type = "csv")
+    uploaded_file = st.file_uploader("Upload a .csv file containing the tidy dataset of interest with at least one binary predictor (and no dates!):", type = "csv")
     if uploaded_file:
         input_data = pd.read_csv(uploaded_file)
-        st.write("The first few rows of your dataset:")
+        st.write("Here are the first few rows of your dataset (missing values will be dropped):")
         st.dataframe(input_data.head())
         input_data = input_data.dropna()
         pos_binary = []
@@ -285,7 +288,7 @@ if path == "Upload my own dataset":
             model_choice = st.radio("Choose a classification model:", ['Logistic Regression', 'Decision Tree', 'K-Nearest Neighbors'])
 
             if model_choice == "Logistic Regression":
-                scale_question = st.radio("Would you like to scale the data? (Scaling adjusts for unit bias)", ['Yes', 'No'])
+                scale_question = st.radio("Would you like to scale the data? (Scaling adjusts for unit bias.)", ['Yes', 'No'])
     
                 if st.button("Run!"):
                     X,y = data_prep(input_data_numeric, features, target)
@@ -306,15 +309,15 @@ if path == "Upload my own dataset":
                 hyper_choice = st.radio("Would you like to choose your own model hyperparameters, or have the model optimize them for you?",
                                 ["I'll tune them myself.", "Tune them for me!"])
                 if hyper_choice == "I'll tune them myself.":
-                    criterion = st.radio("Select a criterion algorithm to optimize each split:", ['gini', 'entropy', 'log_loss'])
-                    max_depth = st.slider("Select a maximum tree depth:", min_value = 1, max_value = 10, step = 1)
-                    min_samples_split = st.slider("Select the minimum number of samples required to split an internal node:",
+                    criterion = st.radio("Select a criterion algorithm for optimizing each split (gini is simpler but slightly faster):", ['gini', 'entropy'])
+                    max_depth = st.slider("Select a maximum tree depth (higher = more precise, but risk overfitting):", min_value = 1, max_value = 10, step = 1)
+                    min_samples_split = st.slider("Select the minimum number of samples required to split an internal node (lower = more precise, but risk overfitting):",
                                           min_value = 2, max_value = 10, step = 1)
-                    min_samples_leaf = st.slider("Select the minimum number of samples required to be in a leaf node:",
+                    min_samples_leaf = st.slider("Select the minimum number of samples required to be in a leaf node (lower = more precise, but risk overfitting):",
                                          min_value = 1, max_value = 10, step = 1)
                 else:
                     param_grid = {
-                        'criterion': ['gini', 'entropy', 'log_loss'],
+                        'criterion': ['gini', 'entropy'],
                         'max_depth': [None,2,4,6,8],
                         'min_samples_split': list(range(2,11,2)),
                         'min_samples_leaf' : list(range(1,11,2))
@@ -341,13 +344,13 @@ if path == "Upload my own dataset":
                     display_visuals(y_test, y_pred, X_test)
 
             if model_choice == "K-Nearest Neighbors":
-                scale_question = st.radio("Would you like to scale the data? (Scaling adjusts for unit bias)", ['Yes', 'No'])
+                scale_question = st.radio("Would you like to scale the data? (Scaling adjusts for unit bias.)", ['Yes', 'No'])
                 hyper_choice = st.radio("Would you like to choose your own model hyperparameters, or have the model optimize them for you?",
                                 ["I'll tune them myself.", "Tune them for me!"])
                 if hyper_choice == "I'll tune them myself.":
-                    n_neighbors = st.slider("Please choose the number of neighbors to use:", 
+                    n_neighbors = st.slider("Please choose the number of neighbors to use (fewer neighbors = more precise, but risk overfitting):", 
                                     min_value = 1, max_value = 19, step = 2)
-                    metric = st.radio("Please choose the metric to use for distance computation:",
+                    metric = st.radio("Please choose the metric to use for distance computation (use 'euclidean' for continuous data, 'manhattan' for discrete data, and 'minkowski' for flexibility):",
                               ["minkowski", "euclidean", "manhattan"])
                 else:
                     param_grid = {
