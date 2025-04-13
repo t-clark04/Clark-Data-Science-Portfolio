@@ -68,6 +68,13 @@ def display_visuals(y_test, y_pred, X_test):
     with col4:
         plot_roc(fpr, tpr, roc_auc)
 
+def scale_data(X_train, X_test, user_data):
+    scaler = StandardScaler()
+    X_train = scaler.fit_transform(X_train)
+    X_test = scaler.transform(X_test)
+    user_data = scaler.transform(user_data)
+    return X_train, X_test, user_data
+
 
 # Loading in and re-formatting the sample dataset.
 nba_data = pd.read_csv("data/NBA_Regular_Season.csv", sep = ";", encoding = 'latin-1')
@@ -127,10 +134,7 @@ if path == "Become an NBA All-Star":
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2,
                                                                 random_state = 99)
             if scale_question == "Yes":
-                scaler = StandardScaler()
-                X_train = scaler.fit_transform(X_train)
-                X_test = scaler.transform(X_test)
-                user_data = scaler.transform(user_data)
+                X_train, X_test, user_data = scale_data(X_train, X_test, user_data)
             model = LogisticRegression()
             model.fit(X_train, y_train)
             model_prob(model, user_data)
@@ -154,25 +158,19 @@ if path == "Become an NBA All-Star":
                         'max_depth': [None,2,4,6,8],
                         'min_samples_split': list(range(2,11,2)),
                         'min_samples_leaf' : list(range(1,11,2))
-}
+                        }           
             st.write("You're in good hands. Hit 'Run!' whenever you're ready! This may take a few seconds.")
         if st.button('Run!'):
             X,y = data_prep(final_dataset, features, target)
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2,
                                                                 random_state = 99)
             if hyper_choice == "I'll tune them myself.":
-                model = DecisionTreeClassifier(random_state = 99,
-                                               criterion = criterion,
-                                               max_depth = max_depth,
-                                               min_samples_split = min_samples_split,
-                                               min_samples_leaf = min_samples_leaf)
+                model = DecisionTreeClassifier(random_state = 99, criterion = criterion, max_depth = max_depth,
+                                               min_samples_split = min_samples_split, min_samples_leaf = min_samples_leaf)
                 model.fit(X_train, y_train)
             else:
                 dtree = DecisionTreeClassifier(random_state = 99)
-                grid_search = GridSearchCV(estimator = dtree, 
-                           param_grid = param_grid,
-                           cv = 3,
-                           scoring = 'accuracy')
+                grid_search = GridSearchCV(estimator = dtree, param_grid = param_grid, cv = 3, scoring = 'accuracy')
                 grid_search.fit(X_train, y_train)
                 model = grid_search.best_estimator_
             model_prob(model, user_data)
@@ -181,6 +179,7 @@ if path == "Become an NBA All-Star":
             display_visuals(y_test, y_pred, X_test)
 
     if model_choice == "K-Nearest Neighbors":
+        scale_question = st.radio("Would you like to scale the data? (Scaling adjusts for unit bias)", ['Yes', 'No'])
         hyper_choice = st.radio("Would you like to choose your own model hyperparameters, or have the model optimize them for you?",
                                 ["I'll tune them myself.", "Tune them for me!"])
         if hyper_choice == "I'll tune them myself.":
@@ -198,16 +197,14 @@ if path == "Become an NBA All-Star":
             X,y = data_prep(final_dataset, features, target)
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2,
                                                                 random_state = 99)
+            if scale_question == "Yes":
+                X_train, X_test, user_data = scale_data(X_train, X_test, user_data)
             if hyper_choice == "I'll tune them myself.":
-                model = KNeighborsClassifier(n_neighbors = n_neighbors,
-                                             metric = metric)
+                model = KNeighborsClassifier(n_neighbors = n_neighbors, metric = metric)
                 model.fit(X_train, y_train)
             else:
                 knn = KNeighborsClassifier()
-                grid_search = GridSearchCV(estimator = knn, 
-                           param_grid = param_grid,
-                           cv = 5,
-                           scoring = 'accuracy')
+                grid_search = GridSearchCV(estimator = knn, param_grid = param_grid, cv = 5, scoring = 'accuracy')
                 grid_search.fit(X_train, y_train)
                 model = grid_search.best_estimator_
             model_prob(model, user_data)
@@ -295,16 +292,14 @@ if path == "Upload my own dataset":
                     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2,
                                                                 random_state = 99)
                     if scale_question == "Yes":
-                        scaler = StandardScaler()
-                        X_train = scaler.fit_transform(X_train)
-                        X_test = scaler.transform(X_test)
-                        user_data = scaler.transform(user_data)
+                        X_train, X_test, user_data = scale_data(X_train, X_test, user_data)
                     model = LogisticRegression()
                     model.fit(X_train, y_train)
                     model_prob2(model, user_data)
                     y_pred = model.predict(X_test)
                     model_metrics(y_test, y_pred)
-                    st.write(f"(Here, 0 represents {input_data[target].unique()[0]}, and 1 represents {input_data[target].unique()[1]}.)")
+                    if set(input_data[target].unique()) != {0,1}:
+                        st.write(f"(Here, 0 represents {input_data[target].unique()[0]} and 1 represents {input_data[target].unique()[1]}.)")
                     display_visuals(y_test, y_pred, X_test)
 
             if model_choice == 'Decision Tree':
@@ -330,27 +325,23 @@ if path == "Upload my own dataset":
                     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2,
                                                                 random_state = 99)
                     if hyper_choice == "I'll tune them myself.":
-                        model = DecisionTreeClassifier(random_state = 99,
-                                               criterion = criterion,
-                                               max_depth = max_depth,
-                                               min_samples_split = min_samples_split,
-                                               min_samples_leaf = min_samples_leaf)
+                        model = DecisionTreeClassifier(random_state = 99, criterion = criterion, max_depth = max_depth,
+                                                       min_samples_split = min_samples_split, min_samples_leaf = min_samples_leaf)
                         model.fit(X_train, y_train)
                     else:
                         dtree = DecisionTreeClassifier(random_state = 99)
-                        grid_search = GridSearchCV(estimator = dtree, 
-                           param_grid = param_grid,
-                           cv = 3,
-                           scoring = 'accuracy')
+                        grid_search = GridSearchCV(estimator = dtree, param_grid = param_grid, cv = 3, scoring = 'accuracy')
                         grid_search.fit(X_train, y_train)
                         model = grid_search.best_estimator_
                     model_prob2(model, user_data)
                     y_pred = model.predict(X_test)
                     model_metrics(y_test, y_pred)
-                    st.write(f"(Here, 0 represents {input_data[target].unique()[0]}, and 1 represents {input_data[target].unique()[1]}.)")
+                    if set(input_data[target].unique()) != {0,1}:
+                        st.write(f"(Here, 0 represents {input_data[target].unique()[0]} and 1 represents {input_data[target].unique()[1]}.)")
                     display_visuals(y_test, y_pred, X_test)
 
             if model_choice == "K-Nearest Neighbors":
+                scale_question = st.radio("Would you like to scale the data? (Scaling adjusts for unit bias)", ['Yes', 'No'])
                 hyper_choice = st.radio("Would you like to choose your own model hyperparameters, or have the model optimize them for you?",
                                 ["I'll tune them myself.", "Tune them for me!"])
                 if hyper_choice == "I'll tune them myself.":
@@ -368,21 +359,21 @@ if path == "Upload my own dataset":
                     X,y = data_prep(input_data_numeric, features, target)
                     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2,
                                                                 random_state = 99)
+                    if scale_question == "Yes":
+                        X_train, X_test, user_data = scale_data(X_train, X_test, user_data)
                     if hyper_choice == "I'll tune them myself.":
-                        model = KNeighborsClassifier(n_neighbors = n_neighbors,
-                                             metric = metric)
+                        model = KNeighborsClassifier(n_neighbors, metric = metric)
                         model.fit(X_train, y_train)
                     else:
                         knn = KNeighborsClassifier()
-                        grid_search = GridSearchCV(estimator = knn, 
-                           param_grid = param_grid,
-                           cv = 5,
-                           scoring = 'accuracy')
+                        grid_search = GridSearchCV(estimator = knn, param_grid = param_grid, cv = 5, scoring = 'accuracy')
                         grid_search.fit(X_train, y_train)
                         model = grid_search.best_estimator_
                     model_prob2(model, user_data)
                     y_pred = model.predict(X_test)
                     model_metrics(y_test, y_pred)
+                    if set(input_data[target].unique()) != {0,1}:
+                        st.write(f"(Here, 0 represents {input_data[target].unique()[0]} and 1 represents {input_data[target].unique()[1]}.)")
                     display_visuals(y_test, y_pred, X_test)
 
 
