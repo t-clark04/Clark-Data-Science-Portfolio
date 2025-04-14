@@ -20,6 +20,7 @@ Thank you very much for checking out my project, and happy exploring! 📈
 - [Data](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp#data-%EF%B8%8F)
 - [What is Machine Learning?](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp#what-is-machine-learning-)
 - [Featured Models](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp#featured-models-%EF%B8%8F)
+- [Model Hyperparameters](https://github.com/t-clark04/Clark-Data-Science-Portfolio/blob/main/MLStreamlitApp/README.md#model-hyperparameters-)
 - [Featured Visuals](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp#featured-visuals-)
 - [References](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp#references-)
 
