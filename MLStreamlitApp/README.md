@@ -21,7 +21,7 @@ Thank you for checking out my project!
 - [What is Machine Learning?](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp#what-is-machine-learning-)
 - [Featured Models](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp#featured-models-%EF%B8%8F)
 - [Model Hyperparameters](https://github.com/t-clark04/Clark-Data-Science-Portfolio/blob/main/MLStreamlitApp/README.md#model-hyperparameters-)
-- [Featured Visuals](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp#featured-visuals-)
+- [Featured Visualizations](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp#featured-visualizations-)
 - [References](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp#references-)
 
 ## Running the App ✅
