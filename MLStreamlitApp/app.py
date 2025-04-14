@@ -149,7 +149,7 @@ all_star_dict = {"Player": ["Tyrese Haliburton", "Damian Lillard", "Giannis Ante
 all_star_data = pd.DataFrame(all_star_dict)
 final_dataset = (pd.merge(new_data, all_star_data, how = "outer", on = "Player").fillna(0))
 
-# Convert the 'Rk' and 'All-Star' variables to integers
+# Convert the 'Rk' and 'All-Star' variables to integers.
 final_dataset['Rk'] = final_dataset['Rk'].astype(int)
 final_dataset['All-Star'] = final_dataset['All-Star'].astype(int)
 
@@ -350,7 +350,7 @@ if path == "Upload my own dataset!":
             st.write("This dataset contains no binary variables. Please select a new dataset.")
             st.stop()
         input_data_numeric = input_data.copy() # Create a copy of the dataset before converting all categorical variables to numeric.
-        # If the values of the target variables aren't already 0 and 1, changes them to 0s and 1s,
+        # If the values of the target variables aren't already 0 and 1, change them to 0s and 1s,
         # then store the map so we can recover what the 0s and 1s mean.
         if set(input_data[target].unique()) != {0,1}:
             target_map = {input_data[target].unique()[0]:0,
@@ -425,7 +425,7 @@ if path == "Upload my own dataset!":
                     model.fit(X_train, y_train) # Define and fit the logistic regression model.
                     model_prob2(model, user_data) # Use the model to make and display predictions on the user's data.
                     y_pred = model.predict(X_test)
-                    model_metrics(y_test, y_pred) # Calcualte and display the model metrics.
+                    model_metrics(y_test, y_pred) # Calculate and display the model metrics.
                     if set(input_data[target].unique()) != {0,1}: # Specify what 0 and 1 represent in the confusion matrix and classification report.
                         st.write(f"(Here, 0 represents {input_data[target].unique()[0]} and 1 represents {input_data[target].unique()[1]}.)")
                     display_visuals(y_test, y_pred, X_test) # Display the confusion matrix, classification report, and ROC curve.
