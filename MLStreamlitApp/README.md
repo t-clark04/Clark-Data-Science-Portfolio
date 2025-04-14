@@ -91,7 +91,7 @@ Confusion matrices:
 - Show the number of true positives, true negatives, false positives, and false negatives in the testing dataset.
   - True positives (TP) are the datapoints correctly predicted to be 1. True negatives (TN) are the datapoints correctly predicted to be 0.
   - False positives (FP) are the datapoints incorrectly predicted to be 1. False negatives (FN) are those incorrectly predicted to be 0.
-- Can easily be used to calculate evaluation metrics, since precision = $\frac{TP}{(TP + FP)}$ and recall = $\frac{TP}{(TP _ FN)}$.
+- Can easily be used to calculate evaluation metrics, since precision = $\frac{TP}{(TP + FP)}$ and recall = $\frac{TP}{(TP + FN)}$.
   
 ![Confusion_Matrix](data/Confusion_Matrix.png)
 
