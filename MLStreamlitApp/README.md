@@ -24,54 +24,40 @@ Thank you very much for checking out my project, and happy exploring! 📈
 ## Running the App ✅
 As with most things in life, there's an easy way and a hard way to run the app.
 
+### Easy Way
 To run it the easy way, simply click [here](https://clark-machine-learning.streamlit.app/). This link should bring up the deployed version of the app on the Streamlit website. No further steps necessary -- just choose your path and start exploring! The only downside of the easy way is that you won't be able to see the underlying Python code.
 
+### Hard Way
 For the hard way, you'll need to start by downloading the "MLStreamlitApp" folder from my data science portfolio repository. To do that, first go to [this link](https://download-directory.github.io/). It will open up a page that looks like this:
 
 ![Getting Started 1](data/Getting_Started_1.png)
 
 Paste the following link into the box in the center of the page and hit enter on the keyboard: https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp.
 
-The project files have now been downloaded to your computer as a zip file. Locate the zip file in your Downloads folder:
+The project files have now been downloaded to your computer as a zip file. Locate the zip file in your Downloads folder, and extract the contents.
 
-### Easy Way
+Now, open up ``app.py`` in your favorite IDE (mine is VSCode!), head over to the terminal, and use the ls and cd commands to navigate your current directory to the "Clark-Data-Science-Portfolio main MLStreamlitApp" folder on your computer. For example, to enter an existing folder in your current working directory, enter "cd folder_name". To exit the folder, enter "cd ..".
 
+Once you're in the correct folder, run the following prompt in the command line:
 
-you first need to download the "TidyData-Project" folder from my data science portfolio repository. To do that, first go to [this link](https://download-directory.github.io/). It will open up this page:
+![Terminal_Prompt.png](data/Terminal_Prompt.png)
 
-![Getting Started 1](data/Getting_Started_1.png)
+This will open up the Streamlit app in a new browser window. 
 
-Paste the following link into the box in the center of the page and hit enter on the keyboard: https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project.
-
-The project files have now been downloaded to your computer as a zip file. Locate the zip file in your Downloads folder:
-
-![Getting Started 2](data/Getting_Started_2.png)
-
-Right-click on the file (or double-click on a Mac) and extract the contents. Now, open up ``main.ipynb`` in your favorite IDE (mine is VSCode!), and run the whole notebook yourself!
-
-Note: This Jupyter notebook uses the following Python libraries: ``pandas``, ``warnings``, ``seaborn``, and ``matplotlib``. If you have never used these libraries before or if they are not contained within your Python Standard Library, you may need to install them before you can run the code in the notebook. To do so, just hop over to the terminal in your IDE, and type: ``pip install package-name``. For example, to install pandas, just enter ``pip install pandas`` in the terminal and hit enter. Once all of these dependencies are installed, you should be good to go!
-
-
-Luis Serrano, author of *Grokking Machine Learning*, defines machine learning as "common sense, except done by computer." [^1] In our case of *supervised* machine learning, this means that we feed data with a target variable and one or more predictor variables to a machine learning algorithm, and it builds a model to predict that target variable when it is absent from the data. My app focuses specifically on the prediction of *binary* target variables (like Yes/No, True/False, or 1/0). 
-
-## Getting Started ✅
-To run the Jupyter notebook yourself, you first need to download the "TidyData-Project" folder from my data science portfolio repository. To do that, first go to [this link](https://download-directory.github.io/). It will open up a page that looks like this:
-
-![Getting Started 1](data/Getting_Started_1.png)
-
-Paste the following link into the box in the center of the page and hit enter on the keyboard: https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project.
-
-The project files have now been downloaded to your computer as a zip file. Locate the zip file in your Downloads folder:
-
-![Getting Started 2](data/Getting_Started_2.png)
-
-Right-click on the file (or double-click on a Mac) and extract the contents. Now, open up ``main.ipynb`` in your favorite IDE (mine is VSCode!), and run the whole notebook yourself!
-
-Note: This Jupyter notebook uses the following Python libraries: ``pandas``, ``warnings``, ``seaborn``, and ``matplotlib``. If you have never used these libraries before or if they are not contained within your Python Standard Library, you may need to install them before you can run the code in the notebook. To do so, just hop over to the terminal in your IDE, and type: ``pip install package-name``. For example, to install pandas, just enter ``pip install pandas`` in the terminal and hit enter. Once all of these dependencies are installed, you should be good to go!
+Note: The app.py script uses the following Python libraries: ``streamlit`` (version 1.37.1), ``pandas`` (version 2.2.3), ``seaborn`` (version 0.13.2), ``matplotlib`` (version 3.10.1), ``scikit_learn`` (version 1.6.1) and ``pathlib``. If you have never used these libraries before or if they are not contained within your Python Standard Library, you may need to install them before you can run the terminal command. To do so, just hop over to the terminal in your IDE, and type: ``pip install package-name``. For example, to install pandas, just enter ``pip install pandas`` in the terminal and hit enter. Once all of these dependencies are installed, you should be good to go!
 
 ## Data 🗄️
+The underlying data for the NBA All-Star path has been adapted from a larger Kaggle dataset linked [here](https://www.kaggle.com/datasets/vivovinco/2023-2024-nba-player-stats?resource=download&select=2023-2024+NBA+Player+Stats+-+Regular.csv). The full dataset contains over 500 observations of NBA player statistics for the 2023-24 season across 30 different variables, though this project only utilized Rank, Player Name, Position, Points per Game, Assists per Game, and Rebounds per Game. Thank you to Vivo Vinco and Basketball Reference for the use of this informative dataset!
 
-The messy data for this mini-project has been adapted from a dataset found at [this link](https://edjnet.github.io/OlympicsGoNUTS/2008/), so thank you to Giorgio Comai from the European Data Journalism Network for the use of his data. You can download the data directly by heading over to the data folder linked [here](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project/data) and downloading the file called ``olympics_08_medalists.csv``. However, if you follow the steps in the "Getting Started" section, there is no need to download the data individually or to carry out any other pre-processing steps. Once cleaned, the dataset contains 1,875 observations across 4 variables relating to the athletes who earned Olympic medals at the 2008 games in Beijing.
+## What is Machine Learning? 🤖
+Luis Serrano, author of *Grokking Machine Learning*, defines machine learning as "common sense, except done by computer." [^1] 
+
+In our case of *supervised* machine learning, this means that we feed data with a target variable and one or more predictor variables to a machine learning algorithm, and it builds a model to predict that target variable when it is absent from the data. 
+
+My app focuses specifically on the prediction of *binary* target variables (like Yes/No, True/False, or 1/0). Since binary variables fall under umbrella of categorical variables, all three of the machine learning models in the app are more precisely referred to as *classification* models. 
+
+## Featured Models 🖥️
+
 
 ## Project Insights 💡
 
