@@ -30,7 +30,7 @@ Simply click [here](https://clark-machine-learning.streamlit.app/). This link sh
 ### Hard Way
 For the hard way, you'll need to start by downloading the "MLStreamlitApp" folder from my data science portfolio repository. To do that, first go to [this link](https://download-directory.github.io/). It will open up a page that looks like this:
 
-![Getting Started 1](data/Getting_Started_1.png)
+<img src="data/Getting_Started_1.png" alt="Getting_Started_1" width="600"/>
 
 Paste the following link into the box in the center of the page and hit enter on the keyboard: https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp.
 
@@ -42,7 +42,7 @@ Once you're in the correct folder, run the following prompt in the command line:
 
 ![Terminal_Prompt.png](data/Terminal_Prompt.png)
 
-This will open up the Streamlit app in a new browser window. 
+This will open up the Streamlit app in a new browser window. Time to explore!
 
 Note: The app.py script uses the following Python libraries: ``streamlit`` (version 1.37.1), ``pandas`` (version 2.2.3), ``seaborn`` (version 0.13.2), ``matplotlib`` (version 3.10.1), ``scikit_learn`` (version 1.6.1) and ``pathlib``. If you have never used these libraries before or if they are not contained within your Python Standard Library, you may need to install them before you can run the terminal command. To do so, just hop over to the terminal in your IDE, and type: ``pip install package-name``. For example, to install pandas, just enter ``pip install pandas`` in the terminal and hit enter. Once all of these dependencies are installed, you should be good to go!
 
