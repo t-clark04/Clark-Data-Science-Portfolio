@@ -65,7 +65,8 @@ My Streamlit app allows the user to utilize three different machine learning cla
 - Decision trees use a series of nested questions in an upside-down tree-like structure to arrive at the prediction of the target variable using the other features in the dataset.
 - K-nearest neighbors uses the "majority vote" of the *k-nearest neighbors* to a given datapoint to determine the value of the predicted target variable at that point.
 
-Each of these three models depend on a different set of hyperparameters for tuning the model to the user's liking and controlling for overfitting.
+## Model Hyperparameters 🔧
+Each of the three models depend on a different set of hyperparameters for tuning the model to the user's liking and controlling for overfitting.
 
 For logistic regression:
 - The tuning of the model mostly depends on whether the features are standardized (scaled) or not.
