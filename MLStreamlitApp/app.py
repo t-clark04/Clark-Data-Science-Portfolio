@@ -252,7 +252,7 @@ if path == "Become an NBA All-Star!":
                 grid_search.fit(X_train, y_train)
                 model = grid_search.best_estimator_
             model_prob(model, user_data) # Use the model to make and display predictions on the user's data.
-            if hyper_choice == "Tune them for me!":
+            if hyper_choice == "Tune them for me!": # Display the hyperparameters if optimized by the model.
                 st.markdown(f"""
                             The algorithm's optimal hyperparameters were:
                             - ``criterion`` = {grid_search.best_params_['criterion']}
@@ -302,7 +302,7 @@ if path == "Become an NBA All-Star!":
                 grid_search.fit(X_train, y_train)
                 model = grid_search.best_estimator_
             model_prob(model, user_data) # Use the model to make and display predictions on the user's data.
-            if hyper_choice == "Tune them for me!":
+            if hyper_choice == "Tune them for me!": # Display the hyperparameters if optimized by the model.
                 st.markdown(f"""
                             The algorithm's optimal hyperparameters were:
                             - ``n_neighbors`` = {grid_search.best_params_['n_neighbors']}
@@ -467,7 +467,7 @@ if path == "Upload my own dataset!":
                         grid_search.fit(X_train, y_train)
                         model = grid_search.best_estimator_
                     model_prob2(model, user_data) # Use the model to make and display predictions on the user's data.
-                    if hyper_choice == "Tune them for me!":
+                    if hyper_choice == "Tune them for me!": # Display the hyperparameters if optimized by the model.
                         st.markdown(f"""
                                     The algorithm's optimal hyperparameters were:
                                     - ``criterion`` = {grid_search.best_params_['criterion']}
@@ -517,7 +517,7 @@ if path == "Upload my own dataset!":
                         grid_search.fit(X_train, y_train)
                         model = grid_search.best_estimator_
                     model_prob2(model, user_data) # Use the model to make and display predictions on the user's data.
-                    if hyper_choice == "Tune them for me!":
+                    if hyper_choice == "Tune them for me!": # Display the hyperparameters if optimized by the model.
                         st.markdown(f"""
                                     The algorithm's optimal hyperparameters were:
                                     - ``n_neighbors`` = {grid_search.best_params_['n_neighbors']}
