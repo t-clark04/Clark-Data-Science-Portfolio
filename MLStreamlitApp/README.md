@@ -27,10 +27,10 @@ Thank you very much for checking out my project, and happy exploring! 📈
 ## Running the App ✅
 As with most things in life, there's an easy way and a hard way to run the app.
 
-### Easy Way
+### The "Easy" Way:
 Simply click [here](https://clark-machine-learning.streamlit.app/). This link should bring up the deployed version of the app on the Streamlit website. No further steps necessary -- just choose your path and start exploring! The only potential downside of this method is that you won't be able to see the underlying Python code if you so desire.
 
-### Hard Way
+### The "Hard" Way:
 For the hard way, you'll need to start by downloading the "MLStreamlitApp" folder from my data science portfolio repository. To do that, first go to [this link](https://download-directory.github.io/). It will open up a page that looks like this:
 
 <img src="data/Getting_Started_1.png" alt="Getting_Started_1" width="600"/>
