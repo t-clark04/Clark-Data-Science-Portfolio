@@ -82,7 +82,7 @@ For decision trees:
 For k-nearest neighbors:
 - Features are allowed to be scaled or unscaled according to the user's preference.
 - ``n_neighbors`` defines the number of nearest neighbors to use as the "voting populace".
-- ``metric`` specifies the method for calculating the distance to the closest datapoints.
+- ``metric`` specifies the method for calculating the distance to the closest datapoints. Click [here](https://www.kdnuggets.com/2023/03/distance-metrics-euclidean-manhattan-minkowski-oh.html) for more information on the various distance metrics.
 
 ## Featured Visuals 📊
 My machine learning app utilizes two different kinds of visuals for displaying the evaluation metrics of a given classification model. These include the confusion matrix and the ROC Curve.
