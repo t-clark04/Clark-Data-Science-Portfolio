@@ -116,7 +116,7 @@ def data_info():
         st.markdown("""
                  The data for this portion of the app was adapted from a dataset on Kaggle linked [here](https://www.kaggle.com/datasets/vivovinco/2023-2024-nba-player-stats?resource=download&select=2023-2024+NBA+Player+Stats+-+Regular.csv).
                  The original dataset contains 30 columns of data on the NBA players who took part in the 2023-24 season, though only six were used in this app.
-                 To explore variables like player name, team, games played, field goals, and more, clink the link to the full dataset above, or check out the first few rows of the dataset below:
+                 To explore variables like player name, team, games played, field goals, and more, clik the link to the full dataset above, or check out the first few rows of the dataset below:
                 """)
         # Display the first ten rows of the full dataset.
         st.dataframe(nba_data.head(10))
