@@ -520,10 +520,8 @@ if path == "Upload my own dataset!":
                     if hyper_choice == "Tune them for me!":
                         st.markdown(f"""
                                     The algorithm's optimal hyperparameters were:
-                                    - ``criterion`` = {grid_search.best_params_['criterion']}
-                                    - ``max_depth`` = {grid_search.best_params_['max_depth']}
-                                    - ``min_samples_split`` = {grid_search.best_params_['min_samples_split']}
-                                    - ``min_samples_leaf`` = {grid_search.best_params_['min_samples_leaf']}
+                                    - ``n_neighbors`` = {grid_search.best_params_['n_neighbors']}
+                                    - ``metric`` = {grid_search.best_params_['metric']}
                                     """)
                     y_pred = model.predict(X_test)
                     model_metrics(y_test, y_pred) # Calculate and display the model metrics.
