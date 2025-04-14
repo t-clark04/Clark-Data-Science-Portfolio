@@ -28,7 +28,11 @@ To run it the easy way, simply click [here](https://clark-machine-learning.strea
 
 For the hard way, you'll need to start by downloading the "MLStreamlitApp" folder from my data science portfolio repository. To do that, first go to [this link](https://download-directory.github.io/). It will open up a page that looks like this:
 
+![Getting Started 1](data/Getting_Started_1.png)
 
+Paste the following link into the box in the center of the page and hit enter on the keyboard: https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp.
+
+The project files have now been downloaded to your computer as a zip file. Locate the zip file in your Downloads folder:
 
 ### Easy Way
 
