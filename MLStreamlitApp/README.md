@@ -1,6 +1,6 @@
 # Machine Learning Streamlit App 🤖🏀
 
-## Overview 📊
+## Overview
 In this project, I have created an interactive Streamlit application that allows users to make predictions on binary target variables and evaluate several machine learning classification models, namely logistic regression, decision trees, and k-nearest neighbors.
 
 Powered by the Python library "sklearn", my app provides the user with two possible paths -- they can either upload their own dataset or play around with the sample NBA data I have provided. In either case, the user's job is to:
@@ -80,7 +80,7 @@ For k-nearest neighbors:
 - ``n_neighbors`` defines the number of nearest neighbors to use as the "voting populace".
 - ``metric`` specifies the method for calculating the distance to the closest datapoints.
 
-## Featured Visuals 💡
+## Featured Visuals 📊
 My machine learning app utilizes two different kinds of visuals for displaying the evaluation metrics of a given classification model. These include the confusion matrix and the ROC Curve.
 
 Confusion matrices:
@@ -96,14 +96,13 @@ The ROC (Receiver Operating Characteristic) Curve:
 - Can be used to visualize the optimal probability threshold for classifying datapoints as a 0 or a 1, though that threshold is optimized automatically in this app.
 - Determines the AUC, or Area Under Curve, for the model, which gives us a good idea of the model's general performance across thresholds (0.8 is typically the benchmark for a good model).
 
-![ROC_Curve][data/ROC_Curve.png]
+![ROC_Curve](data/ROC_Curve.png)
 
 ## References 📚
+For more information on supervised machine learning, I invite you to check out Luis G. Serrano's book, *Grokking Machine Learning*, as most of my general knowledge on the topic has come from that text.
 
-For more information on Hadley Wickham's concept of "tidy data", check out his original article in the Journal of Statistical Software linked [here](https://www.jstatsoft.org/article/view/v059i10).
+Furthermore, the idea for the general layout and probability outputs of this Streamlit app were inspired by the LinkedIn user prediction app linked [here](https://chandinir-linkedin-prediction-app-final-project-app-tjatqd.streamlit.app/). So, thank you to Chandini Ramesh for inspiring this app in many ways! 
 
-While you're at it, feel free to also take a look at the "Pandas Cheat Sheet" [here](https://pandas.pydata.org/Pandas_Cheat_Sheet.pdf). It contains descriptions and examples of many of the functions and methods I used in this project.
-
-Finally, as stated above, the data for this project has been adapted from the work of Giorgio Comai with the European Data Journalism Network. You can find the original source linked [here](https://edjnet.github.io/OlympicsGoNUTS/2008/).
+Finally, as stated above, the data for this project has been adapted from the work of Vivo Vinco and Basketball Reference, whom I also thank for making the sample data portion of this app possible. You can find the original dataset linked [here]([https://edjnet.github.io/OlympicsGoNUTS/2008/](https://www.kaggle.com/datasets/vivovinco/2023-2024-nba-player-stats?resource=download&select=2023-2024+NBA+Player+Stats+-+Regular.csv)).
 
 [^1]: Serrano, Luis G. *Grokking Machine Learning*. Manning, 2021.
