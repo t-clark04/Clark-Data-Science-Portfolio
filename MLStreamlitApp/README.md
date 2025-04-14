@@ -24,24 +24,23 @@ Thank you very much for checking out my project, and happy exploring! 📈
 ## Running the App ✅
 As with most things in life, there's an easy way and a hard way to run the app.
 
+### Easy Way
 To run it the easy way, simply click [here](https://clark-machine-learning.streamlit.app/). This link should bring up the deployed version of the app on the Streamlit website. No further steps necessary -- just choose your path and start exploring! The only downside of the easy way is that you won't be able to see the underlying Python code.
 
+### Hard Way
 For the hard way, you'll need to start by downloading the "MLStreamlitApp" folder from my data science portfolio repository. To do that, first go to [this link](https://download-directory.github.io/). It will open up a page that looks like this:
 
 ![Getting Started 1](data/Getting_Started_1.png)
 
 Paste the following link into the box in the center of the page and hit enter on the keyboard: https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp.
 
-The project files have now been downloaded to your computer as a zip file. Locate the zip file in your Downloads folder:
+The project files have now been downloaded to your computer as a zip file. Locate the zip file in your Downloads folder, and extract the contents.
 
-### Easy Way
+Now, open up ``app.py`` in your favorite IDE (mine is VSCode!), head over to the terminal, and use the ls and cd commands to navigate your current directory to the "Clark-Data-Science-Portfolio main MLStreamlitApp" folder on your computer. For example, to enter an existing folder in your current working directory, enter "cd folder_name". To exit the folder, enter "cd ..".
 
+Once you're in the correct folder, run the following prompt in the command line:
 
-you first need to download the "TidyData-Project" folder from my data science portfolio repository. To do that, first go to [this link](https://download-directory.github.io/). It will open up this page:
-
-![Getting Started 1](data/Getting_Started_1.png)
-
-Paste the following link into the box in the center of the page and hit enter on the keyboard: https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project.
+![Terminal_Prompt.png](data/Terminal_Prompt.png)
 
 The project files have now been downloaded to your computer as a zip file. Locate the zip file in your Downloads folder:
 
