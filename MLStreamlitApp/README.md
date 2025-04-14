@@ -25,7 +25,7 @@ Thank you very much for checking out my project, and happy exploring! 📈
 As with most things in life, there's an easy way and a hard way to run the app.
 
 ### Easy Way
-To run it the easy way, simply click [here](https://clark-machine-learning.streamlit.app/). This link should bring up the deployed version of the app on the Streamlit website. No further steps necessary -- just choose your path and start exploring! The only downside of the easy way is that you won't be able to see the underlying Python code.
+Simply click [here](https://clark-machine-learning.streamlit.app/). This link should bring up the deployed version of the app on the Streamlit website. No further steps necessary -- just choose your path and start exploring! The only potential downside of this method is that you won't be able to see the underlying Python code if you so desire.
 
 ### Hard Way
 For the hard way, you'll need to start by downloading the "MLStreamlitApp" folder from my data science portfolio repository. To do that, first go to [this link](https://download-directory.github.io/). It will open up a page that looks like this:
@@ -36,7 +36,7 @@ Paste the following link into the box in the center of the page and hit enter on
 
 The project files have now been downloaded to your computer as a zip file. Locate the zip file in your Downloads folder, and extract the contents.
 
-Now, open up ``app.py`` in your favorite IDE (mine is VSCode!), head over to the terminal, and use the ls and cd commands to navigate your current directory to the "Clark-Data-Science-Portfolio main MLStreamlitApp" folder on your computer. For example, to enter an existing folder in your current working directory, enter "cd folder_name". To exit the folder, enter "cd ..".
+Now, open up ``app.py`` in your favorite IDE (mine is VSCode!), head over to the terminal, and use the ls and cd commands to navigate your current directory to the "Clark-Data-Science-Portfolio main MLStreamlitApp" folder on your computer. More specifically, to enter an existing folder in your current working directory, enter "cd folder_name". To exit the folder, enter "cd ..". And to view the contents of your current folder, enter "ls".
 
 Once you're in the correct folder, run the following prompt in the command line:
 
@@ -50,26 +50,53 @@ Note: The app.py script uses the following Python libraries: ``streamlit`` (vers
 The underlying data for the NBA All-Star path has been adapted from a larger Kaggle dataset linked [here](https://www.kaggle.com/datasets/vivovinco/2023-2024-nba-player-stats?resource=download&select=2023-2024+NBA+Player+Stats+-+Regular.csv). The full dataset contains over 500 observations of NBA player statistics for the 2023-24 season across 30 different variables, though this project only utilized Rank, Player Name, Position, Points per Game, Assists per Game, and Rebounds per Game. Thank you to Vivo Vinco and Basketball Reference for the use of this informative dataset!
 
 ## What is Machine Learning? 🤖
-Luis Serrano, author of *Grokking Machine Learning*, defines machine learning as "common sense, except done by computer." [^1] 
+- Luis Serrano, author of *Grokking Machine Learning*, defines machine learning as "common sense, except done by computer." [^1] In essence, we prompt machines to learn from experience (i.e. data) in order to make predictions about the future.
 
-In our case of *supervised* machine learning, this means that we feed data with a target variable and one or more predictor variables to a machine learning algorithm, and it builds a model to predict that target variable when it is absent from the data. 
+- In our case of *supervised* machine learning, this means that we feed data with a target variable and one or more predictor variables into a machine learning algorithm, and it builds a model to predict that target variable based on the other featuers. 
 
-My app focuses specifically on the prediction of *binary* target variables (like Yes/No, True/False, or 1/0). Since binary variables fall under umbrella of categorical variables, all three of the machine learning models in the app are more precisely referred to as *classification* models. 
+- My app focuses specifically on the prediction of *binary* target variables (like Yes/No, True/False, or 1/0). Since binary variables fall under the umbrella of categorical variables, all three of the machine learning models in the app are more precisely referred to as *classification* models. 
 
 ## Featured Models 🖥️
+My Streamlit app allows the user to utilize three different machine learning classification models. These include logistic regression, decision trees, and k-nearest neighbors.
 
+- Logistic Regression finds the optimal linear combination of the feature variables to predict the binary variable of interest, and uses the Sigmoid function to turn that prediction into a probability.
+- Decision trees use a series of nested questions in an upside-down tree-like structure to arrive at the prediction of the target variable using the other features in the dataset.
+- K-nearest neighbors uses the "majority vote" of the *k-nearest neighbors* to a given datapoint to determine the value of the predicted target variable at that point.
 
-## Project Insights 💡
+Each of these three models depend on a different set of hyperparameters for tuning the model to the user's liking and controlling for overfitting.
 
-Two of the biggest insights generated by this mini-project were those uncovered through the following visualizations.
+For logistic regression:
+- The tuning of the model mostly depends on whether the features are standardized (scaled) or not.
+- ``penalty`` can also be used to control the weighting of the coefficients, but it is kept at the default value of 'l2' in this app.
 
-![bar chart](data/bar_chart.png)
+For decision trees:
+- ``criterion`` specifies the metric used for finding the optimal "question" to ask at each decision node.
+- ``max_depth`` defines the maximum number of levels in the decision tree before being cut off.
+- ``min_samples_split`` specifies the minimum number of samples needed for a node to be split further.
+- ``min_samples_leaf`` gives the minimum number of samples required in the resulting leaves for a node to be split further.
 
-In this bar chart, we see that in every medal category (i.e. gold, silver, and bronze), male athletes earned a greater number of medals than female athletes at the 2008 Summer Olympics. However, as we discovered over the course of the project, this isn't because of a difference in athletic ability. Rather, it's likely due to the fact that Olympic sports often have more male events, which is a long-term effect of some sports being historically male-dominated.
+For k-nearest neighbors:
+- Features are allowed to be scaled or unscaled according to the user's preference.
+- ``n_neighbors`` defines the number of nearest neighbors to use as the "voting populace".
+- ``metric`` specifies the method for calculating the distance to the closest datapoints.
 
-![pie_chart](data/pie_charts.png)
+## Featured Visuals 💡
+My machine learning app utilizes two different kinds of visuals for displaying the evaluation metrics of a given classification model. These include the confusion matrix and the ROC Curve.
 
-These pie charts show us the sports that were awarded the most medals at the 2008 Olympics. Somewhat unsurprisingly, we find that the sports with either the most events (like athletics and swimming) or the most athletes on the field at a time (like association football and field hockey) were awarded the most medals. However, something to explore a bit further after seeing these graphs might be the correlation of Olympic sport age (i.e. how long they have been included in the Olympics) with number of medals awarded, since athletics and swimming are also among the oldest Olympic sports. Perhaps, this could be a topic for a future mini-project! 🤔
+Confusion matrices:
+- Show the number of true positives, true negatives, false positives, and false negatives in the testing dataset.
+  - True positives (TP) are the datapoints correctly predicted to be 1. True negatives (TN) are the datapoints correctly predicted to be 0.
+  - False positives (FP) are the datapoints incorrectly predicted to be 1. False negatives (FN) are those incorrectly predicted to be 0.
+- Can easily be used to calculate evaluation metrics, since precision = $\frac{TP}{(TP + FP)}$ and recall = $\frac{TP}{(TP _ FN)}$.
+  
+![Confusion_Matrix](data/Confusion_Matrix.png)
+
+The ROC (Receiver Operating Characteristic) Curve:
+- Plots the True Positive Rate (TPR) against the False Positive Rate (TNR).
+- Can be used to visualize the optimal probability threshold for classifying datapoints as a 0 or a 1, though that threshold is optimized automatically in this app.
+- Determines the AUC, or Area Under Curve, for the model, which gives us a good idea of the model's general performance across thresholds (0.8 is typically the benchmark for a good model).
+
+![ROC_Curve][data/ROC_Curve.png]
 
 ## References 📚
 
