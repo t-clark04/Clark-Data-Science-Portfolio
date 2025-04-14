@@ -1,9 +1,9 @@
 # Machine Learning Streamlit App 🤖🏀
 
 ## Overview
-In this project, I have created an interactive Streamlit application that allows users to make predictions on binary target variables and evaluate several machine learning classification models, namely logistic regression, decision trees, and k-nearest neighbors.
+In this project, I have created an interactive Streamlit application that allows users to make predictions on binary target variables and evaluate several machine learning classification models -- namely logistic regression, decision trees, and k-nearest neighbors.
 
-Powered by the Python library "sklearn", my app provides the user with two possible paths -- they can either upload their own dataset or play around with the sample NBA data I have provided. In either case, the user's job is to:
+Powered by the Python library "scikit-learn", my app provides the user with two possible paths. They can either upload their own dataset or play around with the sample NBA data I have provided. In either case, the user's job is to:
 1. Choose specific values for each of the predictors, as well as the type of classification model they'd like to use for prediction.
 2. Tune the mode's hyperparameters, or allow the app to tune the hyperparameters for them.
 3. Observe the outputted probability given the selected values of the predictor variables.
@@ -15,11 +15,13 @@ Thank you very much for checking out my project, and happy exploring! 📈
 
 ## Table of Contents
 
-- [Overview](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project#overview-)
-- [Getting Started](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project#getting-started-)
-- [Data](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project#data-%EF%B8%8F)
-- [Project Insights](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project#project-insights-)
-- [References](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project#references-)
+- [Overview](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp#overview)
+- [Running the App](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp#running-the-app-)
+- [Data](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp#data-%EF%B8%8F)
+- [What is Machine Learning?](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp#what-is-machine-learning-)
+- [Featured Models](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp#featured-models-%EF%B8%8F)
+- [Featured Visuals](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp#featured-visuals-)
+- [References](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp#references-)
 
 ## Running the App ✅
 As with most things in life, there's an easy way and a hard way to run the app.
@@ -47,13 +49,13 @@ This will open up the Streamlit app in a new browser window. Time to explore!
 Note: The app.py script uses the following Python libraries: ``streamlit`` (version 1.37.1), ``pandas`` (version 2.2.3), ``seaborn`` (version 0.13.2), ``matplotlib`` (version 3.10.1), ``scikit_learn`` (version 1.6.1) and ``pathlib``. If you have never used these libraries before or if they are not contained within your Python Standard Library, you may need to install them before you can run the terminal command. To do so, just hop over to the terminal in your IDE, and type: ``pip install package-name``. For example, to install pandas, just enter ``pip install pandas`` in the terminal and hit enter. Once all of these dependencies are installed, you should be good to go!
 
 ## Data 🗄️
-The underlying data for the NBA All-Star path has been adapted from a larger Kaggle dataset linked [here](https://www.kaggle.com/datasets/vivovinco/2023-2024-nba-player-stats?resource=download&select=2023-2024+NBA+Player+Stats+-+Regular.csv). The full dataset contains over 500 observations of NBA player statistics for the 2023-24 season across 30 different variables, though this project only utilized Rank, Player Name, Position, Points per Game, Assists per Game, and Rebounds per Game. Thank you to Vivo Vinco and Basketball Reference for the use of this informative dataset!
+- The underlying data for the NBA All-Star path has been adapted from a larger Kaggle dataset linked [here](https://www.kaggle.com/datasets/vivovinco/2023-2024-nba-player-stats?resource=download&select=2023-2024+NBA+Player+Stats+-+Regular.csv).
+- The full dataset contains over 500 observations of NBA player statistics for the 2023-24 season across 30 different variables, though this project only utilized Rank, Player Name, Position, Points per Game, Assists per Game, and Rebounds per Game.
+- Thank you to Vivo Vinco and Basketball Reference for the use of this informative dataset!
 
 ## What is Machine Learning? 🤖
 - Luis Serrano, author of *Grokking Machine Learning*, defines machine learning as "common sense, except done by computer." [^1] In essence, we prompt machines to learn from experience (i.e. data) in order to make predictions about the future.
-
 - In our case of *supervised* machine learning, this means that we feed data with a target variable and one or more predictor variables into a machine learning algorithm, and it builds a model to predict that target variable based on the other featuers. 
-
 - My app focuses specifically on the prediction of *binary* target variables (like Yes/No, True/False, or 1/0). Since binary variables fall under the umbrella of categorical variables, all three of the machine learning models in the app are more precisely referred to as *classification* models. 
 
 ## Featured Models 🖥️
@@ -103,6 +105,6 @@ For more information on supervised machine learning, I invite you to check out L
 
 Furthermore, the idea for the general layout and probability outputs of this Streamlit app were inspired by the LinkedIn user prediction app linked [here](https://chandinir-linkedin-prediction-app-final-project-app-tjatqd.streamlit.app/). So, thank you to Chandini Ramesh for inspiring this app in many ways! 
 
-Finally, as stated above, the data for this project has been adapted from the work of Vivo Vinco and Basketball Reference, whom I also thank for making the sample data portion of this app possible. You can find the original dataset linked [here]([https://edjnet.github.io/OlympicsGoNUTS/2008/](https://www.kaggle.com/datasets/vivovinco/2023-2024-nba-player-stats?resource=download&select=2023-2024+NBA+Player+Stats+-+Regular.csv)).
+Finally, as stated above, the data for this project has been adapted from the work of Vivo Vinco and Basketball Reference, whom I also thank for making the sample data portion of this app possible. You can find the original dataset linked [here](https://www.kaggle.com/datasets/vivovinco/2023-2024-nba-player-stats?resource=download&select=2023-2024+NBA+Player+Stats+-+Regular.csv).
 
 [^1]: Serrano, Luis G. *Grokking Machine Learning*. Manning, 2021.
