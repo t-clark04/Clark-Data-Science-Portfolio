@@ -5,7 +5,7 @@ This repository contains all of my data science-related projects completed over 
 ## Basic EDA
 <img align="left" width="275" height="175" src="Images/Penguins.jpg"> **[Palmer's Penguins Streamlit App 🐧❄️](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/basic-streamlit-app)**
 
-Basic app showcasing my proficiency with the streamlit library, as well as my skills in working with pandas DataFrames. Allows users to filter and explore the Palmer's Penguins dataset, which contains measurements on three different species of penguins living on the Palmer Archipelago in Antarctica. Navigate to the [basic-streamlit-app](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/basic-streamlit-app) folder for more information and for instructions on how to run the app yourself! 
+Basic app showcasing my proficiency with the Streamlit library, as well as my skills in working with pandas DataFrames. Allows users to filter and explore the Palmer's Penguins dataset, which contains measurements on three different species of penguins living on the Palmer Archipelago in Antarctica. Navigate to the [basic-streamlit-app](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/basic-streamlit-app) folder for more information and for instructions on how to run the app yourself! 
 
 #
 
@@ -15,3 +15,9 @@ Basic app showcasing my proficiency with the streamlit library, as well as my sk
 Project demonstrating my expertise in data cleaning and visualization using Python libraries like ``pandas``, ``seaborn``, and ``matplotlib``. Starting with a "messy" dataset on the 2008 Olympic medalists, I first re-format the data into a ["tidy"](https://www.jstatsoft.org/article/view/v059i10) data frame and then explore relationships in variables (like `Gender` and `Sport`) through pivot tables and visualizations. Click [here](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project) to check it out for yourself! 
 
 #
+
+## Machine Learning
+<img align="left" width="275" height="175" src="Images/NBA.jpg"> **[Machine Learning Streamlit App 🤖🏀](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp)**
+
+Streamlit app displaying my ability to develop and deploy interactive web applications and build machine learning models with ``scikit-learn``. Allows the user to explore various classification models, tune hyperparameters, make predictions, and evaluate predictive power through user-uploaded data or a provided NBA dataset. Head over to [MLSStreamlitApp](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp) for the full app description, or click [here](https://clark-machine-learning.streamlit.app/) to check it out now!
+
