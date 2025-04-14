@@ -302,6 +302,12 @@ if path == "Become an NBA All-Star!":
                 grid_search.fit(X_train, y_train)
                 model = grid_search.best_estimator_
             model_prob(model, user_data) # Use the model to make and display predictions on the user's data.
+            if hyper_choice == "Tune them for me!":
+                st.markdown(f"""
+                            The algorithm's optimal hyperparameters were:
+                            - ``n_neighbors`` = {grid_search.best_params_['n_neighbors']}
+                            - ``metric`` = {grid_search.best_params_['metric']}
+                            """)
             y_pred = model.predict(X_test)
             model_metrics(y_test, y_pred) # Calculate and display the model metrics.
             st.write(f"(Here, a '1' represents an All-Star.)")
@@ -461,6 +467,14 @@ if path == "Upload my own dataset!":
                         grid_search.fit(X_train, y_train)
                         model = grid_search.best_estimator_
                     model_prob2(model, user_data) # Use the model to make and display predictions on the user's data.
+                    if hyper_choice == "Tune them for me!":
+                        st.markdown(f"""
+                                    The algorithm's optimal hyperparameters were:
+                                    - ``criterion`` = {grid_search.best_params_['criterion']}
+                                    - ``max_depth`` = {grid_search.best_params_['max_depth']}
+                                    - ``min_samples_split`` = {grid_search.best_params_['min_samples_split']}
+                                    - ``min_samples_leaf`` = {grid_search.best_params_['min_samples_leaf']}
+                                    """)
                     y_pred = model.predict(X_test)
                     model_metrics(y_test, y_pred) # Calculate and display the model metrics.
                     if set(input_data[target].unique()) != {0,1}: # Specify what 0 and 1 represent in the confusion matrix and classification report.
@@ -503,6 +517,14 @@ if path == "Upload my own dataset!":
                         grid_search.fit(X_train, y_train)
                         model = grid_search.best_estimator_
                     model_prob2(model, user_data) # Use the model to make and display predictions on the user's data.
+                    if hyper_choice == "Tune them for me!":
+                        st.markdown(f"""
+                                    The algorithm's optimal hyperparameters were:
+                                    - ``criterion`` = {grid_search.best_params_['criterion']}
+                                    - ``max_depth`` = {grid_search.best_params_['max_depth']}
+                                    - ``min_samples_split`` = {grid_search.best_params_['min_samples_split']}
+                                    - ``min_samples_leaf`` = {grid_search.best_params_['min_samples_leaf']}
+                                    """)
                     y_pred = model.predict(X_test)
                     model_metrics(y_test, y_pred) # Calculate and display the model metrics.
                     if set(input_data[target].unique()) != {0,1}: # Specify what 0 and 1 represent in the confusion matrix and classification report.
