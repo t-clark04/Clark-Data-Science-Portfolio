@@ -42,40 +42,16 @@ MLB_data = MLB_data.reset_index().drop(columns = 'Rk')
 Identifiers = MLB_data[['Player', 'Team']]
 MLB_data.drop(columns = ['Player', 'Team'])
 
-# Exclude rows with multiple positions listed.
-new_data = new_data[new_data['Pos'].isin(['PG', 'SG', 'SF', 'PF', 'C'])].reset_index(drop = True)
-
-# Merge the NBA dataset with another handmade dataset, which specifies the players who were all-stars during the 2023-24 season.
-all_star_dict = {"Player": ["Tyrese Haliburton", "Damian Lillard", "Giannis Antetokounmpo", "Jayson Tatum", "Joel Embiid",
-                 "Jalen Brunson", "Tyrese Maxey", "Donovan Mitchell", "Trae Young", "Paolo Banchero", "Scottie Barnes", "Jaylen Brown",
-                 "Julius Randle", "Bam Adebayo", "Luka Don?i?", "Shai Gilgeous-Alexander", "Kevin Durant", "LeBron James", "Nikola Joki?",
-                 "Devin Booker", "Stephen Curry", "Anthony Edwards", "Paul George", "Kawhi Leonard", "Karl-Anthony Towns", "Anthony Davis"],
-                 "All-Star": [int(1)]*26}
-all_star_data = pd.DataFrame(all_star_dict)
-final_dataset = (pd.merge(new_data, all_star_data, how = "outer", on = "Player").fillna(0))
-
-# Convert the 'Rk' and 'All-Star' variables to integers.
-final_dataset['Rk'] = final_dataset['Rk'].astype(int)
-final_dataset['All-Star'] = final_dataset['All-Star'].astype(int)
-
-# Convert the categorical position values to integers as well.
-positions = {
-    'PG':1,
-    'SG':2,
-    'SF':3,
-    'PF':4,
-    'C':5
-}
-final_dataset['Pos'] = final_dataset['Pos'].map(positions)
+# We don't need to numerically encode any categorical variables for this dataset.
 
 # -----------------------------------------------
 # App Title and Path Options
 # -----------------------------------------------
-st.title("Exploring Machine Learning Classification Models")
-path = st.radio("Choose a path!", ["Upload my own dataset!", "Become an NBA All-Star!"])
+st.title("Exploring the Uses of Unsupervised Machine Learning")
+path = st.radio("Choose a path!", ["Upload my own dataset!", "Become an MLB analyst!"])
 
 # -----------------------------------------------
-# NBA All-Star Path Information
+# NBA MLB Analyst Path Information
 # -----------------------------------------------
 if path == "Become an NBA All-Star!":
     st.subheader("Predicting NBA All-Star Status with Machine Learning 🏀")
