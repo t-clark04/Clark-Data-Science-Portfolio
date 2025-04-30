@@ -10,24 +10,38 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import GridSearchCV
+from sklearn.cluster import KMeans
 from pathlib import Path # Needed for relative path when deploying app online
 
 # -----------------------------------------------
-# Loading and Re-formatting the NBA Dataset
+# Loading and Re-formatting the MLB Pitchers Dataset
 # -----------------------------------------------
 # Set the proper path for deploying the app online.
-DATA_PATH = Path(__file__).parent / "data" / "NBA_Regular_Season.csv"
+DATA_PATH = Path(__file__).parent / "data" / "MLB_Pitchers.csv"
 # Read in the data from the 'data' folder.
-nba_data = pd.read_csv(DATA_PATH, sep = ";", encoding = 'latin-1')
-# Take a subset of the variables and combine rows with the same player.
-# Keep the first instance of their name and position, and average over their points, assists, and rebounds.
-new_data = (nba_data[['Rk', 'Player', 'Pos', 'PTS', 'AST' ,'TRB']].groupby('Rk', as_index=False).agg({
-    'Player': 'first',  
-    'Pos': 'first',
-    'PTS': 'mean',
-    'AST': 'mean',
-    'TRB': 'mean'
-}))
+MLB_data = pd.read_csv(DATA_PATH, encoding = 'latin-1')
+# Drop the unnecessary columns, restrict our scope only to pitchers with more 
+# than 20 innings pitched, and drop any missing values.
+MLB_data = (MLB_data.drop(columns = ["Lg", "Awards", "Player-additional"]).query('IP > 20').dropna())
+duplicates = MLB_data[MLB_data.duplicated('Rk', keep = False)]
+team_dict = dict()
+for index, row in duplicates.iterrows():
+    if row['Rk'] not in list(team_dict.keys()):
+        team_dict[row['Rk']] = [row['Team']]
+    else:
+        team_dict[row['Rk']].append(row['Team'])
+for elem in team_dict:
+    del team_dict[elem][0]
+team_df = pd.DataFrame(list(team_dict.items()), columns = ['Rk', 'Team'])
+MLB_data = MLB_data.groupby('Rk').agg("first").reset_index()
+MLB_data['Team'] = MLB_data['Team'].apply(lambda x: [x])
+MLB_data.set_index('Rk', inplace = True)
+team_df.set_index('Rk', inplace = True)
+MLB_data.update(team_df)
+MLB_data = MLB_data.reset_index().drop(columns = 'Rk')
+Identifiers = MLB_data[['Player', 'Team']]
+MLB_data.drop(columns = ['Player', 'Team'])
+
 # Exclude rows with multiple positions listed.
 new_data = new_data[new_data['Pos'].isin(['PG', 'SG', 'SF', 'PF', 'C'])].reset_index(drop = True)
 
