@@ -15,6 +15,7 @@ from pathlib import Path # Needed for relative path when deploying app online
 from sklearn.cluster import AgglomerativeClustering
 from scipy.cluster.hierarchy import linkage, dendrogram
 from sklearn.decomposition import PCA
+import plotly.express as px
 
 # -----------------------------------------------
 # Loading and Re-formatting the MLB Pitchers Dataset
@@ -124,59 +125,68 @@ if path == "Become an MLB analyst!":
     # KMeans path
     if cluster_model == "KMeans Clustering":
         # Gathering and storing the user's desired number of clusters.
-        n_clusters = st.slider("Select your desired number of clusters, k:", min_value = 2, max_value = 20, step = 1)
-        # Where model execution starts.
-        if st.button('Run!'):
-            # Creating the dataset we will use to build the model
-            X = MLB_data[features]
-            # Scaling the data
-            scaler = StandardScaler()
-            X_std = scaler.fit_transform(X)
-            # Building the model
-            kmeans = KMeans(n_clusters = n_clusters, random_state = 99)
-            clusters = kmeans.fit_predict(X_std)
-            # Calculating the WCSS and Silhouette Scores for each possible k
-            ks = range(2,21)
-            wcss = []
-            silhouette_scores = []
-            for k in ks:
-                km = KMeans(k, random_state = 99)
-                km.fit(X_std)
-                wcss.append(km.inertia_) # Grabs the WCSS
-                labels = km.labels_
-                silhouette_scores.append(silhouette_score(X_std, labels))
-            # Plotting the elbow plot and silhouette score plot
-            col1, col2 = st.columns(2)
-            with col1:
-                plt.figure()
-                plt.plot(ks, wcss, marker='o')
-                plt.xlabel('Number of clusters (k)')
-                plt.xticks(range(1,21))
-                plt.ylabel('Within-Cluster Sum of Squares (WCSS)')
-                plt.title('Elbow Method for Optimal k')
-                plt.grid(True)
-                st.pyplot(plt)
-                st.write("Note: The elbow plot displays the within-cluster variance for different numbers of clusters. Typically, the optimal k value is found at the 'elbow' of the plot, or where the slope changes sharply.")
-            with col2:
-                plt.figure()
-                plt.plot(ks, silhouette_scores, marker='o', color='green')
-                plt.xlabel('Number of clusters (k)')
-                plt.xticks(range(1,21))
-                plt.ylabel('Silhouette Score')
-                plt.title('Silhouette Score for Optimal k')
-                plt.grid(True)
-                st.pyplot(plt)
-                st.write("Note: The silhouette score measures the average similarity of data points within a cluster. Thus, the highest silhouette score is most desirable.")
-            st.write("**After viewing these plots, you are encouraged to adjust the number of clusters in your model to the optimal number, then re-run the model before continuing.**")
-            st.markdown("""
-                    #### Visualizing and Analyzing the Clusters
-                    """)
-            dim_red = st.radio("Pick a dimensionality reduction model to visualize your clusters in 2D-space:", 
-                                ["PCA", "t-SNE"])
-            feature_labs = st.multiselect("Select which variables you would like displayed when you hover:", options = ["Player", "Team"] + features, default = ["Player", "Team"])
-            high_team = st.selectbox("Select a team you would like highlighted in the plot, if any:", 
-                                     options = ["None"] + sorted(list(set(val for sublist in Identifiers['Team'] for val in sublist))))
-            #if dim_red == "PCA":
+        n_clusters = st.slider("Select your desired number of clusters, k, to start out (can be adjusted later):", min_value = 2, max_value = 20, step = 1)
+        dim_red = st.radio("Pick a dimensionality reduction model to visualize your clusters in 2D-space:", 
+                            ["PCA", "t-SNE"])
+        feature_labs = st.multiselect("Select which variables you would like displayed when you hover:", options = ["Player", "Team"] + features, default = ["Player"])
+        high_team = st.selectbox("Select a team you would like highlighted in the plot, if any:", 
+                                    options = ["None"] + sorted(list(set(val for sublist in Identifiers['Team'] for val in sublist))))
+        if st.button("Go!"):
+            if dim_red == "PCA":
+                # Creating the dataset we will use to build the model
+                X = MLB_data[features]
+                # Scaling the data
+                scaler = StandardScaler()
+                X_std = scaler.fit_transform(X)
+                # Building the model
+                kmeans = KMeans(n_clusters = n_clusters, random_state = 99)
+                clusters = pd.DataFrame(kmeans.fit_predict(X_std), columns = ["Cluster"])
+                # Calculating the WCSS and Silhouette Scores for each possible k
+                ks = range(2,21)
+                wcss = []
+                silhouette_scores = []
+                for k in ks:
+                    km = KMeans(k, random_state = 99)
+                    km.fit(X_std)
+                    wcss.append(km.inertia_) # Grabs the WCSS
+                    labels = km.labels_
+                    silhouette_scores.append(silhouette_score(X_std, labels))
+                # Plotting the elbow plot and silhouette score plot
+                col1, col2 = st.columns(2)
+                with col1:
+                    plt.figure()
+                    plt.plot(ks, wcss, marker='o')
+                    plt.xlabel('Number of clusters (k)')
+                    plt.xticks(range(1,21))
+                    plt.ylabel('Within-Cluster Sum of Squares (WCSS)')
+                    plt.title('Elbow Method for Optimal k')
+                    plt.grid(True)
+                    st.pyplot(plt)
+                    st.write("Note: The elbow plot displays the within-cluster variance for different numbers of clusters. Typically, the optimal k value is found at the 'elbow' of the plot, or where the slope changes sharply.")
+                with col2:
+                    plt.figure()
+                    plt.plot(ks, silhouette_scores, marker='o', color='green')
+                    plt.xlabel('Number of clusters (k)')
+                    plt.xticks(range(1,21))
+                    plt.ylabel('Silhouette Score')
+                    plt.title('Silhouette Score for Optimal k')
+                    plt.grid(True)
+                    st.pyplot(plt)
+                    st.write("Note: The silhouette score measures the average similarity of data points within a cluster. Thus, the highest silhouette score is most desirable.")
+                st.write("**After viewing these plots, you are encouraged to adjust the number of clusters in your model to the optimal number, then re-run the model.**")
+                pca = PCA(n_components=2)
+                X_pca = pd.DataFrame(pca.fit_transform(X_std), columns = ["PCA1", "PCA2"])
+                final_df = pd.concat([X_pca, clusters, X, Identifiers], axis = 1)
+                hover_dict = dict()
+                for var in feature_labs:
+                    hover_dict[var] = True
+                hover_dict["PCA1"] = False
+                hover_dict["PCA2"] = False
+                #plt.figure()
+                #scatter = plt.scatter(X_pca[:, 0], X_pca[:, 1], c=, cmap='viridis', s=60, edgecolor='k', alpha=0.7)
+                fig = px.scatter(final_df, x = "PCA1", y = "PCA2", color = "Cluster", hover_data = hover_dict)
+                st.plotly_chart(fig, use_container_width=True)
+
 
             
             
