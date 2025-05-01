@@ -12,6 +12,8 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from pathlib import Path # Needed for relative path when deploying app online
+from sklearn.cluster import AgglomerativeClustering
+from scipy.cluster.hierarchy import linkage, dendrogram
 
 # -----------------------------------------------
 # Loading and Re-formatting the MLB Pitchers Dataset
@@ -68,6 +70,10 @@ if path == "Become an MLB analyst!":
                 6. Pick which variables you'd like to display when you hover over a datapoint, as well as if you'd like a particular team to be highlighted (to help you locate a certain player). Then, hit "Visualize!".
                 7. Explore your pitcher options, and track down the next Cy Young winner!
                 """)
+    st.write("Let's go!")
+    st.markdown("""
+        #### Clustering the Data
+    """)
     st.write("To start, check out the first few rows of data below, as well as the provided glossary:")
     st.dataframe(MLB_data.head(5))
     with st.expander("**Glossary**"):
@@ -159,4 +165,59 @@ if path == "Become an MLB analyst!":
                 plt.grid(True)
                 st.pyplot(plt)
                 st.write("Note: The silhouette score measures the average similarity of data points within a cluster. Thus, the highest silhouette score is most desirable.")
+            st.write("**After viewing these plots, you are encouraged to adjust the number of clusters in your model to the optimal number, then re-run the model before continuing.**")
+            st.markdown("""
+                    #### Visualizing and Analyzing the Clusters
+                    """)
+            dim_red = st.radio("Pick a dimensionality reduction model to visualize your clusters in 2D-space:", 
+                                ["PCA", "t-SNE"])
+            
+            
+    
+    # Hierarchical Clustering path
+    if cluster_model == "Hierarchical Clustering":
+        # Gathering and storing the user's desired hyperparameter choices.
+        n_clusters = st.slider("Select your desired number of clusters, k:", min_value = 2, max_value = 20, step = 1)
+        link = st.radio("Please choose the rule to use for linking new clusters (default = ward):",
+                              ["ward", "complete", "average", "single"])
+        # Where model execution starts.
+        if st.button('Run!'):
+            # Creating the dataset we will use to build the model
+            X = MLB_data[features]
+            # Scaling the data
+            scaler = StandardScaler()
+            X_std = scaler.fit_transform(X)
+            # Building the model
+            hierarch = AgglomerativeClustering(n_clusters = n_clusters, linkage = link)
+            clusters = hierarch.fit_predict(X_std)
+            # Constructing the dendrogram
+            Z = linkage(X_std, method = link)
+            fig, ax = plt.subplots(figsize = (10,5))
+            dgram = dendrogram(Z, ax = ax, truncate_mode = "lastp")
+            plt.ylabel("Distance")
+            plt.title("Dendrogram of Hierarchical Clustering for MLB Pitchers")
+            st.pyplot(fig)
+            st.write("Note: The dendrogram displays the bottom-up clustering process carried out by the hierarchical algorithm. Inspecting the plot helps you determine where to cut the tree and decide on your optimal number of clusters.")
+            # Calculating the Silhouette Scores for each possible k
+            ks = range(2,21)
+            silhouette_scores = []
+            for k in ks:
+            # Fit hierarchical clustering
+                labels = AgglomerativeClustering(n_clusters=k, linkage= link).fit_predict(X_std)
+                score = silhouette_score(X_std, labels)
+                silhouette_scores.append(score)
+            col3, col4, col5 = st.columns([0.25,.5,.25])
+            with col4:
+                plt.figure()
+                plt.plot(ks, silhouette_scores, marker='o', color='green')
+                plt.xlabel('Number of clusters (k)')
+                plt.xticks(range(1,21))
+                plt.ylabel('Silhouette Score')
+                plt.title('Silhouette Score for Optimal k')
+                plt.grid(True)
+                st.pyplot(plt)
+                st.write("Note: The silhouette score measures the average similarity of data points within a cluster. Thus, the highest silhouette score is most desirable.")
+            st.write("**After viewing these plots, you are encouraged to adjust the number of clusters in your model to the optimal number, then re-run the model before continuing.**")
+
+    
 
