@@ -212,6 +212,11 @@ MLB_data = pd.read_csv(DATA_PATH, encoding = 'latin-1')
 # Drop the unnecessary columns, restrict our scope only to pitchers with more 
 # than 20 innings pitched, and drop any missing values.
 MLB_data = (MLB_data.drop(columns = ["Lg", "Awards", "Player-additional"]).query('IP > 20').dropna())
+# Locate the pitchers who played for multiple teams, then iterate through them.
+# Create a dictionary for each pitcher, where the corresponding value is a list
+# of teams that they played for in 2024. Then delete the initial entry, since it
+# is not a team at all. It is just a placeholder like '2TM' that indicates they
+# played for two teams.
 duplicates = MLB_data[MLB_data.duplicated('Rk', keep = False)]
 team_dict = dict()
 for index, row in duplicates.iterrows():
@@ -221,18 +226,31 @@ for index, row in duplicates.iterrows():
         team_dict[row['Rk']].append(row['Team'])
 for elem in team_dict:
     del team_dict[elem][0]
+# Turn that dictionary into a dataframe containing the ranks of pitchers
+# who played for multiple teams and a column of lists containing the teams.
 team_df = pd.DataFrame(list(team_dict.items()), columns = ['Rk', 'Team'])
+# Collapse down each of the rows containing pitchers who played for different
+# teams and keep the first row's data, since already it contains sums and averages 
+# where appropriate, but get rid of the specified pitchers since they played in 
+# multiple leagues during the 2024 season, so they are just too complicated to
+# work with. There aren't many of them anyway, so it's not that big of a loss. 
 MLB_data = MLB_data.groupby('Rk').agg("first").reset_index()
 MLB_data = MLB_data[~MLB_data['Rk'].isin([162,288,375,400,417,431,467,476,514,529])]
+# Turn each entry for Team in the data frame into a list, and for the pitchers with
+# multiple teams, replace their current entry for Team with the list we just created
+# in the team_df.
 MLB_data['Team'] = MLB_data['Team'].apply(lambda x: [x])
 MLB_data.set_index('Rk', inplace = True)
 team_df.set_index('Rk', inplace = True)
 MLB_data.update(team_df)
+# Reset the indices in the dataframe (drop rank), store the Player and Team variables as a 
+# separate dataset called Identifiers to be used later, then make a reduced data frame
+# without those variables. The reduced dataset will be used to offer the user their variable
+# choices for clustering the pitchers.
 MLB_data = MLB_data.reset_index().drop(columns = 'Rk')
 Identifiers = MLB_data[['Player', 'Team']]
 MLB_reduced = MLB_data.drop(columns = ['Player', 'Team'])
 
-# We don't need to numerically encode any categorical variables for this dataset.
 # -----------------------------------------------
 # App Title and Path Options
 # -----------------------------------------------
@@ -244,26 +262,25 @@ path = st.radio("Select a path to get started!", ["Upload my own dataset!", "Bec
 # MLB Analyst Path Information
 # -----------------------------------------------
 if path == "Become an MLB analyst!":
-    st.subheader("Sabermetrics with MLB Pitcher Data")
+    st.subheader("Sabermetrics with MLB Pitcher Data ⚾📈")
     # Instructions
-    st.write("In this portion of the app, you'll get to pretend that you're an analyst in the front office of your favorite Major League Baseball team, and your team desperately needs a pitcher. However, all you've been given is a dataset with the statistics for each pitcher in the MLB during the 2024 season.")
-    st.write("With no target variable to predict in the dataset, you'll use unsupervised machine learning to group together similar players into clusters and then visualize those clusters in the xy-plane. So, if there's a desirable pitcher who's out of your pay range, you can look within that pitcher's cluster to find some more affordable talent for your team.")
+    st.write("In this portion of the app, you'll get to pretend that you're an analyst in the front office of your favorite Major League Baseball team, and your team desperately needs a pitcher. However, all you've been given is a dataset with the statistics for each MLB pitcher during the 2024 season.")
+    st.write("With no target variable to predict in the dataset, you'll use unsupervised machine learning to group together similar players into clusters and then visualize those clusters in the xy-plane. That way, if you know there's a desirable pitcher who's out of your pay range, you can look within that pitcher's cluster to find some more affordable talent for your team.")
     st.write("Here's your job:")
     st.markdown("""
-                1. Take a look at the dataset you've been given, as well as the definitions of all of the pitching statistics, and choose a group of variables to use for clustering similar pitchers together.
-                2. Pick the model you'd like to use to construct the clusters -- either KMeans or Hierarchical Clustering. 
-                3. Tune the hyperparameters of the corresponding model and hit 'Run!'.
-                4. Observe the outputted model feedback and re-tune the hyperparameters, if necessary.
-                5. Pick the dimensionality reduction model you'd like to use to visualize your clusters -- either Principal Components Analysis (PCA) or t-SNE. 
-                6. Pick which variables you'd like to display when you hover over a datapoint, as well as if you'd like a particular team to be highlighted (to help you locate a certain player). Then, hit "Visualize!".
-                7. Explore your pitcher options, and track down the next Cy Young winner!
+                1. Take a look at the dataset you've been given, as well as the glossary of pitching metrics, and choose a group of variables to cluster similar pitchers together.
+                2. Pick the model you'd like to use to construct the clusters -- either KMeans or Hierarchical Clustering -- and tune the model hyperparameters to start (you can re-adjust them later).
+                3. Choose the dimensionality reduction model you'd like to use to visualize your clusters -- either Principal Components Analysis (PCA) or t-SNE. 
+                4. Pick which variables you'd like to display when you hover over a datapoint in your plot, as well is if you'd like a particular team to be highlighted (to help you locate a certain player). Then, hit "Go!".
+                5. Observe the outputted model feedback and re-tune the hyperparameters, if necessary.
+                6. Explore your pitching options, and track down the next Cy Young winner!
                 """)
-    st.write("Let's go!")
-    st.markdown("""
-        #### Clustering the Data
-    """)
+    st.write("Let's get to work!")
+    st.divider() # Breaks up the app a little bit.
     st.write("To start, check out the first few rows of data below, as well as the provided glossary:")
-    st.dataframe(MLB_data.head(5))
+    st.dataframe(MLB_data.head(5)) # First five rows of the big data frame.
+    # Glossary of pitching metrics from Baseball Reference to help the user 
+    # pick which variables they want to use.
     with st.expander("**Glossary**"):
         st.markdown(
             """
@@ -301,27 +318,31 @@ if path == "Become an MLB analyst!":
             - **SO9** - 9 x Strikeouts / Innings Pitched
             - **SO/BB** - Strikeouts/Walks
         """)
-    
     # Obtaining and storing selected variables.
     features = st.multiselect("Select the variables you'd like to use for clustering (at least 2, preferably more):", MLB_reduced.columns)  
     # Asking user which model they'd like to use for clustering.
-    cluster_model = st.radio("Choose a clustering model:", ['KMeans Clustering', 'Hierarchical Clustering'])
+    cluster_model = st.radio("Choose a clustering model (KMeans = top-down, Hierarchical = bottom-up):", ['KMeans Clustering', 'Hierarchical Clustering'])
     
     # KMeans path
     if cluster_model == "KMeans Clustering":
         # Gathering and storing the user's desired number of clusters.
         n_clusters = st.slider("Select your desired number of clusters, k, to start out (can be adjusted later):", min_value = 2, max_value = 20, step = 1)
-        dim_red = st.radio("Pick a dimensionality reduction model to visualize your clusters in 2D-space:", 
+        # Storing their choice for the dimensionarlity reduction model.
+        dim_red = st.radio("Pick a dimensionality reduction model to visualize your clusters in 2D-space (t-SNE = better, but slower):", 
                             ["PCA", "t-SNE"])
+        # Asking them to which variables they want to be displayed upon hovering.
         feature_labs = st.multiselect("Select which variables you would like displayed when you hover:", options = ["Player", "Team"] + features, default = ["Player", "Team"])
+        # Asking the user which team to highlight in the plot.
         high_team = st.selectbox("Select a team you would like highlighted in the plot, if any:", 
                                     options = ["None"] + sorted(list(set(val for sublist in Identifiers['Team'] for val in sublist))))
+        # Where execution starts.
         if st.button("Go!"):
             if dim_red == "PCA":
-                # Creating the dataset we will use to build the model
+                # Creating the dataset we will use to build the model, 
+                # and scaling it.
                 X = MLB_data[features]
                 X_std = scale_X(X)
-                # Building the model
+                # Building the KMeans model and storing the clusters as a dataframe.
                 kmeans = KMeans(n_clusters = n_clusters, random_state = 99)
                 clusters = pd.DataFrame(kmeans.fit_predict(X_std), columns = ["Cluster"])
                 # Calculating the WCSS and Silhouette Scores for each possible k
@@ -330,18 +351,28 @@ if path == "Become an MLB analyst!":
                 # Plotting the elbow plot and silhouette score plot
                 plot_elbow_silhouette(ks, wcss, silhouette_scores)
                 st.write("**After viewing these plots, you are encouraged to adjust the number of clusters in your model to the optimal number, then re-run the model.**")
+                # Doing the dimensionality reduction and storing principle components as a
+                # data frame.
                 pca = PCA(n_components=2)
                 X_pca = pd.DataFrame(pca.fit_transform(X_std), columns = ["PCA1", "PCA2"])
+                # Concatenating all of the necessary dataframes into one for plotting.
                 final_df = pd.concat([X_pca, clusters, X, Identifiers], axis = 1)
+                # Converting the cluster column to a categorical variable so that the 
+                # color scale on the graph is discrete rather than continuous.
                 final_df['Cluster'] = final_df['Cluster'].astype('category')
+                # Create an opacity column in the final_dataset to dictate which team
+                # should be highlighted and which teams should be more transparent.
                 if high_team == "None":
                     final_df['opacity'] = 1
                 else:            
                     final_df['opacity'] = final_df['Team'].apply(lambda x: 1 if high_team in x else 0.4)
+                # Creating our dictionary to tell plotly which variables to include in the hover labels.
                 hover_dict = hover_labs(dim_red, feature_labs)
+                # Building our graph.
                 fig = build_MLB_traces(final_df, dim_red)
+                # Updating it for the aesthetics.
                 update_fig_format(fig, dim_red)
-                # Show the combined figure
+                # Displaying it to the user.
                 st.plotly_chart(fig, use_container_width=True)
             if dim_red == "t-SNE":
                 X = MLB_data[features]
