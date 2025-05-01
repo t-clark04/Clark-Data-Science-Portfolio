@@ -190,6 +190,8 @@ if path == "Become an MLB analyst!":
                 hover_dict["PCA2"] = False
                 df_highlight = final_df[final_df['opacity'] == 1.0]
                 df_faded = final_df[final_df['opacity'] == 0.4]
+                dict_fake = {"PCA1": [float('nan')]*n_clusters, "PCA2": [float('nan')]*n_clusters, 'Cluster': final_df['Cluster'].unique()}
+                df_fake = pd.DataFrame(dict_fake)
 
                 fig_highlight = px.scatter(df_highlight, x="PCA1", y="PCA2", color="Cluster",
                                         hover_data=hover_dict, 
@@ -203,11 +205,19 @@ if path == "Become an MLB analyst!":
                                     opacity=0.4,
                                     category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
                 
+                fig_fake = px.scatter(df_fake, x="PCA1", y="PCA2", color="Cluster",
+                                      color_discrete_sequence=px.colors.qualitative.Set1,
+                                      opacity=1,
+                                      category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
+                
                 for trace in fig_faded.data:
                     trace.showlegend = False
 
+                for trace in fig_highlight.data:
+                    trace.showlegend = False
+
                 # Combine all traces
-                fig = go.Figure(data=fig_faded.data + fig_highlight.data)
+                fig = go.Figure(data=fig_faded.data + fig_highlight.data + fig_fake.data)
                 fig.update_layout(
                     margin = dict(t = 40),
                     hoverlabel = dict(font_color = "black", font_size = 12),
