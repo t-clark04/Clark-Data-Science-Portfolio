@@ -1,3 +1,5 @@
+import os
+os.environ["OMP_NUM_THREADS"] = "3"
 # -----------------------------------------------
 # Loading in dependencies
 # -----------------------------------------------
@@ -71,6 +73,14 @@ def plot_dendrogram(X_std):
     plt.title("Dendrogram of Hierarchical Clustering for MLB Pitchers")
     st.pyplot(fig)
     st.write("Note: The dendrogram displays the bottom-up clustering process carried out by the hierarchical algorithm. Inspecting the plot helps you determine where to cut the tree and decide on your optimal number of clusters.")
+
+def hover_labs(dim_red):
+    hover_dict = dict()
+    for var in feature_labs:
+        hover_dict[var] = True
+    hover_dict[f"{dim_red}1"] = False
+    hover_dict[f"{dim_red}2"] = False
+    return hover_dict
 
 # -----------------------------------------------
 # Loading and Re-formatting the MLB Pitchers Dataset
@@ -203,36 +213,28 @@ if path == "Become an MLB analyst!":
                 pca = PCA(n_components=2)
                 X_pca = pd.DataFrame(pca.fit_transform(X_std), columns = ["PCA1", "PCA2"])
                 final_df = pd.concat([X_pca, clusters, X, Identifiers], axis = 1)
-                
                 final_df['Cluster'] = final_df['Cluster'].astype('category')
                 if high_team == "None":
                     final_df['opacity'] = 1
                 else:            
                     final_df['opacity'] = final_df['Team'].apply(lambda x: 1 if high_team in x else 0.4)
-                hover_dict = dict()
-                for var in feature_labs:
-                    hover_dict[var] = True
-                hover_dict["PCA1"] = False
-                hover_dict["PCA2"] = False
+                hover_dict = hover_labs(dim_red)
                 df_highlight = final_df[final_df['opacity'] == 1.0]
                 df_faded = final_df[final_df['opacity'] == 0.4]
                 dict_fake = {"PCA1": [float('nan')]*n_clusters, "PCA2": [float('nan')]*n_clusters, 'Cluster': final_df['Cluster'].unique()}
                 df_fake = pd.DataFrame(dict_fake)
-
                 fig_highlight = px.scatter(df_highlight, x="PCA1", y="PCA2", color="Cluster",
                                         hover_data=hover_dict, 
                                         color_discrete_sequence=px.colors.qualitative.Set1,
                                         opacity=1.0,
                                         category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
                 fig_highlight.update_traces(marker=dict(size=6.5))
-
                 fig_faded = px.scatter(df_faded, x="PCA1", y="PCA2", color="Cluster",
                                     hover_data=hover_dict,
                                     color_discrete_sequence=px.colors.qualitative.Set1,
                                     opacity=0.4,
                                     category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
                 fig_faded.update_traces(marker=dict(size=6.5))
-                
                 fig_fake = px.scatter(df_fake, x="PCA1", y="PCA2", color="Cluster",
                                       color_discrete_sequence=px.colors.qualitative.Set1,
                                       opacity=1,
@@ -243,6 +245,7 @@ if path == "Become an MLB analyst!":
                     trace.showlegend = False
                 # Combine all traces
                 fig = go.Figure(data=fig_faded.data + fig_highlight.data + fig_fake.data)
+
                 fig.update_layout(
                     margin = dict(t = 40),
                     hoverlabel = dict(font_color = "black", font_size = 12),
@@ -306,11 +309,7 @@ if path == "Become an MLB analyst!":
                     final_df['opacity'] = 1
                 else:            
                     final_df['opacity'] = final_df['Team'].apply(lambda x: 1 if high_team in x else 0.4)
-                hover_dict = dict()
-                for var in feature_labs:
-                    hover_dict[var] = True
-                hover_dict["t-SNE1"] = False
-                hover_dict["t-SNE2"] = False
+                hover_dict = hover_labs(dim_red)
                 df_highlight = final_df[final_df['opacity'] == 1.0]
                 df_faded = final_df[final_df['opacity'] == 0.4]
                 dict_fake = {"t-SNE1": [float('nan')]*n_clusters, "t-SNE2": [float('nan')]*n_clusters, 'Cluster': final_df['Cluster'].unique()}
@@ -409,11 +408,7 @@ if path == "Become an MLB analyst!":
                     final_df['opacity'] = 1
                 else:            
                     final_df['opacity'] = final_df['Team'].apply(lambda x: 1 if high_team in x else 0.4)
-                hover_dict = dict()
-                for var in feature_labs:
-                    hover_dict[var] = True
-                hover_dict["PCA1"] = False
-                hover_dict["PCA2"] = False
+                hover_dict = hover_labs(dim_red)
                 df_highlight = final_df[final_df['opacity'] == 1.0]
                 df_faded = final_df[final_df['opacity'] == 0.4]
                 dict_fake = {"PCA1": [float('nan')]*n_clusters, "PCA2": [float('nan')]*n_clusters, 'Cluster': final_df['Cluster'].unique()}
@@ -503,11 +498,7 @@ if path == "Become an MLB analyst!":
                     final_df['opacity'] = 1
                 else:            
                     final_df['opacity'] = final_df['Team'].apply(lambda x: 1 if high_team in x else 0.4)
-                hover_dict = dict()
-                for var in feature_labs:
-                    hover_dict[var] = True
-                hover_dict["t-SNE1"] = False
-                hover_dict["t-SNE2"] = False
+                hover_dict = hover_labs(dim_red)
                 df_highlight = final_df[final_df['opacity'] == 1.0]
                 df_faded = final_df[final_df['opacity'] == 0.4]
                 dict_fake = {"t-SNE1": [float('nan')]*n_clusters, "t-SNE2": [float('nan')]*n_clusters, 'Cluster': final_df['Cluster'].unique()}
