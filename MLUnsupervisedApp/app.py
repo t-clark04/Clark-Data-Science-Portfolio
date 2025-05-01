@@ -1,49 +1,57 @@
-import os
-os.environ["OMP_NUM_THREADS"] = "3"
 # -----------------------------------------------
 # Loading in dependencies
 # -----------------------------------------------
-import streamlit as st
-import pandas as pd 
-import seaborn as sns 
-import matplotlib.pyplot as plt 
+# Needed to suppress a memory leak warning from KMeans.
+import os
+os.environ["OMP_NUM_THREADS"] = "3"
 
-# All of these required for executing machine learning algorithms.
+import streamlit as st # To run the app.
+import pandas as pd # To work with dataframes.
+import seaborn as sns # To build dendrograms.
+import matplotlib.pyplot as plt # To make scatterplots and line charts.
+
+# All of these are required for executing the machine learning algorithms.
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
-from pathlib import Path # Needed for relative path when deploying app online
 from sklearn.cluster import AgglomerativeClustering
 from scipy.cluster.hierarchy import linkage, dendrogram
 from sklearn.decomposition import PCA
 import plotly.express as px
 import plotly.graph_objects as go
 from sklearn.manifold import TSNE
+from pathlib import Path # Needed for relative path when deploying app online.
 
 # -----------------------------------------------
 # Helper Functions
 # -----------------------------------------------
-def scale_X(X):
-    # Scaling the data
+def scale_X(X): # Re-scale the data and return it.
     scaler = StandardScaler()
     X_std = scaler.fit_transform(X)
     return X_std
 
 def calculate_metrics(X_std):
-    ks = range(2,21)
+    ks = range(2,21) # Take k from 2 to 20.
     wcss = []
     silhouette_scores = []
-    for k in ks:
+    # For each k, fit a KMeans model (I only use this for KMeans),
+    # and append the WCSS and Silhouette scores to the running lists,
+    # then return them both.
+    for k in ks: # For each k,
         km = KMeans(k, random_state = 99)
         km.fit(X_std)
-        wcss.append(km.inertia_) # Grabs the WCSS
+        wcss.append(km.inertia_)
         labels = km.labels_
         silhouette_scores.append(silhouette_score(X_std, labels))
     return(wcss, silhouette_scores)
 
 def plot_elbow_silhouette(ks, wcss, silhouette_scores):
+    # Split the canvas up into two columns.
     col1, col2 = st.columns(2)
+    # In the first column, plot each k value against its corresponding
+    # WCSS, return the scatterplot, and describe to the user what
+    # the graph is displaying.
     with col1:
         plt.figure()
         plt.plot(ks, wcss, marker='o')
@@ -54,6 +62,9 @@ def plot_elbow_silhouette(ks, wcss, silhouette_scores):
         plt.grid(True)
         st.pyplot(plt)
         st.write("Note: The elbow plot displays the within-cluster variance for different numbers of clusters. Typically, the optimal k value is found at the 'elbow' of the plot, or where the slope changes sharply.")
+    # Do the same thing in the second column, except now with
+    # the silhouette scores. Write another note to the user about
+    # how to read the graph.
     with col2:
         plt.figure()
         plt.plot(ks, silhouette_scores, marker='o', color='green')
@@ -65,22 +76,131 @@ def plot_elbow_silhouette(ks, wcss, silhouette_scores):
         st.pyplot(plt)
         st.write("Note: The silhouette score measures the average similarity of data points within a cluster. Thus, the highest silhouette score is most desirable.")
 
-def plot_dendrogram(X_std):
+def plot_dendrogram(X_std, link):
+    # Start off by performing the hierarchical clustering, according
+    # to the linkage rule specified by the user.
     Z = linkage(X_std, method = link)
+    # Create the plotting canvas.
     fig, ax = plt.subplots(figsize = (10,5))
+    # Build the dendrogram and label it accordingly.
     dendrogram(Z, ax = ax, truncate_mode = "lastp")
     plt.ylabel("Distance")
     plt.title("Dendrogram of Hierarchical Clustering for MLB Pitchers")
+    # Display it for the user.
     st.pyplot(fig)
+    # Return a description for the dendrogram.
     st.write("Note: The dendrogram displays the bottom-up clustering process carried out by the hierarchical algorithm. Inspecting the plot helps you determine where to cut the tree and decide on your optimal number of clusters.")
 
-def hover_labs(dim_red):
+def hover_labs(dim_red, feature_labs):
+    # Create a dictionary that tells plotly to display the 
+    # user's desired hover labels and not to display the 
+    # PCA or t-SNE coordinates.
     hover_dict = dict()
     for var in feature_labs:
         hover_dict[var] = True
     hover_dict[f"{dim_red}1"] = False
     hover_dict[f"{dim_red}2"] = False
     return hover_dict
+
+def build_MLB_traces(final_df, dim_red):
+    # Create a separate dataframe with only the team that 
+    # the user wants to highlight in the graph and store the
+    # opacity variable as 1 for each observation. All of this needs to
+    # be done because plotly doesn't allow for variable opacity (you can
+    # only have one opacity value per graph), so we work around it.
+    df_highlight = final_df[final_df['opacity'] == 1.0]
+    # Put the rest of the datapoints in a separate dataframe,
+    # with an opacity value of 0.4 (more transparent).
+    df_faded = final_df[final_df['opacity'] == 0.4]
+    # Create a dictionary of fake datapoints so that we can use
+    # its legend and ensure that all possible clusters are included
+    # in the legend (even if the user's desired team has no players
+    # in one of the clusters).
+    dict_fake = {f"{dim_red}1": [float('nan')]*n_clusters, f"{dim_red}2": [float('nan')]*n_clusters, 'Cluster': final_df['Cluster'].unique()}
+    df_fake = pd.DataFrame(dict_fake)
+    # Create a plotly scatterplot for the datapoints that are meant to 
+    # be highlighted. Assign each cluster to a different color, pass
+    # in our hover_dictionary that we built previously, and set the
+    # opacity of the dots to 1. Then, make the dots slightly bigger
+    # as well.
+    fig_highlight = px.scatter(df_highlight, x=f"{dim_red}1", y=f"{dim_red}2", color="Cluster",
+                            hover_data=hover_dict, 
+                            color_discrete_sequence=px.colors.qualitative.Set1,
+                            opacity=1.0,
+                            category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
+    fig_highlight.update_traces(marker=dict(size=6.5))
+    # Do the same thing again, but with all of the datapoints not included in the highlighted
+    # data (i.e. not on the user's desired team). Set the opacity of these dots to 0.4 instead
+    # of 1 (more transparent).
+    fig_faded = px.scatter(df_faded, x=f"{dim_red}1", y=f"{dim_red}2", color="Cluster",
+                        hover_data=hover_dict,
+                        color_discrete_sequence=px.colors.qualitative.Set1,
+                        opacity=0.4,
+                        category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
+    fig_faded.update_traces(marker=dict(size=6.5))
+    # Finally, plot the "fake" data, and make sure the cluster labels line up as well.
+    fig_fake = px.scatter(df_fake, x=f"{dim_red}1", y=f"{dim_red}2", color="Cluster",
+                            color_discrete_sequence=px.colors.qualitative.Set1,
+                            opacity=1,
+                            category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
+    # Suppress the legend for the higlighted and for the more transparent data, and only use
+    # the legend for the "fake" data.
+    for trace in fig_faded.data:
+        trace.showlegend = False
+    for trace in fig_highlight.data:
+        trace.showlegend = False
+    # Combine these three graphs into one, and return it.
+    fig = go.Figure(data=fig_faded.data + fig_highlight.data + fig_fake.data)
+    return fig
+
+def update_fig_format(fig, dim_red):
+    # Adjust the graph aesthetics to our liking (much more
+    # complicated because we are using plotly for a more interactive
+    # interface).
+    fig.update_layout(
+        margin = dict(t = 40), # Lower the title.
+        hoverlabel = dict(font_color = "black", font_size = 12), # Format the hover label text.
+        # Add a title.
+        title=dict(
+            text=f"Pitcher Clusters via {dim_red}",
+            x=0.5,
+            xanchor='center',
+            font=dict(color="black", size=18)),
+        # Make all text size 15 and black.
+        font=dict(
+            size=15,
+            color="black"),
+        # Adjust the size of the graph.
+        width=900,
+        height=500,
+        # Label the x-axis, add a grid, and adjust the font to our liking.
+        xaxis=dict(
+            title="Component 1",
+            showgrid=True,
+            gridcolor='lightgray',
+            title_font=dict(color="black"),
+            tickfont=dict(color="black")),
+        # Do the same for the y-axis.
+        yaxis=dict(
+            title="Component 2",
+            showgrid=True,
+            gridcolor='lightgray',
+            title_font=dict(color="black"),
+            tickfont=dict(color="black")),
+        # Adjust the font for the legend
+        legend_title=dict(
+            text="Cluster",
+            font=dict(size=15, color="black")),
+        # Make the background white.
+        plot_bgcolor="white",
+        paper_bgcolor="white",
+        # Make sure the cluster labels are displayed in
+        # ascending order.
+        legend=dict(
+            traceorder='normal',
+            tracegroupgap=2,
+            font=dict(color="black", size = 15))
+        )
 
 # -----------------------------------------------
 # Loading and Re-formatting the MLB Pitchers Dataset
@@ -198,7 +318,7 @@ if path == "Become an MLB analyst!":
                                     options = ["None"] + sorted(list(set(val for sublist in Identifiers['Team'] for val in sublist))))
         if st.button("Go!"):
             if dim_red == "PCA":
-                    # Creating the dataset we will use to build the model
+                # Creating the dataset we will use to build the model
                 X = MLB_data[features]
                 X_std = scale_X(X)
                 # Building the model
@@ -218,75 +338,9 @@ if path == "Become an MLB analyst!":
                     final_df['opacity'] = 1
                 else:            
                     final_df['opacity'] = final_df['Team'].apply(lambda x: 1 if high_team in x else 0.4)
-                hover_dict = hover_labs(dim_red)
-                df_highlight = final_df[final_df['opacity'] == 1.0]
-                df_faded = final_df[final_df['opacity'] == 0.4]
-                dict_fake = {"PCA1": [float('nan')]*n_clusters, "PCA2": [float('nan')]*n_clusters, 'Cluster': final_df['Cluster'].unique()}
-                df_fake = pd.DataFrame(dict_fake)
-                fig_highlight = px.scatter(df_highlight, x="PCA1", y="PCA2", color="Cluster",
-                                        hover_data=hover_dict, 
-                                        color_discrete_sequence=px.colors.qualitative.Set1,
-                                        opacity=1.0,
-                                        category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
-                fig_highlight.update_traces(marker=dict(size=6.5))
-                fig_faded = px.scatter(df_faded, x="PCA1", y="PCA2", color="Cluster",
-                                    hover_data=hover_dict,
-                                    color_discrete_sequence=px.colors.qualitative.Set1,
-                                    opacity=0.4,
-                                    category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
-                fig_faded.update_traces(marker=dict(size=6.5))
-                fig_fake = px.scatter(df_fake, x="PCA1", y="PCA2", color="Cluster",
-                                      color_discrete_sequence=px.colors.qualitative.Set1,
-                                      opacity=1,
-                                      category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
-                for trace in fig_faded.data:
-                    trace.showlegend = False
-                for trace in fig_highlight.data:
-                    trace.showlegend = False
-                # Combine all traces
-                fig = go.Figure(data=fig_faded.data + fig_highlight.data + fig_fake.data)
-
-                fig.update_layout(
-                    margin = dict(t = 40),
-                    hoverlabel = dict(font_color = "black", font_size = 12),
-                    title=dict(
-                        text="Pitcher Clusters via PCA",
-                        x=0.5,
-                        xanchor='center',
-                        font=dict(color="black", size=18)
-                    ),
-                    font=dict(
-                        size=15,
-                        color="black"
-                    ),
-                    width=900,
-                    height=500,
-                    xaxis=dict(
-                        title="Principal Component 1",
-                        showgrid=True,
-                        gridcolor='lightgray',
-                        title_font=dict(color="black"),
-                        tickfont=dict(color="black")
-                    ),
-                    yaxis=dict(
-                        title="Principal Component 2",
-                        showgrid=True,
-                        gridcolor='lightgray',
-                        title_font=dict(color="black"),
-                        tickfont=dict(color="black")
-                    ),
-                    legend_title=dict(
-                        text="Cluster",
-                        font=dict(size=15, color="black")
-                    ),
-                    plot_bgcolor="white",
-                    paper_bgcolor="white",
-                    legend=dict(
-                        traceorder='normal',
-                        tracegroupgap=2,
-                        font=dict(color="black", size = 15)
-                    )
-                )
+                hover_dict = hover_labs(dim_red, feature_labs)
+                fig = build_MLB_traces(final_df, dim_red)
+                update_fig_format(fig, dim_red)
                 # Show the combined figure
                 st.plotly_chart(fig, use_container_width=True)
             if dim_red == "t-SNE":
@@ -309,71 +363,9 @@ if path == "Become an MLB analyst!":
                     final_df['opacity'] = 1
                 else:            
                     final_df['opacity'] = final_df['Team'].apply(lambda x: 1 if high_team in x else 0.4)
-                hover_dict = hover_labs(dim_red)
-                df_highlight = final_df[final_df['opacity'] == 1.0]
-                df_faded = final_df[final_df['opacity'] == 0.4]
-                dict_fake = {"t-SNE1": [float('nan')]*n_clusters, "t-SNE2": [float('nan')]*n_clusters, 'Cluster': final_df['Cluster'].unique()}
-                df_fake = pd.DataFrame(dict_fake)
-
-                fig_highlight = px.scatter(df_highlight, x="t-SNE1", y="t-SNE2", color="Cluster",
-                                        hover_data=hover_dict, 
-                                        color_discrete_sequence=px.colors.qualitative.Set1,
-                                        opacity=1.0,
-                                        category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
-                fig_highlight.update_traces(marker=dict(size=6.5))
-
-                fig_faded = px.scatter(df_faded, x="t-SNE1", y="t-SNE2", color="Cluster",
-                                    hover_data=hover_dict,
-                                    color_discrete_sequence=px.colors.qualitative.Set1,
-                                    opacity=0.4,
-                                    category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
-                fig_faded.update_traces(marker=dict(size=6.5))
-
-                fig_fake = px.scatter(df_fake, x="t-SNE1", y="t-SNE2", color="Cluster",
-                                      color_discrete_sequence=px.colors.qualitative.Set1,
-                                      opacity=1,
-                                      category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
-                for trace in fig_faded.data:
-                    trace.showlegend = False
-                for trace in fig_highlight.data:
-                    trace.showlegend = False
-                # Combine all traces
-                fig = go.Figure(data=fig_faded.data + fig_highlight.data + fig_fake.data)
-                fig.update_layout(
-                    margin = dict(t = 40),
-                    hoverlabel = dict(font_color = "black", font_size = 12),
-                    title=dict(
-                        text="Pitcher Clusters via t-SNE",
-                        x=0.5,
-                        xanchor='center',
-                        font=dict(color="black", size=18)),
-                    font=dict(
-                        size=15,
-                        color="black"),
-                    width=900,
-                    height=500,
-                    xaxis=dict(
-                        title="t-SNE Component 1",
-                        showgrid=True,
-                        gridcolor='lightgray',
-                        title_font=dict(color="black"),
-                        tickfont=dict(color="black")),
-                    yaxis=dict(
-                        title="t-SNE Component 2",
-                        showgrid=True,
-                        gridcolor='lightgray',
-                        title_font=dict(color="black"),
-                        tickfont=dict(color="black")),
-                    legend_title=dict(
-                        text="Cluster",
-                        font=dict(size=15, color="black")),
-                    plot_bgcolor="white",
-                    paper_bgcolor="white",
-                    legend=dict(
-                        traceorder='normal',
-                        tracegroupgap=2,
-                        font=dict(color="black", size = 15))
-                )
+                hover_dict = hover_labs(dim_red, feature_labs)
+                fig = build_MLB_traces(final_df, dim_red)
+                update_fig_format(fig, dim_red)
                 # Show the combined figure
                 st.plotly_chart(fig, use_container_width=True)
 
@@ -398,7 +390,7 @@ if path == "Become an MLB analyst!":
                 hierarch = AgglomerativeClustering(n_clusters = n_clusters, linkage = link)
                 clusters = pd.DataFrame(hierarch.fit_predict(X_std), columns = ["Cluster"])
                 # Constructing the dendrogram
-                plot_dendrogram(X_std)
+                plot_dendrogram(X_std, link)
                 st.write("**After viewing the dendrogram, you are encouraged to adjust the number of clusters in your model to the optimal number, then re-run the model before continuing.**")
                 pca = PCA(n_components=2)
                 X_pca = pd.DataFrame(pca.fit_transform(X_std), columns = ["PCA1", "PCA2"])
@@ -408,77 +400,9 @@ if path == "Become an MLB analyst!":
                     final_df['opacity'] = 1
                 else:            
                     final_df['opacity'] = final_df['Team'].apply(lambda x: 1 if high_team in x else 0.4)
-                hover_dict = hover_labs(dim_red)
-                df_highlight = final_df[final_df['opacity'] == 1.0]
-                df_faded = final_df[final_df['opacity'] == 0.4]
-                dict_fake = {"PCA1": [float('nan')]*n_clusters, "PCA2": [float('nan')]*n_clusters, 'Cluster': final_df['Cluster'].unique()}
-                df_fake = pd.DataFrame(dict_fake)
-
-                fig_highlight = px.scatter(df_highlight, x="PCA1", y="PCA2", color="Cluster",
-                                        hover_data=hover_dict, 
-                                        color_discrete_sequence=px.colors.qualitative.Set1,
-                                        opacity=1.0,
-                                        category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
-                fig_highlight.update_traces(marker=dict(size=6.5))
-
-                fig_faded = px.scatter(df_faded, x="PCA1", y="PCA2", color="Cluster",
-                                    hover_data=hover_dict,
-                                    color_discrete_sequence=px.colors.qualitative.Set1,
-                                    opacity=0.4,
-                                    category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
-                fig_faded.update_traces(marker=dict(size=6.5))
-                
-                fig_fake = px.scatter(df_fake, x="PCA1", y="PCA2", color="Cluster",
-                                      color_discrete_sequence=px.colors.qualitative.Set1,
-                                      opacity=1,
-                                      category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
-                for trace in fig_faded.data:
-                    trace.showlegend = False
-                for trace in fig_highlight.data:
-                    trace.showlegend = False
-                # Combine all traces
-                fig = go.Figure(data=fig_faded.data + fig_highlight.data + fig_fake.data)
-                fig.update_layout(
-                    margin = dict(t = 40),
-                    hoverlabel = dict(font_color = "black", font_size = 12),
-                    title=dict(
-                        text="Pitcher Clusters via PCA",
-                        x=0.5,
-                        xanchor='center',
-                        font=dict(color="black", size=18)
-                    ),
-                    font=dict(
-                        size=15,
-                        color="black"
-                    ),
-                    width=900,
-                    height=500,
-                    xaxis=dict(
-                        title="Principal Component 1",
-                        showgrid=True,
-                        gridcolor='lightgray',
-                        title_font=dict(color="black"),
-                        tickfont=dict(color="black")
-                    ),
-                    yaxis=dict(
-                        title="Principal Component 2",
-                        showgrid=True,
-                        gridcolor='lightgray',
-                        title_font=dict(color="black"),
-                        tickfont=dict(color="black")
-                    ),
-                    legend_title=dict(
-                        text="Cluster",
-                        font=dict(size=15, color="black")
-                    ),
-                    plot_bgcolor="white",
-                    paper_bgcolor="white",
-                    legend=dict(
-                        traceorder='normal',
-                        tracegroupgap=2,
-                        font=dict(color="black", size = 15)
-                    )
-                )
+                hover_dict = hover_labs(dim_red, feature_labs)
+                fig = build_MLB_traces(final_df, dim_red)
+                update_fig_format(fig, dim_red)
                 # Show the combined figure
                 st.plotly_chart(fig, use_container_width=True)
             if dim_red == "t-SNE":
@@ -488,7 +412,7 @@ if path == "Become an MLB analyst!":
                 hierarch = AgglomerativeClustering(n_clusters = n_clusters, linkage = link)
                 clusters = pd.DataFrame(hierarch.fit_predict(X_std), columns = ["Cluster"])
                 # Constructing the dendrogram
-                plot_dendrogram(X_std)
+                plot_dendrogram(X_std, link)
                 st.write("**After viewing the dendrogram, you are encouraged to adjust the number of clusters in your model to the optimal number, then re-run the model before continuing.**")
                 tsne = TSNE(n_components=2)
                 X_tsne = pd.DataFrame(tsne.fit_transform(X_std), columns = ["t-SNE1", "t-SNE2"])
@@ -498,71 +422,9 @@ if path == "Become an MLB analyst!":
                     final_df['opacity'] = 1
                 else:            
                     final_df['opacity'] = final_df['Team'].apply(lambda x: 1 if high_team in x else 0.4)
-                hover_dict = hover_labs(dim_red)
-                df_highlight = final_df[final_df['opacity'] == 1.0]
-                df_faded = final_df[final_df['opacity'] == 0.4]
-                dict_fake = {"t-SNE1": [float('nan')]*n_clusters, "t-SNE2": [float('nan')]*n_clusters, 'Cluster': final_df['Cluster'].unique()}
-                df_fake = pd.DataFrame(dict_fake)
-
-                fig_highlight = px.scatter(df_highlight, x="t-SNE1", y="t-SNE2", color="Cluster",
-                                        hover_data=hover_dict, 
-                                        color_discrete_sequence=px.colors.qualitative.Set1,
-                                        opacity=1.0,
-                                        category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
-                fig_highlight.update_traces(marker=dict(size=6.5))
-
-                fig_faded = px.scatter(df_faded, x="t-SNE1", y="t-SNE2", color="Cluster",
-                                    hover_data=hover_dict,
-                                    color_discrete_sequence=px.colors.qualitative.Set1,
-                                    opacity=0.4,
-                                    category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
-                fig_faded.update_traces(marker=dict(size=6.5))
-
-                fig_fake = px.scatter(df_fake, x="t-SNE1", y="t-SNE2", color="Cluster",
-                                      color_discrete_sequence=px.colors.qualitative.Set1,
-                                      opacity=1,
-                                      category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
-                for trace in fig_faded.data:
-                    trace.showlegend = False
-                for trace in fig_highlight.data:
-                    trace.showlegend = False
-                # Combine all traces
-                fig = go.Figure(data=fig_faded.data + fig_highlight.data + fig_fake.data)
-                fig.update_layout(
-                    margin = dict(t = 40),
-                    hoverlabel = dict(font_color = "black", font_size = 12),
-                    title=dict(
-                        text="Pitcher Clusters via t-SNE",
-                        x=0.5,
-                        xanchor='center',
-                        font=dict(color="black", size=18)),
-                    font=dict(
-                        size=15,
-                        color="black"),
-                    width=900,
-                    height=500,
-                    xaxis=dict(
-                        title="t-SNE Component 1",
-                        showgrid=True,
-                        gridcolor='lightgray',
-                        title_font=dict(color="black"),
-                        tickfont=dict(color="black")),
-                    yaxis=dict(
-                        title="t-SNE Component 2",
-                        showgrid=True,
-                        gridcolor='lightgray',
-                        title_font=dict(color="black"),
-                        tickfont=dict(color="black")),
-                    legend_title=dict(
-                        text="Cluster",
-                        font=dict(size=15, color="black")),
-                    plot_bgcolor="white",
-                    paper_bgcolor="white",
-                    legend=dict(
-                        traceorder='normal',
-                        tracegroupgap=2,
-                        font=dict(color="black", size = 15))
-                )
+                hover_dict = hover_labs(dim_red, feature_labs)
+                fig = build_MLB_traces(final_df, dim_red)
+                update_fig_format(fig, dim_red)
                 # Show the combined figure
                 st.plotly_chart(fig, use_container_width=True)
     
