@@ -16,6 +16,7 @@ from sklearn.cluster import AgglomerativeClustering
 from scipy.cluster.hierarchy import linkage, dendrogram
 from sklearn.decomposition import PCA
 import plotly.express as px
+import plotly.graph_objects as go
 
 # -----------------------------------------------
 # Loading and Re-formatting the MLB Pitchers Dataset
@@ -128,7 +129,7 @@ if path == "Become an MLB analyst!":
         n_clusters = st.slider("Select your desired number of clusters, k, to start out (can be adjusted later):", min_value = 2, max_value = 20, step = 1)
         dim_red = st.radio("Pick a dimensionality reduction model to visualize your clusters in 2D-space:", 
                             ["PCA", "t-SNE"])
-        feature_labs = st.multiselect("Select which variables you would like displayed when you hover:", options = ["Player", "Team"] + features, default = ["Player"])
+        feature_labs = st.multiselect("Select which variables you would like displayed when you hover:", options = ["Player", "Team"] + features, default = ["Player", "Team"])
         high_team = st.selectbox("Select a team you would like highlighted in the plot, if any:", 
                                     options = ["None"] + sorted(list(set(val for sublist in Identifiers['Team'] for val in sublist))))
         if st.button("Go!"):
@@ -177,15 +178,62 @@ if path == "Become an MLB analyst!":
                 pca = PCA(n_components=2)
                 X_pca = pd.DataFrame(pca.fit_transform(X_std), columns = ["PCA1", "PCA2"])
                 final_df = pd.concat([X_pca, clusters, X, Identifiers], axis = 1)
+                final_df['Cluster'] = final_df['Cluster'].astype('category')
+                if high_team == "None":
+                    final_df['opacity'] = 1
+                else:            
+                    final_df['opacity'] = final_df['Team'].apply(lambda x: 1 if high_team in x else 0.4)
                 hover_dict = dict()
                 for var in feature_labs:
                     hover_dict[var] = True
                 hover_dict["PCA1"] = False
                 hover_dict["PCA2"] = False
-                #plt.figure()
-                #scatter = plt.scatter(X_pca[:, 0], X_pca[:, 1], c=, cmap='viridis', s=60, edgecolor='k', alpha=0.7)
-                fig = px.scatter(final_df, x = "PCA1", y = "PCA2", color = "Cluster", hover_data = hover_dict)
+                df_highlight = final_df[final_df['opacity'] == 1.0]
+                df_faded = final_df[final_df['opacity'] == 0.4]
+
+                fig_highlight = px.scatter(df_highlight, x="PCA1", y="PCA2", color="Cluster",
+                                        hover_data=hover_dict, 
+                                        color_discrete_sequence=px.colors.qualitative.Set1,
+                                        opacity=1.0,
+                                        category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
+
+                fig_faded = px.scatter(df_faded, x="PCA1", y="PCA2", color="Cluster",
+                                    hover_data=hover_dict,
+                                    color_discrete_sequence=px.colors.qualitative.Set1,
+                                    opacity=0.4,
+                                    category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
+                
+                for trace in fig_faded.data:
+                    trace.showlegend = False
+
+                # Combine all traces
+                fig = go.Figure(data=fig_faded.data + fig_highlight.data)
+
+                fig.update_layout(
+                    title=dict(text = "Pitcher Clusters via PCA", x = 0.5, xanchor = 'center'),
+                    width = 900,
+                    height = 500,
+                    xaxis_title="Principal Component 1",
+                    yaxis_title="Principal Component 2",
+                    xaxis_showgrid=True,
+                    yaxis_showgrid=True,
+                    legend_title= dict(text = "Cluster", font = dict(size = 15)),
+                    font=dict(size=16),
+                    plot_bgcolor="white",
+                    legend=dict(
+                    traceorder='normal',
+                    tracegroupgap=2,
+                    font = dict(size = 15)) 
+                    )
+
+                # Show the combined figure
                 st.plotly_chart(fig, use_container_width=True)
+                                #plt.figure()
+                #scatter = plt.scatter(X_pca[:, 0], X_pca[:, 1], c=, cmap='viridis', s=60, edgecolor='k', alpha=0.7)
+                #fig = px.scatter(final_df, x = "PCA1", y = "PCA2", color = "Cluster", 
+                                  #hover_data = hover_dict, color_discrete_sequence=px.colors.qualitative.Set1)
+                # fig.update_traces(marker=dict(opacity=final_df['opacity']))
+                #st.plotly_chart(fig, use_container_width=True)
 
 
             
