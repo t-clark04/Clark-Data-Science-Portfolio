@@ -208,23 +208,63 @@ if path == "Become an MLB analyst!":
 
                 # Combine all traces
                 fig = go.Figure(data=fig_faded.data + fig_highlight.data)
-
                 fig.update_layout(
-                    title=dict(text = "Pitcher Clusters via PCA", x = 0.5, xanchor = 'center'),
-                    width = 900,
-                    height = 500,
-                    xaxis_title="Principal Component 1",
-                    yaxis_title="Principal Component 2",
-                    xaxis_showgrid=True,
-                    yaxis_showgrid=True,
-                    legend_title= dict(text = "Cluster", font = dict(size = 15)),
-                    font=dict(size=16),
+                    margin = dict(t = 40),
+                    hoverlabel = dict(font_color = "black", font_size = 12),
+                    title=dict(
+                        text="Pitcher Clusters via PCA",
+                        x=0.5,
+                        xanchor='center',
+                        font=dict(color="black", size=18)
+                    ),
+                    font=dict(
+                        size=15,
+                        color="black"
+                    ),
+                    width=900,
+                    height=500,
+                    xaxis=dict(
+                        title="Principal Component 1",
+                        showgrid=True,
+                        gridcolor='lightgray',
+                        title_font=dict(color="black"),
+                        tickfont=dict(color="black")
+                    ),
+                    yaxis=dict(
+                        title="Principal Component 2",
+                        showgrid=True,
+                        gridcolor='lightgray',
+                        title_font=dict(color="black"),
+                        tickfont=dict(color="black")
+                    ),
+                    legend_title=dict(
+                        text="Cluster",
+                        font=dict(size=15, color="black")
+                    ),
                     plot_bgcolor="white",
+                    paper_bgcolor="white",
                     legend=dict(
-                    traceorder='normal',
-                    tracegroupgap=2,
-                    font = dict(size = 15)) 
+                        traceorder='normal',
+                        tracegroupgap=2,
+                        font=dict(color="black", size = 15)
                     )
+                )
+
+                # fig.update_layout(
+                #     title=dict(text = "Pitcher Clusters via PCA", x = 0.5, xanchor = 'center'),
+                #     font = dict(size = 15, color = "black"),
+                #     width = 900,
+                #     height = 500,
+                #     xaxis_title="Principal Component 1",
+                #     yaxis_title="Principal Component 2",
+                #     xaxis_showgrid=True,
+                #     yaxis_showgrid=True,
+                #     legend_title= dict(text = "Cluster", font = dict(size = 15)),
+                #     plot_bgcolor="white",
+                #     legend=dict(
+                #     traceorder='normal',
+                #     tracegroupgap=2) 
+                #     )
 
                 # Show the combined figure
                 st.plotly_chart(fig, use_container_width=True)
