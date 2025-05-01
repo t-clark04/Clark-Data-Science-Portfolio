@@ -14,6 +14,7 @@ from sklearn.metrics import silhouette_score
 from pathlib import Path # Needed for relative path when deploying app online
 from sklearn.cluster import AgglomerativeClustering
 from scipy.cluster.hierarchy import linkage, dendrogram
+from sklearn.decomposition import PCA
 
 # -----------------------------------------------
 # Loading and Re-formatting the MLB Pitchers Dataset
@@ -36,6 +37,7 @@ for elem in team_dict:
     del team_dict[elem][0]
 team_df = pd.DataFrame(list(team_dict.items()), columns = ['Rk', 'Team'])
 MLB_data = MLB_data.groupby('Rk').agg("first").reset_index()
+MLB_data = MLB_data[~MLB_data['Rk'].isin([162,288,375,400,417,431,467,476,514,529])]
 MLB_data['Team'] = MLB_data['Team'].apply(lambda x: [x])
 MLB_data.set_index('Rk', inplace = True)
 team_df.set_index('Rk', inplace = True)
@@ -171,6 +173,11 @@ if path == "Become an MLB analyst!":
                     """)
             dim_red = st.radio("Pick a dimensionality reduction model to visualize your clusters in 2D-space:", 
                                 ["PCA", "t-SNE"])
+            feature_labs = st.multiselect("Select which variables you would like displayed when you hover:", options = ["Player", "Team"] + features, default = ["Player", "Team"])
+            high_team = st.selectbox("Select a team you would like highlighted in the plot, if any:", 
+                                     options = ["None"] + sorted(list(set(val for sublist in Identifiers['Team'] for val in sublist))))
+            #if dim_red == "PCA":
+
             
             
     
