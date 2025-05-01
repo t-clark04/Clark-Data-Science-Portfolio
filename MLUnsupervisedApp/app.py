@@ -17,6 +17,60 @@ from scipy.cluster.hierarchy import linkage, dendrogram
 from sklearn.decomposition import PCA
 import plotly.express as px
 import plotly.graph_objects as go
+from sklearn.manifold import TSNE
+
+# -----------------------------------------------
+# Helper Functions
+# -----------------------------------------------
+def scale_X(X):
+    # Scaling the data
+    scaler = StandardScaler()
+    X_std = scaler.fit_transform(X)
+    return X_std
+
+def calculate_metrics(X_std):
+    ks = range(2,21)
+    wcss = []
+    silhouette_scores = []
+    for k in ks:
+        km = KMeans(k, random_state = 99)
+        km.fit(X_std)
+        wcss.append(km.inertia_) # Grabs the WCSS
+        labels = km.labels_
+        silhouette_scores.append(silhouette_score(X_std, labels))
+    return(wcss, silhouette_scores)
+
+def plot_elbow_silhouette(ks, wcss, silhouette_scores):
+    col1, col2 = st.columns(2)
+    with col1:
+        plt.figure()
+        plt.plot(ks, wcss, marker='o')
+        plt.xlabel('Number of clusters (k)')
+        plt.xticks(range(1,21))
+        plt.ylabel('Within-Cluster Sum of Squares (WCSS)')
+        plt.title('Elbow Method for Optimal k')
+        plt.grid(True)
+        st.pyplot(plt)
+        st.write("Note: The elbow plot displays the within-cluster variance for different numbers of clusters. Typically, the optimal k value is found at the 'elbow' of the plot, or where the slope changes sharply.")
+    with col2:
+        plt.figure()
+        plt.plot(ks, silhouette_scores, marker='o', color='green')
+        plt.xlabel('Number of clusters (k)')
+        plt.xticks(range(1,21))
+        plt.ylabel('Silhouette Score')
+        plt.title('Silhouette Score for Optimal k')
+        plt.grid(True)
+        st.pyplot(plt)
+        st.write("Note: The silhouette score measures the average similarity of data points within a cluster. Thus, the highest silhouette score is most desirable.")
+
+def plot_dendrogram(X_std):
+    Z = linkage(X_std, method = link)
+    fig, ax = plt.subplots(figsize = (10,5))
+    dendrogram(Z, ax = ax, truncate_mode = "lastp")
+    plt.ylabel("Distance")
+    plt.title("Dendrogram of Hierarchical Clustering for MLB Pitchers")
+    st.pyplot(fig)
+    st.write("Note: The dendrogram displays the bottom-up clustering process carried out by the hierarchical algorithm. Inspecting the plot helps you determine where to cut the tree and decide on your optimal number of clusters.")
 
 # -----------------------------------------------
 # Loading and Re-formatting the MLB Pitchers Dataset
@@ -134,50 +188,22 @@ if path == "Become an MLB analyst!":
                                     options = ["None"] + sorted(list(set(val for sublist in Identifiers['Team'] for val in sublist))))
         if st.button("Go!"):
             if dim_red == "PCA":
-                # Creating the dataset we will use to build the model
+                    # Creating the dataset we will use to build the model
                 X = MLB_data[features]
-                # Scaling the data
-                scaler = StandardScaler()
-                X_std = scaler.fit_transform(X)
+                X_std = scale_X(X)
                 # Building the model
                 kmeans = KMeans(n_clusters = n_clusters, random_state = 99)
                 clusters = pd.DataFrame(kmeans.fit_predict(X_std), columns = ["Cluster"])
                 # Calculating the WCSS and Silhouette Scores for each possible k
                 ks = range(2,21)
-                wcss = []
-                silhouette_scores = []
-                for k in ks:
-                    km = KMeans(k, random_state = 99)
-                    km.fit(X_std)
-                    wcss.append(km.inertia_) # Grabs the WCSS
-                    labels = km.labels_
-                    silhouette_scores.append(silhouette_score(X_std, labels))
+                wcss, silhouette_scores = calculate_metrics(X_std)
                 # Plotting the elbow plot and silhouette score plot
-                col1, col2 = st.columns(2)
-                with col1:
-                    plt.figure()
-                    plt.plot(ks, wcss, marker='o')
-                    plt.xlabel('Number of clusters (k)')
-                    plt.xticks(range(1,21))
-                    plt.ylabel('Within-Cluster Sum of Squares (WCSS)')
-                    plt.title('Elbow Method for Optimal k')
-                    plt.grid(True)
-                    st.pyplot(plt)
-                    st.write("Note: The elbow plot displays the within-cluster variance for different numbers of clusters. Typically, the optimal k value is found at the 'elbow' of the plot, or where the slope changes sharply.")
-                with col2:
-                    plt.figure()
-                    plt.plot(ks, silhouette_scores, marker='o', color='green')
-                    plt.xlabel('Number of clusters (k)')
-                    plt.xticks(range(1,21))
-                    plt.ylabel('Silhouette Score')
-                    plt.title('Silhouette Score for Optimal k')
-                    plt.grid(True)
-                    st.pyplot(plt)
-                    st.write("Note: The silhouette score measures the average similarity of data points within a cluster. Thus, the highest silhouette score is most desirable.")
+                plot_elbow_silhouette(ks, wcss, silhouette_scores)
                 st.write("**After viewing these plots, you are encouraged to adjust the number of clusters in your model to the optimal number, then re-run the model.**")
                 pca = PCA(n_components=2)
                 X_pca = pd.DataFrame(pca.fit_transform(X_std), columns = ["PCA1", "PCA2"])
                 final_df = pd.concat([X_pca, clusters, X, Identifiers], axis = 1)
+                
                 final_df['Cluster'] = final_df['Cluster'].astype('category')
                 if high_team == "None":
                     final_df['opacity'] = 1
@@ -198,24 +224,23 @@ if path == "Become an MLB analyst!":
                                         color_discrete_sequence=px.colors.qualitative.Set1,
                                         opacity=1.0,
                                         category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
+                fig_highlight.update_traces(marker=dict(size=6.5))
 
                 fig_faded = px.scatter(df_faded, x="PCA1", y="PCA2", color="Cluster",
                                     hover_data=hover_dict,
                                     color_discrete_sequence=px.colors.qualitative.Set1,
                                     opacity=0.4,
                                     category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
+                fig_faded.update_traces(marker=dict(size=6.5))
                 
                 fig_fake = px.scatter(df_fake, x="PCA1", y="PCA2", color="Cluster",
                                       color_discrete_sequence=px.colors.qualitative.Set1,
                                       opacity=1,
                                       category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
-                
                 for trace in fig_faded.data:
                     trace.showlegend = False
-
                 for trace in fig_highlight.data:
                     trace.showlegend = False
-
                 # Combine all traces
                 fig = go.Figure(data=fig_faded.data + fig_highlight.data + fig_fake.data)
                 fig.update_layout(
@@ -259,35 +284,100 @@ if path == "Become an MLB analyst!":
                         font=dict(color="black", size = 15)
                     )
                 )
-
-                # fig.update_layout(
-                #     title=dict(text = "Pitcher Clusters via PCA", x = 0.5, xanchor = 'center'),
-                #     font = dict(size = 15, color = "black"),
-                #     width = 900,
-                #     height = 500,
-                #     xaxis_title="Principal Component 1",
-                #     yaxis_title="Principal Component 2",
-                #     xaxis_showgrid=True,
-                #     yaxis_showgrid=True,
-                #     legend_title= dict(text = "Cluster", font = dict(size = 15)),
-                #     plot_bgcolor="white",
-                #     legend=dict(
-                #     traceorder='normal',
-                #     tracegroupgap=2) 
-                #     )
-
                 # Show the combined figure
                 st.plotly_chart(fig, use_container_width=True)
-                                #plt.figure()
-                #scatter = plt.scatter(X_pca[:, 0], X_pca[:, 1], c=, cmap='viridis', s=60, edgecolor='k', alpha=0.7)
-                #fig = px.scatter(final_df, x = "PCA1", y = "PCA2", color = "Cluster", 
-                                  #hover_data = hover_dict, color_discrete_sequence=px.colors.qualitative.Set1)
-                # fig.update_traces(marker=dict(opacity=final_df['opacity']))
-                #st.plotly_chart(fig, use_container_width=True)
+            if dim_red == "t-SNE":
+                X = MLB_data[features]
+                X_std = scale_X(X)
+                # Building the model
+                kmeans = KMeans(n_clusters = n_clusters, random_state = 99)
+                clusters = pd.DataFrame(kmeans.fit_predict(X_std), columns = ["Cluster"])
+                # Calculating the WCSS and Silhouette Scores for each possible k
+                ks = range(2,21)
+                wcss, silhouette_scores = calculate_metrics(X_std)
+                # Plotting the elbow plot and silhouette score plot
+                plot_elbow_silhouette(ks, wcss, silhouette_scores)
+                st.write("**After viewing these plots, you are encouraged to adjust the number of clusters in your model to the optimal number, then re-run the model.**")
+                tsne = TSNE(n_components=2)
+                X_tsne = pd.DataFrame(tsne.fit_transform(X_std), columns = ["t-SNE1", "t-SNE2"])
+                final_df = pd.concat([X_tsne, clusters, X, Identifiers], axis = 1)
+                final_df['Cluster'] = final_df['Cluster'].astype('category')
+                if high_team == "None":
+                    final_df['opacity'] = 1
+                else:            
+                    final_df['opacity'] = final_df['Team'].apply(lambda x: 1 if high_team in x else 0.4)
+                hover_dict = dict()
+                for var in feature_labs:
+                    hover_dict[var] = True
+                hover_dict["t-SNE1"] = False
+                hover_dict["t-SNE2"] = False
+                df_highlight = final_df[final_df['opacity'] == 1.0]
+                df_faded = final_df[final_df['opacity'] == 0.4]
+                dict_fake = {"t-SNE1": [float('nan')]*n_clusters, "t-SNE2": [float('nan')]*n_clusters, 'Cluster': final_df['Cluster'].unique()}
+                df_fake = pd.DataFrame(dict_fake)
 
+                fig_highlight = px.scatter(df_highlight, x="t-SNE1", y="t-SNE2", color="Cluster",
+                                        hover_data=hover_dict, 
+                                        color_discrete_sequence=px.colors.qualitative.Set1,
+                                        opacity=1.0,
+                                        category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
+                fig_highlight.update_traces(marker=dict(size=6.5))
 
-            
-            
+                fig_faded = px.scatter(df_faded, x="t-SNE1", y="t-SNE2", color="Cluster",
+                                    hover_data=hover_dict,
+                                    color_discrete_sequence=px.colors.qualitative.Set1,
+                                    opacity=0.4,
+                                    category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
+                fig_faded.update_traces(marker=dict(size=6.5))
+
+                fig_fake = px.scatter(df_fake, x="t-SNE1", y="t-SNE2", color="Cluster",
+                                      color_discrete_sequence=px.colors.qualitative.Set1,
+                                      opacity=1,
+                                      category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
+                for trace in fig_faded.data:
+                    trace.showlegend = False
+                for trace in fig_highlight.data:
+                    trace.showlegend = False
+                # Combine all traces
+                fig = go.Figure(data=fig_faded.data + fig_highlight.data + fig_fake.data)
+                fig.update_layout(
+                    margin = dict(t = 40),
+                    hoverlabel = dict(font_color = "black", font_size = 12),
+                    title=dict(
+                        text="Pitcher Clusters via t-SNE",
+                        x=0.5,
+                        xanchor='center',
+                        font=dict(color="black", size=18)),
+                    font=dict(
+                        size=15,
+                        color="black"),
+                    width=900,
+                    height=500,
+                    xaxis=dict(
+                        title="t-SNE Component 1",
+                        showgrid=True,
+                        gridcolor='lightgray',
+                        title_font=dict(color="black"),
+                        tickfont=dict(color="black")),
+                    yaxis=dict(
+                        title="t-SNE Component 2",
+                        showgrid=True,
+                        gridcolor='lightgray',
+                        title_font=dict(color="black"),
+                        tickfont=dict(color="black")),
+                    legend_title=dict(
+                        text="Cluster",
+                        font=dict(size=15, color="black")),
+                    plot_bgcolor="white",
+                    paper_bgcolor="white",
+                    legend=dict(
+                        traceorder='normal',
+                        tracegroupgap=2,
+                        font=dict(color="black", size = 15))
+                )
+                # Show the combined figure
+                st.plotly_chart(fig, use_container_width=True)
+
     
     # Hierarchical Clustering path
     if cluster_model == "Hierarchical Clustering":
@@ -295,44 +385,194 @@ if path == "Become an MLB analyst!":
         n_clusters = st.slider("Select your desired number of clusters, k:", min_value = 2, max_value = 20, step = 1)
         link = st.radio("Please choose the rule to use for linking new clusters (default = ward):",
                               ["ward", "complete", "average", "single"])
+        dim_red = st.radio("Pick a dimensionality reduction model to visualize your clusters in 2D-space:", 
+                            ["PCA", "t-SNE"])
+        feature_labs = st.multiselect("Select which variables you would like displayed when you hover:", options = ["Player", "Team"] + features, default = ["Player", "Team"])
+        high_team = st.selectbox("Select a team you would like highlighted in the plot, if any:", 
+                                    options = ["None"] + sorted(list(set(val for sublist in Identifiers['Team'] for val in sublist))))
         # Where model execution starts.
-        if st.button('Run!'):
-            # Creating the dataset we will use to build the model
-            X = MLB_data[features]
-            # Scaling the data
-            scaler = StandardScaler()
-            X_std = scaler.fit_transform(X)
-            # Building the model
-            hierarch = AgglomerativeClustering(n_clusters = n_clusters, linkage = link)
-            clusters = hierarch.fit_predict(X_std)
-            # Constructing the dendrogram
-            Z = linkage(X_std, method = link)
-            fig, ax = plt.subplots(figsize = (10,5))
-            dgram = dendrogram(Z, ax = ax, truncate_mode = "lastp")
-            plt.ylabel("Distance")
-            plt.title("Dendrogram of Hierarchical Clustering for MLB Pitchers")
-            st.pyplot(fig)
-            st.write("Note: The dendrogram displays the bottom-up clustering process carried out by the hierarchical algorithm. Inspecting the plot helps you determine where to cut the tree and decide on your optimal number of clusters.")
-            # Calculating the Silhouette Scores for each possible k
-            ks = range(2,21)
-            silhouette_scores = []
-            for k in ks:
-            # Fit hierarchical clustering
-                labels = AgglomerativeClustering(n_clusters=k, linkage= link).fit_predict(X_std)
-                score = silhouette_score(X_std, labels)
-                silhouette_scores.append(score)
-            col3, col4, col5 = st.columns([0.25,.5,.25])
-            with col4:
-                plt.figure()
-                plt.plot(ks, silhouette_scores, marker='o', color='green')
-                plt.xlabel('Number of clusters (k)')
-                plt.xticks(range(1,21))
-                plt.ylabel('Silhouette Score')
-                plt.title('Silhouette Score for Optimal k')
-                plt.grid(True)
-                st.pyplot(plt)
-                st.write("Note: The silhouette score measures the average similarity of data points within a cluster. Thus, the highest silhouette score is most desirable.")
-            st.write("**After viewing these plots, you are encouraged to adjust the number of clusters in your model to the optimal number, then re-run the model before continuing.**")
+        if st.button('Go!'):
+            if dim_red == "PCA":
+                X = MLB_data[features]
+                X_std = scale_X(X)
+                # Building the model
+                hierarch = AgglomerativeClustering(n_clusters = n_clusters, linkage = link)
+                clusters = pd.DataFrame(hierarch.fit_predict(X_std), columns = ["Cluster"])
+                # Constructing the dendrogram
+                plot_dendrogram(X_std)
+                st.write("**After viewing the dendrogram, you are encouraged to adjust the number of clusters in your model to the optimal number, then re-run the model before continuing.**")
+                pca = PCA(n_components=2)
+                X_pca = pd.DataFrame(pca.fit_transform(X_std), columns = ["PCA1", "PCA2"])
+                final_df = pd.concat([X_pca, clusters, X, Identifiers], axis = 1)
+                final_df['Cluster'] = final_df['Cluster'].astype('category')
+                if high_team == "None":
+                    final_df['opacity'] = 1
+                else:            
+                    final_df['opacity'] = final_df['Team'].apply(lambda x: 1 if high_team in x else 0.4)
+                hover_dict = dict()
+                for var in feature_labs:
+                    hover_dict[var] = True
+                hover_dict["PCA1"] = False
+                hover_dict["PCA2"] = False
+                df_highlight = final_df[final_df['opacity'] == 1.0]
+                df_faded = final_df[final_df['opacity'] == 0.4]
+                dict_fake = {"PCA1": [float('nan')]*n_clusters, "PCA2": [float('nan')]*n_clusters, 'Cluster': final_df['Cluster'].unique()}
+                df_fake = pd.DataFrame(dict_fake)
 
+                fig_highlight = px.scatter(df_highlight, x="PCA1", y="PCA2", color="Cluster",
+                                        hover_data=hover_dict, 
+                                        color_discrete_sequence=px.colors.qualitative.Set1,
+                                        opacity=1.0,
+                                        category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
+                fig_highlight.update_traces(marker=dict(size=6.5))
+
+                fig_faded = px.scatter(df_faded, x="PCA1", y="PCA2", color="Cluster",
+                                    hover_data=hover_dict,
+                                    color_discrete_sequence=px.colors.qualitative.Set1,
+                                    opacity=0.4,
+                                    category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
+                fig_faded.update_traces(marker=dict(size=6.5))
+                
+                fig_fake = px.scatter(df_fake, x="PCA1", y="PCA2", color="Cluster",
+                                      color_discrete_sequence=px.colors.qualitative.Set1,
+                                      opacity=1,
+                                      category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
+                for trace in fig_faded.data:
+                    trace.showlegend = False
+                for trace in fig_highlight.data:
+                    trace.showlegend = False
+                # Combine all traces
+                fig = go.Figure(data=fig_faded.data + fig_highlight.data + fig_fake.data)
+                fig.update_layout(
+                    margin = dict(t = 40),
+                    hoverlabel = dict(font_color = "black", font_size = 12),
+                    title=dict(
+                        text="Pitcher Clusters via PCA",
+                        x=0.5,
+                        xanchor='center',
+                        font=dict(color="black", size=18)
+                    ),
+                    font=dict(
+                        size=15,
+                        color="black"
+                    ),
+                    width=900,
+                    height=500,
+                    xaxis=dict(
+                        title="Principal Component 1",
+                        showgrid=True,
+                        gridcolor='lightgray',
+                        title_font=dict(color="black"),
+                        tickfont=dict(color="black")
+                    ),
+                    yaxis=dict(
+                        title="Principal Component 2",
+                        showgrid=True,
+                        gridcolor='lightgray',
+                        title_font=dict(color="black"),
+                        tickfont=dict(color="black")
+                    ),
+                    legend_title=dict(
+                        text="Cluster",
+                        font=dict(size=15, color="black")
+                    ),
+                    plot_bgcolor="white",
+                    paper_bgcolor="white",
+                    legend=dict(
+                        traceorder='normal',
+                        tracegroupgap=2,
+                        font=dict(color="black", size = 15)
+                    )
+                )
+                # Show the combined figure
+                st.plotly_chart(fig, use_container_width=True)
+            if dim_red == "t-SNE":
+                X = MLB_data[features]
+                X_std = scale_X(X)
+                # Building the model
+                hierarch = AgglomerativeClustering(n_clusters = n_clusters, linkage = link)
+                clusters = pd.DataFrame(hierarch.fit_predict(X_std), columns = ["Cluster"])
+                # Constructing the dendrogram
+                plot_dendrogram(X_std)
+                st.write("**After viewing the dendrogram, you are encouraged to adjust the number of clusters in your model to the optimal number, then re-run the model before continuing.**")
+                tsne = TSNE(n_components=2)
+                X_tsne = pd.DataFrame(tsne.fit_transform(X_std), columns = ["t-SNE1", "t-SNE2"])
+                final_df = pd.concat([X_tsne, clusters, X, Identifiers], axis = 1)
+                final_df['Cluster'] = final_df['Cluster'].astype('category')
+                if high_team == "None":
+                    final_df['opacity'] = 1
+                else:            
+                    final_df['opacity'] = final_df['Team'].apply(lambda x: 1 if high_team in x else 0.4)
+                hover_dict = dict()
+                for var in feature_labs:
+                    hover_dict[var] = True
+                hover_dict["t-SNE1"] = False
+                hover_dict["t-SNE2"] = False
+                df_highlight = final_df[final_df['opacity'] == 1.0]
+                df_faded = final_df[final_df['opacity'] == 0.4]
+                dict_fake = {"t-SNE1": [float('nan')]*n_clusters, "t-SNE2": [float('nan')]*n_clusters, 'Cluster': final_df['Cluster'].unique()}
+                df_fake = pd.DataFrame(dict_fake)
+
+                fig_highlight = px.scatter(df_highlight, x="t-SNE1", y="t-SNE2", color="Cluster",
+                                        hover_data=hover_dict, 
+                                        color_discrete_sequence=px.colors.qualitative.Set1,
+                                        opacity=1.0,
+                                        category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
+                fig_highlight.update_traces(marker=dict(size=6.5))
+
+                fig_faded = px.scatter(df_faded, x="t-SNE1", y="t-SNE2", color="Cluster",
+                                    hover_data=hover_dict,
+                                    color_discrete_sequence=px.colors.qualitative.Set1,
+                                    opacity=0.4,
+                                    category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
+                fig_faded.update_traces(marker=dict(size=6.5))
+
+                fig_fake = px.scatter(df_fake, x="t-SNE1", y="t-SNE2", color="Cluster",
+                                      color_discrete_sequence=px.colors.qualitative.Set1,
+                                      opacity=1,
+                                      category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
+                for trace in fig_faded.data:
+                    trace.showlegend = False
+                for trace in fig_highlight.data:
+                    trace.showlegend = False
+                # Combine all traces
+                fig = go.Figure(data=fig_faded.data + fig_highlight.data + fig_fake.data)
+                fig.update_layout(
+                    margin = dict(t = 40),
+                    hoverlabel = dict(font_color = "black", font_size = 12),
+                    title=dict(
+                        text="Pitcher Clusters via t-SNE",
+                        x=0.5,
+                        xanchor='center',
+                        font=dict(color="black", size=18)),
+                    font=dict(
+                        size=15,
+                        color="black"),
+                    width=900,
+                    height=500,
+                    xaxis=dict(
+                        title="t-SNE Component 1",
+                        showgrid=True,
+                        gridcolor='lightgray',
+                        title_font=dict(color="black"),
+                        tickfont=dict(color="black")),
+                    yaxis=dict(
+                        title="t-SNE Component 2",
+                        showgrid=True,
+                        gridcolor='lightgray',
+                        title_font=dict(color="black"),
+                        tickfont=dict(color="black")),
+                    legend_title=dict(
+                        text="Cluster",
+                        font=dict(size=15, color="black")),
+                    plot_bgcolor="white",
+                    paper_bgcolor="white",
+                    legend=dict(
+                        traceorder='normal',
+                        tracegroupgap=2,
+                        font=dict(color="black", size = 15))
+                )
+                # Show the combined figure
+                st.plotly_chart(fig, use_container_width=True)
     
 
