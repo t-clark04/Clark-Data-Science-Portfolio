@@ -528,4 +528,56 @@ if path == "Become an MLB analyst!":
                 # Providing information on the data source.
                 data_info()
     
-
+# -----------------------------------------------
+# User-Provided Data Path Information
+# -----------------------------------------------
+if path == "Upload my own dataset!":
+    st.subheader("Building Clusters with User-Provided Data 🧠🧩")
+    # Instructions
+    st.markdown("Awesome choice! You'll be generating your own insights on unlabeled data in no time! Here's what you'll need to do:")
+    st.markdown("""
+                1. Upload your own tidy dataset containing two or more variables (either numeric, categorical, or binary).
+                2. Take a look at the data you've uploaded, and choose a collection of variables to use for clustering similar observations together.
+                3. Pick the model you'd like to use to construct the clusters -- either KMeans or Hierarchical Clustering -- and tune the model hyperparameters to start (you can re-adjust them later).
+                4. Choose the dimensionality reduction model you'd like to use to visualize your clusters -- either Principal Components Analysis (PCA) or t-SNE. 
+                5. Pick which variables you'd like to display when you hover over a datapoint in your plot. Then, hit "Go!".
+                6. Observe the outputted model feedback and re-tune the hyperparameters, if necessary.
+                7. Explore your clustered data!
+                """)
+    st.write("Let's get exploring!")
+    st.divider() # Breaks up the app a little bit.
+    # Prompt the user to upload a file.
+    uploaded_file = st.file_uploader("Upload a .csv file containing your tidy dataset of interest (no dates!):", type = "csv")
+    if uploaded_file: # If they do upload a csv file...
+        input_data = pd.read_csv(uploaded_file) # Read it in.
+        st.write("Here are the first few rows of your dataset. Missing values will be dropped, and any categorical variables will be converted to numeric:")
+        st.dataframe(input_data.head()) # Display the first 5 rows.
+        input_data = input_data.dropna() # Drop all missing values (ML models can't deal with them).
+        input_data_numeric = input_data.copy() # Create a copy of the dataset before converting all categorical variables to numeric.
+        # Have the user select their desired variables from those given in the inputted dataset.
+        vars = list(input_data.columns)
+        features = st.multiselect("Select variables from the dataset to build your model:", vars)
+        if features: # Once they select at least one variable...
+            # Convert all of the "bool" columns to 0s and 1s, then store all possible categorical
+            # variables in a list called cats.
+            cats = []
+            for var in features:
+                if input_data[var].dtype == "bool":
+                    map = {"False":0,
+                    "True":1}
+                    input_data_numeric[var] = input_data[var].map(map)
+                elif input_data[var].dtype == "object":
+                    cats.append(var)
+            # Go through each of the variables in the cats list and convert them to numeric values in the 
+            # data frame. Store the value map for each variable in a large dictionary called cat_dict, so
+            # that we can recover what each numeric value represents later on.
+            cat_dict = {}
+            for cat in cats:
+                map = {}
+                for i in range(0, len(input_data[cat].unique())):
+                    map[input_data[cat].unique()[i]] = i
+                input_data_numeric[cat] = input_data[cat].map(map)
+                cat_dict[cat] = map
+             # Asking user which model they'd like to use for clustering.
+            cluster_model = st.radio("Choose a clustering model (KMeans = top-down, Hierarchical = bottom-up):", ['KMeans Clustering', 'Hierarchical Clustering'])
+            
