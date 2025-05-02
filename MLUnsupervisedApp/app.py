@@ -92,6 +92,8 @@ def plot_dendrogram(X_std, link):
     st.write("Note: The dendrogram displays the bottom-up clustering process carried out by the hierarchical algorithm. Inspecting the tree and cutting it at a specific height helps you determine your optimal number of clusters.")
 
 def plot_dendrogram2(X_std, link):
+    # Need this to call in the user-uploaded data path, since it
+    # needs a more general title.
     # Start off by performing the hierarchical clustering, according
     # to the linkage rule specified by the user.
     Z = linkage(X_std, method = link)
@@ -170,6 +172,8 @@ def build_MLB_traces(final_df, dim_red):
     return fig
 
 def build_fig(final_df, dim_red):
+    # Basic figure building without the need for highlighting
+    # certain data values.
     fig = px.scatter(final_df, x=f"{dim_red}1", y=f"{dim_red}2", color="Cluster",
                         hover_data=hover_dict,
                         color_discrete_sequence=px.colors.qualitative.Set1,
@@ -418,10 +422,10 @@ if path == "Become an MLB analyst!":
     if cluster_model == "KMeans Clustering":
         # Gathering and storing the user's desired number of clusters.
         n_clusters = st.slider("Select your desired number of clusters, k, to start out (can be adjusted later):", min_value = 2, max_value = 20, step = 1)
-        # Storing their choice for the dimensionarlity reduction model.
+        # Storing their choice for the dimensionality reduction model.
         dim_red = st.radio("Pick a dimensionality reduction model to visualize your clusters in 2D-space (t-SNE = better, but slower):", 
                             ["PCA", "t-SNE"])
-        # Asking them to which variables they want to be displayed upon hovering.
+        # Asking them which variables they want to be displayed upon hovering.
         feature_labs = st.multiselect("Select which variables you would like displayed when you hover:", options = ["Player", "Team"] + features, default = ["Player", "Team"])
         # Asking the user which team to highlight in the plot.
         high_team = st.selectbox("Select a team you would like highlighted in the plot, if any:", 
@@ -521,7 +525,7 @@ if path == "Become an MLB analyst!":
         # Asking the user to decide on a linkage rule.
         link = st.radio("Please choose your desired rule for linking new clusters (default = ward, see README file for full descriptions):",
                               ["ward", "complete", "average", "single"])
-        # Storing their choice for the dimensionarlity reduction model.
+        # Storing their choice for the dimensionality reduction model.
         dim_red = st.radio("Pick a dimensionality reduction model to visualize your clusters in 2D-space (t-SNE = better, but slower):", ["PCA", "t-SNE"])
         # Asking them to which variables they want to be displayed upon hovering.
         feature_labs = st.multiselect("Select which variables you would like displayed when you hover:", options = ["Player", "Team"] + features, default = ["Player", "Team"])
@@ -625,9 +629,9 @@ if path == "Upload my own dataset!":
                 4. Choose the dimensionality reduction model you'd like to use to visualize your clusters -- either Principal Components Analysis (PCA) or t-SNE. 
                 5. Pick which variables you'd like to display when you hover over a datapoint in your plot. Then, hit "Go!".
                 6. Observe the outputted model feedback and re-tune the hyperparameters, if necessary.
-                7. Explore your clustered data!
+                7. Explore your clustered data, and generate some insights!
                 """)
-    st.write("Let's get exploring!")
+    st.write("Let's go!")
     st.divider() # Breaks up the app a little bit.
     # Prompt the user to upload a file.
     uploaded_file = st.file_uploader("Upload a .csv file containing your tidy dataset of interest (no dates!):", type = "csv")
@@ -642,7 +646,7 @@ if path == "Upload my own dataset!":
         input_data_numeric = input_data.copy() # Create a copy of the dataset before converting all categorical variables to numeric.
         # Have the user select their desired variables from those given in the inputted dataset.
         vars = list(input_data.columns)
-        features = st.multiselect("Select the variables you'd like to use for clustering (at least 2, preferably more):", vars)
+        features = st.multiselect("Select the variables you'd like to use for clustering (at least 2, preferably more):", [var for var in vars if var not in ['index']])
         if features: # Once they select at least one variable...
             # Convert all of the "bool" columns to 0s and 1s, then store all possible categorical
             # variables in a list called cats.
@@ -664,18 +668,20 @@ if path == "Upload my own dataset!":
                     map[input_data[cat].unique()[i]] = i
                 input_data_numeric[cat] = input_data[cat].map(map)
                 cat_dict[cat] = map
-             # Asking user which model they'd like to use for clustering.
+            # Asking user which model they'd like to use for clustering.
             cluster_model = st.radio("Choose a clustering model (KMeans = top-down, Hierarchical = bottom-up):", ['KMeans Clustering', 'Hierarchical Clustering'])
             
             # KMeans path
             if cluster_model == "KMeans Clustering":
                 # Gathering and storing the user's desired number of clusters.
                 n_clusters = st.slider("Select your desired number of clusters, k, to start out (can be adjusted later):", min_value = 2, max_value = 20, step = 1)
-                # Storing their choice for the dimensionarlity reduction model.
+                # Storing their choice for the dimensionality reduction model.
                 dim_red = st.radio("Pick a dimensionality reduction model to visualize your clusters in 2D-space (t-SNE = better, but slower):", 
                                     ["PCA", "t-SNE"])
-                # Asking them to which variables they want to be displayed upon hovering.
-                feature_labs = st.multiselect("Select which variables you would like displayed when you hover:", options = features)
+                # Asking them which variables they want to be displayed upon hovering. I allow the user to select any variables from
+                # the inputted dataset here, so that they can display an ID column or a Name column, even if it wasn't used for
+                # clustering.
+                feature_labs = st.multiselect("Select which variables you would like displayed when you hover:", options = [var for var in vars if var not in ['index']])
                 # Where execution starts.
                 if st.button("Go!"):
                     if dim_red == "PCA":
@@ -700,7 +706,7 @@ if path == "Upload my own dataset!":
                         pca = PCA(n_components=2)
                         X_pca = pd.DataFrame(pca.fit_transform(X_std), columns = ["PCA1", "PCA2"])
                         # Concatenating all of the necessary dataframes into one for plotting.
-                        final_df = pd.concat([X_pca, clusters, input_data[features]], axis = 1)
+                        final_df = pd.concat([X_pca, clusters, input_data], axis = 1)
                         # Converting the cluster column to a categorical variable so that the 
                         # color scale on the graph is discrete rather than continuous.
                         final_df['Cluster'] = final_df['Cluster'].astype('category')
@@ -734,7 +740,7 @@ if path == "Upload my own dataset!":
                         tsne = TSNE(n_components=2)
                         X_tsne = pd.DataFrame(tsne.fit_transform(X_std), columns = ["t-SNE1", "t-SNE2"])
                         # Concatenating all of the necessary dataframes into one for plotting.
-                        final_df = pd.concat([X_tsne, clusters, input_data[features]], axis = 1)
+                        final_df = pd.concat([X_tsne, clusters, input_data], axis = 1)
                         # Converting the cluster column to a categorical variable so that the 
                         # color scale on the graph is discrete rather than continuous.
                         final_df['Cluster'] = final_df['Cluster'].astype('category')
@@ -754,10 +760,12 @@ if path == "Upload my own dataset!":
                 # Asking the user to decide on a linkage rule.
                 link = st.radio("Please choose your desired rule for linking new clusters (default = ward, see README file for full descriptions):",
                                     ["ward", "complete", "average", "single"])
-                # Storing their choice for the dimensionarlity reduction model.
+                # Storing their choice for the dimensionality reduction model.
                 dim_red = st.radio("Pick a dimensionality reduction model to visualize your clusters in 2D-space (t-SNE = better, but slower):", ["PCA", "t-SNE"])
-                # Asking them to which variables they want to be displayed upon hovering.
-                feature_labs = st.multiselect("Select which variables you would like displayed when you hover:", options = features)
+                # Asking them which variables they want to be displayed upon hovering. I allow the user to select any variables from
+                # the inputted dataset here, so that they can display an ID column or a Name column, even if it wasn't used for
+                # clustering.
+                feature_labs = st.multiselect("Select which variables you would like displayed when you hover:", options = [var for var in vars if var not in ['index']])
                 # Where model execution starts.
                 if st.button('Go!'):
                     if dim_red == "PCA":
@@ -780,7 +788,7 @@ if path == "Upload my own dataset!":
                         pca = PCA(n_components=2)
                         X_pca = pd.DataFrame(pca.fit_transform(X_std), columns = ["PCA1", "PCA2"])
                         # Concatenating all of the necessary dataframes into one for plotting.
-                        final_df = pd.concat([X_pca, clusters, input_data[features]], axis = 1)
+                        final_df = pd.concat([X_pca, clusters, input_data], axis = 1)
                         # Converting the cluster column to a categorical variable so that the 
                         # color scale on the graph is discrete rather than continuous.
                         final_df['Cluster'] = final_df['Cluster'].astype('category')
@@ -812,7 +820,7 @@ if path == "Upload my own dataset!":
                         tsne = TSNE(n_components=2)
                         X_tsne = pd.DataFrame(tsne.fit_transform(X_std), columns = ["t-SNE1", "t-SNE2"])
                         # Concatenating all of the necessary dataframes into one for plotting.
-                        final_df = pd.concat([X_tsne, clusters, input_data[features]], axis = 1)
+                        final_df = pd.concat([X_tsne, clusters, input_data], axis = 1)
                         # Converting the cluster column to a categorical variable so that the 
                         # color scale on the graph is discrete rather than continuous.
                         final_df['Cluster'] = final_df['Cluster'].astype('category')
