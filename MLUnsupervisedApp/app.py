@@ -358,6 +358,9 @@ if path == "Become an MLB analyst!":
         # Where execution starts.
         if st.button("Go!"):
             if dim_red == "PCA":
+                if len(features) < 2:
+                    st.write("You must select 2 or more variables to construct your clusters. Please adjust and re-run!")
+                    st.stop()
                 # Creating the dataset we will use to build the model, 
                 # and scaling it.
                 X = MLB_data[features]
@@ -397,6 +400,9 @@ if path == "Become an MLB analyst!":
                 # Providing information on the data source.
                 data_info()
             if dim_red == "t-SNE":
+                if len(features) < 2:
+                    st.write("You must select 2 or more variables to construct your clusters. Please adjust and re-run!")
+                    st.stop()
                 # Creating the dataset we will use to build the model, 
                 # and scaling it.
                 X = MLB_data[features]
@@ -454,6 +460,9 @@ if path == "Become an MLB analyst!":
         # Where model execution starts.
         if st.button('Go!'):
             if dim_red == "PCA":
+                if len(features) < 2:
+                    st.write("You must select 2 or more variables to construct your clusters. Please adjust and re-run!")
+                    st.stop()
                 # Creating the dataset we will use to build the model, 
                 # and scaling it.
                 X = MLB_data[features]
@@ -491,6 +500,9 @@ if path == "Become an MLB analyst!":
                 # Providing information on the data source.
                 data_info()
             if dim_red == "t-SNE":
+                if len(features) < 2:
+                    st.write("You must select 2 or more variables to construct your clusters. Please adjust and re-run!")
+                    st.stop()
                 # Creating the dataset we will use to build the model, 
                 # and scaling it.
                 X = MLB_data[features]
@@ -550,13 +562,16 @@ if path == "Upload my own dataset!":
     uploaded_file = st.file_uploader("Upload a .csv file containing your tidy dataset of interest (no dates!):", type = "csv")
     if uploaded_file: # If they do upload a csv file...
         input_data = pd.read_csv(uploaded_file) # Read it in.
+        if len(input_data.columns) < 2:
+            st.write("This dataset contains less than 2 variables. Please upload a new one.")
+            st.stop()
         st.write("Here are the first few rows of your dataset. Missing values will be dropped, and any categorical variables will be converted to numeric:")
         st.dataframe(input_data.head()) # Display the first 5 rows.
         input_data = input_data.dropna() # Drop all missing values (ML models can't deal with them).
         input_data_numeric = input_data.copy() # Create a copy of the dataset before converting all categorical variables to numeric.
         # Have the user select their desired variables from those given in the inputted dataset.
         vars = list(input_data.columns)
-        features = st.multiselect("Select variables from the dataset to build your model:", vars)
+        features = st.multiselect("Select the variables you'd like to use for clustering (at least 2, preferably more):", vars)
         if features: # Once they select at least one variable...
             # Convert all of the "bool" columns to 0s and 1s, then store all possible categorical
             # variables in a list called cats.
@@ -581,3 +596,49 @@ if path == "Upload my own dataset!":
              # Asking user which model they'd like to use for clustering.
             cluster_model = st.radio("Choose a clustering model (KMeans = top-down, Hierarchical = bottom-up):", ['KMeans Clustering', 'Hierarchical Clustering'])
             
+            # KMeans path
+            if cluster_model == "KMeans Clustering":
+                # Gathering and storing the user's desired number of clusters.
+                n_clusters = st.slider("Select your desired number of clusters, k, to start out (can be adjusted later):", min_value = 2, max_value = 20, step = 1)
+                # Storing their choice for the dimensionarlity reduction model.
+                dim_red = st.radio("Pick a dimensionality reduction model to visualize your clusters in 2D-space (t-SNE = better, but slower):", 
+                                    ["PCA", "t-SNE"])
+                # Asking them to which variables they want to be displayed upon hovering.
+                feature_labs = st.multiselect("Select which variables you would like displayed when you hover:", options = features)
+                # Where execution starts.
+                if st.button("Go!"):
+                    if dim_red == "PCA":
+                        if len(features) < 2:
+                            st.write("You must select 2 or more variables to construct your clusters. Please adjust and re-run!")
+                            st.stop()
+                        # Creating the dataset we will use to build the model, 
+                        # and scaling it.
+                        X = input_data_numeric[features]
+                        X_std = scale_X(X)
+                        # Building the KMeans model and storing the clusters as a dataframe.
+                        kmeans = KMeans(n_clusters = n_clusters, random_state = 99)
+                        clusters = pd.DataFrame(kmeans.fit_predict(X_std), columns = ["Cluster"])
+                        # Calculating the WCSS and Silhouette Scores for each possible k.
+                        ks = range(2,21)
+                        wcss, silhouette_scores = calculate_metrics(X_std)
+                        # Plotting the elbow plot and silhouette score plot.
+                        plot_elbow_silhouette(ks, wcss, silhouette_scores)
+                        st.write("**After viewing these plots, you are encouraged to adjust the number of clusters in your model to the optimal number, then re-run the model.**")
+                        # Doing the dimensionality reduction and storing principle components as a
+                        # data frame.
+                        pca = PCA(n_components=2)
+                        X_pca = pd.DataFrame(pca.fit_transform(X_std), columns = ["PCA1", "PCA2"])
+                        # Concatenating all of the necessary dataframes into one for plotting.
+                        ##################### START HERE!!!!!!
+                        final_df = pd.concat([X_pca, clusters, input_data[features]], axis = 1)
+                        # Converting the cluster column to a categorical variable so that the 
+                        # color scale on the graph is discrete rather than continuous.
+                        final_df['Cluster'] = final_df['Cluster'].astype('category')
+                        # Creating our dictionary to tell plotly which variables to include in the hover labels.
+                        hover_dict = hover_labs(dim_red, feature_labs)
+                        # Building our graph.
+                        fig = build_MLB_traces(final_df, dim_red)
+                        # Updating it for the aesthetics.
+                        update_fig_format(fig, dim_red)
+                        # Displaying it to the user.
+                        st.plotly_chart(fig, use_container_width=True)
