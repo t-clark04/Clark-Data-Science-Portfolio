@@ -186,7 +186,7 @@ def update_fig_format(fig, dim_red):
     # interface).
     fig.update_layout(
         margin = dict(t = 40), # Lower the title.
-        hoverlabel = dict(font_color = "black", font_size = 12), # Format the hover label text.
+        hoverlabel = dict(font_color = "black", font_size = 12, bgcolor = "white"), # Format the hover label text.
         # Add a title.
         title=dict(
             text=f"Pitcher Clusters in 2-D Plane via {dim_red}",
@@ -244,7 +244,7 @@ def update_fig_format2(fig, dim_red):
     # interface).
     fig.update_layout(
         margin = dict(t = 40), # Lower the title.
-        hoverlabel = dict(font_color = "black", font_size = 12), # Format the hover label text.
+        hoverlabel = dict(font_color = "black", font_size = 12, bgcolor = "white"), # Format the hover label text.
         # Add a title.
         title=dict(
             text=f"User-Built Clusters in 2-D Plane via {dim_red}",
