@@ -91,6 +91,22 @@ def plot_dendrogram(X_std, link):
     # Return a description for the dendrogram.
     st.write("Note: The dendrogram displays the bottom-up clustering process carried out by the hierarchical algorithm. Inspecting the tree and cutting it at a specific height helps you determine your optimal number of clusters.")
 
+def plot_dendrogram2(X_std, link):
+    # Start off by performing the hierarchical clustering, according
+    # to the linkage rule specified by the user.
+    Z = linkage(X_std, method = link)
+    # Create the plotting canvas.
+    fig, ax = plt.subplots(figsize = (10,5))
+    # Build the dendrogram and label it accordingly.
+    dendrogram(Z, ax = ax, truncate_mode = "lastp")
+    plt.ylabel("Distance")
+    plt.title("Dendrogram of Hierarchical Clustering for User-Inputted Data")
+    # Display it for the user.
+    st.pyplot(fig)
+    # Return a description for the dendrogram.
+    st.write("Note: The dendrogram displays the bottom-up clustering process carried out by the hierarchical algorithm. Inspecting the tree and cutting it at a specific height helps you determine your optimal number of clusters.")
+
+
 def hover_labs(dim_red, feature_labs):
     # Create a dictionary that tells plotly to display the 
     # user's desired hover labels and not to display the 
@@ -153,6 +169,13 @@ def build_MLB_traces(final_df, dim_red):
     fig = go.Figure(data=fig_faded.data + fig_highlight.data + fig_fake.data)
     return fig
 
+def build_fig(final_df, dim_red):
+    fig = px.scatter(final_df, x=f"{dim_red}1", y=f"{dim_red}2", color="Cluster",
+                        hover_data=hover_dict,
+                        color_discrete_sequence=px.colors.qualitative.Set1,
+                        category_orders={'Cluster': sorted(final_df['Cluster'].unique())})
+    return fig
+
 def update_fig_format(fig, dim_red):
     # Adjust the graph aesthetics to our liking (much more
     # complicated because we are using plotly for a more interactive
@@ -210,6 +233,54 @@ def update_fig_format(fig, dim_red):
         x=0, y=-0.2,  # Positioning below the plot
         showarrow=False,
         font=dict(size=14),
+        )
+def update_fig_format2(fig, dim_red):
+    # Adjust the graph aesthetics to our liking (much more
+    # complicated because we are using plotly for a more interactive
+    # interface).
+    fig.update_layout(
+        margin = dict(t = 40), # Lower the title.
+        hoverlabel = dict(font_color = "black", font_size = 12), # Format the hover label text.
+        # Add a title.
+        title=dict(
+            text=f"User-Built Clusters in 2-D Plane via {dim_red}",
+            x=0.5,
+            xanchor='center',
+            font=dict(color="black", size=17)),
+        # Make all text size 15 and black.
+        font=dict(
+            size=15,
+            color="black"),
+        # Adjust the size of the graph.
+        width=900,
+        height=500,
+        # Label the x-axis, add a grid, and adjust the font to our liking.
+        xaxis=dict(
+            title="Component 1",
+            showgrid=True,
+            gridcolor='lightgray',
+            title_font=dict(color="black"),
+            tickfont=dict(color="black")),
+        # Do the same for the y-axis.
+        yaxis=dict(
+            title="Component 2",
+            showgrid=True,
+            gridcolor='lightgray',
+            title_font=dict(color="black"),
+            tickfont=dict(color="black")),
+        # Adjust the font for the legend
+        legend_title=dict(
+            text="Cluster",
+            font=dict(size=15, color="black")),
+        # Make the background white.
+        plot_bgcolor="white",
+        paper_bgcolor="white",
+        # Make sure the cluster labels are displayed in
+        # ascending order.
+        legend=dict(
+            traceorder='normal',
+            tracegroupgap=2,
+            font=dict(color="black", size = 15))
         )
     
 def data_info():
@@ -566,8 +637,8 @@ if path == "Upload my own dataset!":
             st.write("This dataset contains less than 2 variables. Please upload a new one.")
             st.stop()
         st.write("Here are the first few rows of your dataset. Missing values will be dropped, and any categorical variables will be converted to numeric:")
-        st.dataframe(input_data.head()) # Display the first 5 rows.
-        input_data = input_data.dropna() # Drop all missing values (ML models can't deal with them).
+        st.dataframe(input_data.head(5)) # Display the first 5 rows.
+        input_data = input_data.dropna().reset_index() # Drop all missing values (ML models can't deal with them).
         input_data_numeric = input_data.copy() # Create a copy of the dataset before converting all categorical variables to numeric.
         # Have the user select their desired variables from those given in the inputted dataset.
         vars = list(input_data.columns)
@@ -629,7 +700,6 @@ if path == "Upload my own dataset!":
                         pca = PCA(n_components=2)
                         X_pca = pd.DataFrame(pca.fit_transform(X_std), columns = ["PCA1", "PCA2"])
                         # Concatenating all of the necessary dataframes into one for plotting.
-                        ##################### START HERE!!!!!!
                         final_df = pd.concat([X_pca, clusters, input_data[features]], axis = 1)
                         # Converting the cluster column to a categorical variable so that the 
                         # color scale on the graph is discrete rather than continuous.
@@ -637,8 +707,120 @@ if path == "Upload my own dataset!":
                         # Creating our dictionary to tell plotly which variables to include in the hover labels.
                         hover_dict = hover_labs(dim_red, feature_labs)
                         # Building our graph.
-                        fig = build_MLB_traces(final_df, dim_red)
+                        fig = build_fig(final_df, dim_red)
                         # Updating it for the aesthetics.
-                        update_fig_format(fig, dim_red)
+                        update_fig_format2(fig, dim_red)
+                        # Displaying it to the user.
+                        st.plotly_chart(fig, use_container_width=True)
+                    if dim_red == "t-SNE":
+                        if len(features) < 2:
+                            st.write("You must select 2 or more variables to construct your clusters. Please adjust and re-run!")
+                            st.stop()
+                        # Creating the dataset we will use to build the model, 
+                        # and scaling it.
+                        X = input_data_numeric[features]
+                        X_std = scale_X(X)
+                        # Building the KMeans model and storing the clusters as a dataframe.
+                        kmeans = KMeans(n_clusters = n_clusters, random_state = 99)
+                        clusters = pd.DataFrame(kmeans.fit_predict(X_std), columns = ["Cluster"])
+                        # Calculating the WCSS and Silhouette Scores for each possible k.
+                        ks = range(2,21)
+                        wcss, silhouette_scores = calculate_metrics(X_std)
+                        # Plotting the elbow plot and silhouette score plot.
+                        plot_elbow_silhouette(ks, wcss, silhouette_scores)
+                        st.write("**After viewing these plots, you are encouraged to adjust the number of clusters in your model to the optimal number, then re-run the model.**")
+                        # Doing the dimensionality reduction and storing principle components as a
+                        # data frame.
+                        tsne = TSNE(n_components=2)
+                        X_tsne = pd.DataFrame(tsne.fit_transform(X_std), columns = ["t-SNE1", "t-SNE2"])
+                        # Concatenating all of the necessary dataframes into one for plotting.
+                        final_df = pd.concat([X_tsne, clusters, input_data[features]], axis = 1)
+                        # Converting the cluster column to a categorical variable so that the 
+                        # color scale on the graph is discrete rather than continuous.
+                        final_df['Cluster'] = final_df['Cluster'].astype('category')
+                        # Creating our dictionary to tell plotly which variables to include in the hover labels.
+                        hover_dict = hover_labs(dim_red, feature_labs)
+                        # Building our graph.
+                        fig = build_fig(final_df, dim_red)
+                        # Updating it for the aesthetics.
+                        update_fig_format2(fig, dim_red)
+                        # Displaying it to the user.
+                        st.plotly_chart(fig, use_container_width=True)
+
+            # Hierarchical Clustering path
+            if cluster_model == "Hierarchical Clustering":
+                # Gathering and storing the user's desired hyperparameter choices.
+                n_clusters = st.slider("Select your desired number of clusters, k, to start out (can be adjusted later):", min_value = 2, max_value = 20, step = 1)
+                # Asking the user to decide on a linkage rule.
+                link = st.radio("Please choose your desired rule for linking new clusters (default = ward, see README file for full descriptions):",
+                                    ["ward", "complete", "average", "single"])
+                # Storing their choice for the dimensionarlity reduction model.
+                dim_red = st.radio("Pick a dimensionality reduction model to visualize your clusters in 2D-space (t-SNE = better, but slower):", ["PCA", "t-SNE"])
+                # Asking them to which variables they want to be displayed upon hovering.
+                feature_labs = st.multiselect("Select which variables you would like displayed when you hover:", options = features)
+                # Where model execution starts.
+                if st.button('Go!'):
+                    if dim_red == "PCA":
+                        if len(features) < 2:
+                            st.write("You must select 2 or more variables to construct your clusters. Please adjust and re-run!")
+                            st.stop()
+                        # Creating the dataset we will use to build the model, 
+                        # and scaling it.
+                        X = input_data_numeric[features]
+                        X_std = scale_X(X)
+                        # Building the hierarchical clustering model and storing the 
+                        # generated clusters as a data frame.
+                        hierarch = AgglomerativeClustering(n_clusters = n_clusters, linkage = link)
+                        clusters = pd.DataFrame(hierarch.fit_predict(X_std), columns = ["Cluster"])
+                        # Constructing and displaying the dendrogram.
+                        plot_dendrogram2(X_std, link)
+                        st.write("**After viewing the dendrogram, you are encouraged to adjust the number of clusters in your model to the optimal number, then re-run the model before continuing.**")
+                        # Doing the dimensionality reduction and storing principle components as a
+                        # data frame.
+                        pca = PCA(n_components=2)
+                        X_pca = pd.DataFrame(pca.fit_transform(X_std), columns = ["PCA1", "PCA2"])
+                        # Concatenating all of the necessary dataframes into one for plotting.
+                        final_df = pd.concat([X_pca, clusters, input_data[features]], axis = 1)
+                        # Converting the cluster column to a categorical variable so that the 
+                        # color scale on the graph is discrete rather than continuous.
+                        final_df['Cluster'] = final_df['Cluster'].astype('category')
+                        # Creating our dictionary to tell plotly which variables to include in the hover labels.
+                        hover_dict = hover_labs(dim_red, feature_labs)
+                        # Building our graph.
+                        fig = build_fig(final_df, dim_red)
+                        # Updating it for the aesthetics.
+                        update_fig_format2(fig, dim_red)
+                        # Displaying it to the user.
+                        st.plotly_chart(fig, use_container_width=True)
+                    if dim_red == "t-SNE":
+                        if len(features) < 2:
+                            st.write("You must select 2 or more variables to construct your clusters. Please adjust and re-run!")
+                            st.stop()
+                        # Creating the dataset we will use to build the model, 
+                        # and scaling it.
+                        X = input_data_numeric[features]
+                        X_std = scale_X(X)
+                        # Building the hierarchical clustering model and storing the 
+                        # generated clusters as a data frame.
+                        hierarch = AgglomerativeClustering(n_clusters = n_clusters, linkage = link)
+                        clusters = pd.DataFrame(hierarch.fit_predict(X_std), columns = ["Cluster"])
+                        # Constructing and displaying the dendrogram.
+                        plot_dendrogram2(X_std, link)
+                        st.write("**After viewing the dendrogram, you are encouraged to adjust the number of clusters in your model to the optimal number, then re-run the model before continuing.**")
+                        # Doing the dimensionality reduction and storing t-SNE components as a
+                        # data frame
+                        tsne = TSNE(n_components=2)
+                        X_tsne = pd.DataFrame(tsne.fit_transform(X_std), columns = ["t-SNE1", "t-SNE2"])
+                        # Concatenating all of the necessary dataframes into one for plotting.
+                        final_df = pd.concat([X_tsne, clusters, input_data[features]], axis = 1)
+                        # Converting the cluster column to a categorical variable so that the 
+                        # color scale on the graph is discrete rather than continuous.
+                        final_df['Cluster'] = final_df['Cluster'].astype('category')
+                        # Creating our dictionary to tell plotly which variables to include in the hover labels.
+                        hover_dict = hover_labs(dim_red, feature_labs)
+                        # Building our graph.
+                        fig = build_fig(final_df, dim_red)
+                        # Updating it for the aesthetics.
+                        update_fig_format2(fig, dim_red)
                         # Displaying it to the user.
                         st.plotly_chart(fig, use_container_width=True)
