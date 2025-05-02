@@ -74,7 +74,7 @@ def plot_elbow_silhouette(ks, wcss, silhouette_scores):
         plt.title('Silhouette Score for Optimal k')
         plt.grid(True)
         st.pyplot(plt)
-        st.write("Note: The silhouette score measures the average similarity of data points within a cluster. Thus, the highest silhouette score is most desirable.")
+        st.write("Note: The silhouette score measures the average similarity of data points within a cluster. Thus, a higher silhouette score generally indicates a better model.")
 
 def plot_dendrogram(X_std, link):
     # Start off by performing the hierarchical clustering, according
@@ -89,7 +89,7 @@ def plot_dendrogram(X_std, link):
     # Display it for the user.
     st.pyplot(fig)
     # Return a description for the dendrogram.
-    st.write("Note: The dendrogram displays the bottom-up clustering process carried out by the hierarchical algorithm. Inspecting the plot helps you determine where to cut the tree and decide on your optimal number of clusters.")
+    st.write("Note: The dendrogram displays the bottom-up clustering process carried out by the hierarchical algorithm. Inspecting the tree and cutting it at a specific height helps you determine your optimal number of clusters.")
 
 def hover_labs(dim_red, feature_labs):
     # Create a dictionary that tells plotly to display the 
@@ -162,10 +162,10 @@ def update_fig_format(fig, dim_red):
         hoverlabel = dict(font_color = "black", font_size = 12), # Format the hover label text.
         # Add a title.
         title=dict(
-            text=f"Pitcher Clusters via {dim_red}",
+            text=f"Pitcher Clusters in 2-D Plane via {dim_red}",
             x=0.5,
             xanchor='center',
-            font=dict(color="black", size=18)),
+            font=dict(color="black", size=17)),
         # Make all text size 15 and black.
         font=dict(
             size=15,
@@ -201,6 +201,26 @@ def update_fig_format(fig, dim_red):
             tracegroupgap=2,
             font=dict(color="black", size = 15))
         )
+    # Add a note to the bottom of the graph to explain why
+    # some pitchers have an asterisk after their names while
+    # others don't.
+    fig.add_annotation(
+        text="* indicates a left-handed pitcher.",
+        xref="paper", yref="paper",
+        x=0, y=-0.2,  # Positioning below the plot
+        showarrow=False,
+        font=dict(size=14),
+        )
+    
+def data_info():
+    # Create an expander for more information on the original MLB dataset.
+    with st.expander("Want to learn more about the data?"):
+        # Provide a description and link to the full dataset.
+        st.markdown("""
+                - The data and glossary used in this portion of the app both come from Baseball-Reference.com.
+                - To check out the full dataset, head over to their website linked [here](https://www.baseball-reference.com/leagues/majors/2024-standard-pitching.shtml).
+                - Thank you to Baseball Reference for making this project possible!
+                """)
 
 # -----------------------------------------------
 # Loading and Re-formatting the MLB Pitchers Dataset
@@ -284,7 +304,7 @@ if path == "Become an MLB analyst!":
     with st.expander("**Glossary**"):
         st.markdown(
             """
-            **Explanations of variables as provided by Baseball Reference**:
+            **Explanations of variables as provided by Baseball-Reference.com**:
             - **Age** - As of June 30 of the 2024 season.
             - **WAR (Wins Above Replacement)** - A single number that presents the number of wins the player added to the team above what a replacement player would add. This value includes defensive support and includes additional value for high leverage situations. Scale: 8+ MVP Quality, 5+ All-Star Quality, 2+ Starter, 0-2 Reserve, < 0 Replacement Level. Developed by Sean Smith of BaseballProjection.com
             - **W** - Wins
@@ -345,10 +365,10 @@ if path == "Become an MLB analyst!":
                 # Building the KMeans model and storing the clusters as a dataframe.
                 kmeans = KMeans(n_clusters = n_clusters, random_state = 99)
                 clusters = pd.DataFrame(kmeans.fit_predict(X_std), columns = ["Cluster"])
-                # Calculating the WCSS and Silhouette Scores for each possible k
+                # Calculating the WCSS and Silhouette Scores for each possible k.
                 ks = range(2,21)
                 wcss, silhouette_scores = calculate_metrics(X_std)
-                # Plotting the elbow plot and silhouette score plot
+                # Plotting the elbow plot and silhouette score plot.
                 plot_elbow_silhouette(ks, wcss, silhouette_scores)
                 st.write("**After viewing these plots, you are encouraged to adjust the number of clusters in your model to the optimal number, then re-run the model.**")
                 # Doing the dimensionality reduction and storing principle components as a
@@ -374,89 +394,138 @@ if path == "Become an MLB analyst!":
                 update_fig_format(fig, dim_red)
                 # Displaying it to the user.
                 st.plotly_chart(fig, use_container_width=True)
+                # Providing information on the data source.
+                data_info()
             if dim_red == "t-SNE":
+                # Creating the dataset we will use to build the model, 
+                # and scaling it.
                 X = MLB_data[features]
                 X_std = scale_X(X)
-                # Building the model
+                # Building the KMeans model and storing the clusters as a dataframe.
                 kmeans = KMeans(n_clusters = n_clusters, random_state = 99)
                 clusters = pd.DataFrame(kmeans.fit_predict(X_std), columns = ["Cluster"])
-                # Calculating the WCSS and Silhouette Scores for each possible k
+                # Calculating the WCSS and Silhouette Scores for each possible k.
                 ks = range(2,21)
                 wcss, silhouette_scores = calculate_metrics(X_std)
-                # Plotting the elbow plot and silhouette score plot
+                # Plotting the elbow plot and silhouette score plot.
                 plot_elbow_silhouette(ks, wcss, silhouette_scores)
                 st.write("**After viewing these plots, you are encouraged to adjust the number of clusters in your model to the optimal number, then re-run the model.**")
+                # Doing the dimensionality reduction and storing t-SNE components as a
+                # data frame.
                 tsne = TSNE(n_components=2)
                 X_tsne = pd.DataFrame(tsne.fit_transform(X_std), columns = ["t-SNE1", "t-SNE2"])
+                # Concatenating all of the necessary dataframes into one for plotting.
                 final_df = pd.concat([X_tsne, clusters, X, Identifiers], axis = 1)
+                # Converting the cluster column to a categorical variable so that the 
+                # color scale on the graph is discrete rather than continuous.
                 final_df['Cluster'] = final_df['Cluster'].astype('category')
+                # Create an opacity column in the final_dataset to dictate which team
+                # should be highlighted and which teams should be more transparent.
                 if high_team == "None":
                     final_df['opacity'] = 1
                 else:            
                     final_df['opacity'] = final_df['Team'].apply(lambda x: 1 if high_team in x else 0.4)
+                # Creating our dictionary to tell plotly which variables to include in the hover labels.
                 hover_dict = hover_labs(dim_red, feature_labs)
+                # Building our graph.
                 fig = build_MLB_traces(final_df, dim_red)
+                # Updating the aesthetics.
                 update_fig_format(fig, dim_red)
-                # Show the combined figure
+                # Displaying it to the user.
                 st.plotly_chart(fig, use_container_width=True)
+                # Providing information on the data source.
+                data_info()
 
     
     # Hierarchical Clustering path
     if cluster_model == "Hierarchical Clustering":
         # Gathering and storing the user's desired hyperparameter choices.
-        n_clusters = st.slider("Select your desired number of clusters, k:", min_value = 2, max_value = 20, step = 1)
-        link = st.radio("Please choose the rule to use for linking new clusters (default = ward):",
+        n_clusters = st.slider("Select your desired number of clusters, k, to start out (can be adjusted later):", min_value = 2, max_value = 20, step = 1)
+        # Asking the user to decide on a linkage rule.
+        link = st.radio("Please choose your desired rule for linking new clusters (default = ward, see README file for full descriptions):",
                               ["ward", "complete", "average", "single"])
-        dim_red = st.radio("Pick a dimensionality reduction model to visualize your clusters in 2D-space:", 
-                            ["PCA", "t-SNE"])
+        # Storing their choice for the dimensionarlity reduction model.
+        dim_red = st.radio("Pick a dimensionality reduction model to visualize your clusters in 2D-space (t-SNE = better, but slower):", ["PCA", "t-SNE"])
+        # Asking them to which variables they want to be displayed upon hovering.
         feature_labs = st.multiselect("Select which variables you would like displayed when you hover:", options = ["Player", "Team"] + features, default = ["Player", "Team"])
+        # Asking the user which team to highlight in the plot.
         high_team = st.selectbox("Select a team you would like highlighted in the plot, if any:", 
                                     options = ["None"] + sorted(list(set(val for sublist in Identifiers['Team'] for val in sublist))))
         # Where model execution starts.
         if st.button('Go!'):
             if dim_red == "PCA":
+                # Creating the dataset we will use to build the model, 
+                # and scaling it.
                 X = MLB_data[features]
                 X_std = scale_X(X)
-                # Building the model
+                # Building the hierarchical clustering model and storing the 
+                # generated clusters as a data frame.
                 hierarch = AgglomerativeClustering(n_clusters = n_clusters, linkage = link)
                 clusters = pd.DataFrame(hierarch.fit_predict(X_std), columns = ["Cluster"])
-                # Constructing the dendrogram
+                # Constructing and displaying the dendrogram.
                 plot_dendrogram(X_std, link)
                 st.write("**After viewing the dendrogram, you are encouraged to adjust the number of clusters in your model to the optimal number, then re-run the model before continuing.**")
+                # Doing the dimensionality reduction and storing principle components as a
+                # data frame.
                 pca = PCA(n_components=2)
                 X_pca = pd.DataFrame(pca.fit_transform(X_std), columns = ["PCA1", "PCA2"])
+                # Concatenating all of the necessary dataframes into one for plotting.
                 final_df = pd.concat([X_pca, clusters, X, Identifiers], axis = 1)
+                # Converting the cluster column to a categorical variable so that the 
+                # color scale on the graph is discrete rather than continuous.
                 final_df['Cluster'] = final_df['Cluster'].astype('category')
+                # Create an opacity column in the final_dataset to dictate which team
+                # should be highlighted and which teams should be more transparent.
                 if high_team == "None":
                     final_df['opacity'] = 1
                 else:            
                     final_df['opacity'] = final_df['Team'].apply(lambda x: 1 if high_team in x else 0.4)
+                # Creating our dictionary to tell plotly which variables to include in the hover labels.
                 hover_dict = hover_labs(dim_red, feature_labs)
+                # Building our graph.
                 fig = build_MLB_traces(final_df, dim_red)
+                # Updating the aesthetics.
                 update_fig_format(fig, dim_red)
-                # Show the combined figure
+                # Displaying it to the user.
                 st.plotly_chart(fig, use_container_width=True)
+                # Providing information on the data source.
+                data_info()
             if dim_red == "t-SNE":
+                # Creating the dataset we will use to build the model, 
+                # and scaling it.
                 X = MLB_data[features]
                 X_std = scale_X(X)
-                # Building the model
+                # Building the hierarchical clustering model and storing the 
+                # generated clusters as a data frame.
                 hierarch = AgglomerativeClustering(n_clusters = n_clusters, linkage = link)
                 clusters = pd.DataFrame(hierarch.fit_predict(X_std), columns = ["Cluster"])
-                # Constructing the dendrogram
+                # Constructing and displaying the dendrogram.
                 plot_dendrogram(X_std, link)
                 st.write("**After viewing the dendrogram, you are encouraged to adjust the number of clusters in your model to the optimal number, then re-run the model before continuing.**")
+                # Doing the dimensionality reduction and storing t-SNE components as a
+                # data frame
                 tsne = TSNE(n_components=2)
                 X_tsne = pd.DataFrame(tsne.fit_transform(X_std), columns = ["t-SNE1", "t-SNE2"])
+                # Concatenating all of the necessary dataframes into one for plotting.
                 final_df = pd.concat([X_tsne, clusters, X, Identifiers], axis = 1)
+                # Converting the cluster column to a categorical variable so that the 
+                # color scale on the graph is discrete rather than continuous.
                 final_df['Cluster'] = final_df['Cluster'].astype('category')
+                # Create an opacity column in the final_dataset to dictate which team
+                # should be highlighted and which teams should be more transparent.
                 if high_team == "None":
                     final_df['opacity'] = 1
                 else:            
                     final_df['opacity'] = final_df['Team'].apply(lambda x: 1 if high_team in x else 0.4)
+                # Creating our dictionary to tell plotly which variables to include in the hover labels.
                 hover_dict = hover_labs(dim_red, feature_labs)
+                # Building our graph.
                 fig = build_MLB_traces(final_df, dim_red)
+                # Updating the aesthetics.
                 update_fig_format(fig, dim_red)
-                # Show the combined figure
+                # Displaying it to the user.
                 st.plotly_chart(fig, use_container_width=True)
+                # Providing information on the data source.
+                data_info()
     
 
