@@ -644,7 +644,7 @@ if path == "Upload my own dataset!":
             st.write("**Looks like your .csv file has an unfamiliar encoding format. Please convert to 'UTF-8', then try again!**")
             st.stop()
         if len(input_data.columns) < 2:
-            st.write("This dataset contains less than 2 variables. Please upload a new one.")
+            st.write("This dataset either contains less than 2 variables or the values are not comma-separated. Please upload a new one or re-adjust to continue.")
             st.stop()
         st.write("Here are the first few rows of your dataset. Missing values will be dropped, and any categorical variables will be converted to numeric:")
         st.dataframe(input_data.head(5)) # Display the first 5 rows.
