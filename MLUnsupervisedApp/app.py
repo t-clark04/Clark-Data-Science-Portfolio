@@ -305,7 +305,7 @@ def data_info():
 # Set the proper path for deploying the app online.
 DATA_PATH = Path(__file__).parent / "data" / "MLB_Pitchers.csv"
 # Read in the data from the 'data' folder.
-MLB_data = pd.read_csv(DATA_PATH, encoding = 'latin-1')
+MLB_data = pd.read_csv(DATA_PATH, encoding = 'utf-8')
 # Drop the unnecessary columns, restrict our scope only to pitchers with more 
 # than 20 innings pitched, and drop any missing values.
 MLB_data = (MLB_data.drop(columns = ["Lg", "Awards", "Player-additional"]).query('IP > 20').dropna())
