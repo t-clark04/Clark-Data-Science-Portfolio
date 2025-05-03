@@ -638,7 +638,11 @@ if path == "Upload my own dataset!":
     # Prompt the user to upload a file.
     uploaded_file = st.file_uploader("Upload a .csv file containing your tidy dataset of interest (no dates!):", type = "csv")
     if uploaded_file: # If they do upload a csv file...
-        input_data = pd.read_csv(uploaded_file) # Read it in.
+        try:
+            input_data = pd.read_csv(uploaded_file) # Read it in.
+        except UnicodeDecodeError:
+            st.write("Looks like your .csv file has an unfamiliar encoding format. Please convert to 'UTF-8', then try again.")
+            st.stop()
         if len(input_data.columns) < 2:
             st.write("This dataset contains less than 2 variables. Please upload a new one.")
             st.stop()
