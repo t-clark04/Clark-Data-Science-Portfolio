@@ -9,7 +9,6 @@ import streamlit as st # To run the app.
 import pandas as pd # To work with dataframes.
 import seaborn as sns # To build dendrograms.
 import matplotlib.pyplot as plt # To make scatterplots and line charts.
-import chardet # To detect the right .csv encoding.
 
 # All of these are required for executing the machine learning algorithms.
 from sklearn.model_selection import train_test_split
@@ -639,10 +638,7 @@ if path == "Upload my own dataset!":
     # Prompt the user to upload a file.
     uploaded_file = st.file_uploader("Upload a .csv file containing your tidy dataset of interest (no dates!):", type = "csv")
     if uploaded_file: # If they do upload a csv file...
-        with open(uploaded_file, 'rb'):
-            raw_file = uploaded_file.read()
-            encoding = chardet.detect(raw_file)['encoding']    
-        input_data = pd.read_csv(uploaded_file, encoding = encoding) # Read it in.
+        input_data = pd.read_csv(uploaded_file) # Read it in.
         if len(input_data.columns) < 2:
             st.write("This dataset contains less than 2 variables. Please upload a new one.")
             st.stop()
