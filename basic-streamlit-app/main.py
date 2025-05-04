@@ -14,11 +14,13 @@
 # Importing the packages I will need to create the app and load in the data.
 import streamlit as st
 import pandas as pd
+from pathlib import Path # Needed for relative path when deploying app online
 
 # Adding a title, loading in the penguin data, and converting the year column to
 # string type to avoid added commas.
 st.title("Exploring the Palmer's Penguins Dataframe")
-penguins_df = pd.read_csv("data/penguins.csv")
+DATA_PATH = Path(__file__).parent / "data" / "penguins.csv"
+penguins_df = pd.read_csv(DATA_PATH)
 penguins_df["year"] = penguins_df["year"].astype(str)
 
 # Basic description and instructions for navigating the data.
