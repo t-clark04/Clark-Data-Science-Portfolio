@@ -1,4 +1,4 @@
-# Unsupervised Machine Learning Streamlit App ⚾📈
+# Unsupervised Machine Learning App ⚾📈
 
 ## Overview
 For this project, I have built an interactive Streamlit application that allows users to explore the two main uses of unsupervised machine learning: clustering and dimensionality reduction!
