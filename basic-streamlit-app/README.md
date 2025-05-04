@@ -11,7 +11,7 @@ Thanks for checking out my first mini-project!
 
 - [Overview](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/basic-streamlit-app#overview-)
 - [Running the App](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/basic-streamlit-app#running-the-app-)
-- [Data[]()](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/basic-streamlit-app#data-%EF%B8%8F)
+- [Data](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/basic-streamlit-app#data-%EF%B8%8F)
 
 ## Running the App ✅
 This application is now deployed on the Streamlit Community Cloud, so there's an easy way and a hard way to run the app.
