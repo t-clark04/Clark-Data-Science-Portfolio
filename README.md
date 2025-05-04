@@ -5,7 +5,7 @@ This repository contains all of my data science-related projects completed over 
 ## Basic EDA
 <img align="left" width="275" height="175" src="Images/Penguins.jpg"> **[Palmer's Penguins Streamlit App 🐧❄️](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/basic-streamlit-app)**
 
-Showcases my proficiency with the Streamlit library, as well as my skills in working with pandas DataFrames. Allows users to filter and explore the Palmer's Penguins dataset, which contains measurements on three different species of penguins living on the Palmer Archipelago in Antarctica. Navigate to the [basic-streamlit-app](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/basic-streamlit-app) folder for more information and for instructions on how to run the app yourself! 
+Showcases my proficiency with the Streamlit library, as well as my skills in working with pandas DataFrames. Allows users to filter and explore the Palmer's Penguins dataset, which contains measurements on three different species of penguins living on the Palmer Archipelago in Antarctica. Click [here](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/basic-streamlit-app) or navigate over to the [basic-streamlit-app](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/basic-streamlit-app) folder for more information! 
 
 #
 
@@ -17,9 +17,15 @@ Demonstrates my expertise in data cleaning and visualization using Python librar
 #
 
 ## Machine Learning
-<img align="left" width="275" height="175" src="Images/NBA.jpg"> **[Machine Learning Streamlit App 🤖🏀](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp)**
+<img align="left" width="275" height="175" src="Images/NBA.jpg"> **[Supervised Machine Learning App 🤖🏀](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp)**
 
 Displays my ability to develop and deploy interactive web applications with ``streamlit`` and build machine learning models with ``scikit-learn``. Allows the user to explore various classification models, tune hyperparameters, make predictions, and evaluate predictive power through user-uploaded data or a provided NBA dataset. Head over to [MLSStreamlitApp](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp) for the full app description, or click [here](https://clark-machine-learning.streamlit.app/) to check out the deployed app now!
+
+<br clear="all">
+
+<img align="left" width="275" height="175" src="Images/MLB.webp"> **[Unsupervised Machine Learning App ⚾📈](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLUnsupervisedApp)**
+
+My greatest accomplishment. Showcases my mastery of ``streamlit`` web applications, as well as my understanding of both clustering and dimensionality reduction in ``scikit-learn``. Prompts users to select variables for clustering, choose their desired unsupervised learning models, tune hyperparameters, customize output, and explore their interactive ``plotly`` scatterplot. Explore the app right now by clicking [here](https://clark-unsupervised.streamlit.app/), or navigate over to [MLUnsupervisedApp](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLUnsupervisedApp) for more information!
 
 #
 
