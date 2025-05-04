@@ -38,7 +38,7 @@ def calculate_metrics(X_std):
     # For each k, fit a KMeans model (I only use this for KMeans),
     # and append the WCSS and Silhouette scores to the running lists,
     # then return them both.
-    for k in ks: # For each k,
+    for k in ks: 
         km = KMeans(k, random_state = 99)
         km.fit(X_std)
         wcss.append(km.inertia_)
