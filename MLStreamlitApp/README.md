@@ -1,4 +1,4 @@
-# Machine Learning Streamlit App 🤖🏀
+# Supervised Machine Learning App 🤖🏀
 
 ## Overview
 In this project, I have created an interactive Streamlit application that allows users to make predictions on binary target variables and evaluate several machine learning classification models -- namely logistic regression, decision trees, and k-nearest neighbors.
