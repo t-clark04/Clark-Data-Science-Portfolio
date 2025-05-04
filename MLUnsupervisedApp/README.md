@@ -5,25 +5,25 @@ For this project, I have built an interactive Streamlit application that allows 
 
 The user can either upload their own dataset or jump into the world of *Moneyball* by exploring the pitching data I have provided. In either case, the user's job is to:
 1. Select a collection of variables from the dataset to build their clusters.
-2. Pick the clustering model to use -- either KMeans or Hierarchical -- and tune the hyperparameters to start.
+2. Pick the particular clustering model to use and tune the hyperparameters to start.
 3. Choose a dimensionality reduction algorithm for visualizing the clusters in the xy-plane.
 4. Customize the future plot by selecting which variables to display when hovering over a datapoint. Then, hit "Run!".
 5. Observe the model feedback, re-adjust hyperparameters if necessary, and explore the clustered data!
 
-Unsupervised machine learning finds meaning in meaningless data. It's as close to magic as it gets, so try it out yourself! Who knows what unexpected insights you'll uncover!
+Unsupervised machine learning finds meaning in "meaningless" data. It's as close to magic as it gets, so try it out for yourself! Who knows what you'll uncover!
 
 Thank you for checking out my project!
 
 ## Table of Contents
 
-- [Overview]()
-- [Running the App]()
-- [Data]()
-- [What is Machine Learning?]()
-- [Featured Models]()
-- [Model Hyperparameters]()
-- [Featured Visualizations]()
-- [References]()
+- [Overview](https://github.com/t-clark04/Clark-Data-Science-Portfolio/edit/main/MLUnsupervisedApp/README.md#overview)
+- [Running the App](https://github.com/t-clark04/Clark-Data-Science-Portfolio/edit/main/MLUnsupervisedApp/README.md#running-the-app-)
+- [Data](https://github.com/t-clark04/Clark-Data-Science-Portfolio/edit/main/MLUnsupervisedApp/README.md#data-%EF%B8%8F)
+- [What is Machine Learning?](https://github.com/t-clark04/Clark-Data-Science-Portfolio/edit/main/MLUnsupervisedApp/README.md#what-is-machine-learning-)
+- [Featured Models](https://github.com/t-clark04/Clark-Data-Science-Portfolio/edit/main/MLUnsupervisedApp/README.md#featured-models-%EF%B8%8F)
+- [Model Hyperparameters](https://github.com/t-clark04/Clark-Data-Science-Portfolio/edit/main/MLUnsupervisedApp/README.md#model-hyperparameters-)
+- [Featured Visualizations](https://github.com/t-clark04/Clark-Data-Science-Portfolio/edit/main/MLUnsupervisedApp/README.md#featured-visualizations-)
+- [References](https://github.com/t-clark04/Clark-Data-Science-Portfolio/edit/main/MLUnsupervisedApp/README.md#references-)
 
 ## Running the App ✅
 This application is deployed on the Streamlit Community Cloud, which means there's an easy way and a hard way to run the app.
@@ -32,7 +32,7 @@ This application is deployed on the Streamlit Community Cloud, which means there
 Simply click [here](https://clark-unsupervised.streamlit.app). This link should bring up the published version of the app on the Streamlit website. No further steps necessary -- just choose your path and start exploring! If you wish to see the underlying Python code, however, you'll have to run it the "hard" way...
 
 ### The "Hard" Way:
-You'll have to start by downloading the "MLUnsupervisedApp" folder from my data science portfolio repository. To do that, first go to [this link](https://download-directory.github.io/). It will open up a page that looks like this:
+You'll start by downloading the "MLUnsupervisedApp" folder from my data science portfolio repository. To do that, first go to [this link](https://download-directory.github.io/). It will open up a page that looks like this:
 
 <img src="data/Getting_Started_1.png" alt="Getting_Started_1" width="600"/>
 
@@ -53,64 +53,62 @@ Note: The app.py script uses the following Python libraries: ``streamlit`` (vers
 ## Data 🗄️
 - The 2024 MLB pitching dataset and the glossary used for the sabermetrics portion of the app come from Baseball-Reference.com.
 - To check out the full dataset, head over to the website linked [here](https://www.baseball-reference.com/leagues/majors/2024-standard-pitching.shtml).
-- I express my most sincere gratitude to Baseball Reference for the use of this information and for making this app possible!
+- I express my most sincere gratitude to Baseball Reference for the use of this data and for helping this awesome app come to fruition!
 
 ## What is Machine Learning? 🤖
 - Luis Serrano, author of *Grokking Machine Learning*, defines machine learning as "common sense, except done by computer." [^1] In essence, we prompt machines to learn from experience (i.e. data) to help us make decisions or predict the future.
 - In this project, I focus specifically on *unsupervised* machine learning, which means that the dataset we input contains no target variable. There is nothing in the dataset that we wish to predict based on the other features, so we are left with two main options. We can:
 1. Group together similar observations ("clustering") and explore potential relationships between variables in this way.
 2. Cut down the number of variables in our dataset ("dimensionality reduction") with the goal of visualizing multi-dimensional data or preparing the data for *supervised* machine learning (see [Supervised Machine Learning App 🤖🏀](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp)). 
-- My app actually does both! It first clusters the given data using the selected variables and hyperparameters inputted by the user. Then, it uses dimensionality reduction to project the n-dimensional clusters into 2-D space and allow the user to gather insights.  
+- My app actually does both! It first clusters the given data using the selected variables and hyperparameters inputted by the user. Then, it uses dimensionality reduction to project the n-dimensional clusters into 2-D space!  
 
 ## Featured Models 🖥️
-My Streamlit app allows the user to utilize three different machine learning classification models. These include logistic regression, decision trees, and k-nearest neighbors.
+This Streamlit app utilizes four different unsupervised machine learning models -- two for clustering and two for dimensionality reduction.
 
-- Logistic Regression finds the optimal linear combination of the feature variables to predict the binary variable of interest, and it uses the Sigmoid function to turn that prediction into a probability.
-- Decision trees use a series of nested questions in an upside-down tree-like structure to arrive at the prediction of the target variable using the other features in the dataset.
-- K-nearest neighbors uses the "majority vote" of the *k-nearest neighbors* to a given datapoint to determine the value of the predicted target variable at that point.
+Clustering models:
+- **KMeans** groups data into *k* clusters by finding the location of the optimal centroid to minimize the within-cluster sum of squares (WCSS, or inertia) for each cluster.
+- **Hierarchical clustering** uses a bottom-up approach to build a tree of nested clusters, combining them into larger clusters according to the linkage rule specified by the user.
+
+Dimensionality reduction models:
+- **Principal Components Analysis (PCA)** creates linear combinations of the variables in the dataset and weights them according to their respective variances. This allows us to explain as much variance in the data as we can with as few variables as possible. In our case, we take the first two principal components (since they explain the most variance) and use those to graph clusters in the xy-plane.
+- **T-distributed Stochastic Neighbor Embedding (t-SNE)** is designed specifically for visualizing high-dimensional data, and it essentially uses joint probability distributions to group together similar data points in 2- or 3-dimensional space. It is the recommended method for our purposes, though it will likely take a few more seconds to produce the graph.
 
 ## Model Hyperparameters 🔧
-Each of the three models depends on a different set of hyperparameters for tuning the model to the user's liking and controlling for overfitting.
+In this app, only the two clustering models require user-inputted hyperparameters.
 
-For logistic regression:
-- The tuning of the model mostly depends on whether the features are standardized (scaled) or not.
-- ``penalty`` can also be used to control the weighting of the coefficients, but it is kept at the default value of 'l2' in this app.
+For KMeans Clustering:
+- ``k`` sets the number of clusters to group the data into. It is recommended that the user optimize this number according to the output given in the elbow and silhouette score plots.
 
-For decision trees:
-- ``criterion`` specifies the algorithm used for finding the optimal "question" to ask at each decision node.
-- ``max_depth`` defines the maximum number of levels in the decision tree before being cut off.
-- ``min_samples_split`` specifies the minimum number of samples required at a node for it to be split further.
-- ``min_samples_leaf`` gives the minimum number of samples required in the resulting leaves for a node to be split further.
-
-For k-nearest neighbors:
-- Features are allowed to be scaled or unscaled according to the user's preference.
-- ``n_neighbors`` represents our 'k' value and corresponds to the number of nearest neighbors to use as the "voting populace".
-- ``metric`` specifies the method for calculating the distance to the closest datapoints. Click [here](https://www.kdnuggets.com/2023/03/distance-metrics-euclidean-manhattan-minkowski-oh.html) for more information on the various distance metrics.
+For Hierarchical Clustering:
+- ``k`` again denotes the number of clusters. It should be adjusted for optimization by the user according to the information given in the dendrogram.
+- ``linkage`` sets the criterion to be minimized when merging clusters together. Scikit-learn sets the default to 'ward', which minimizes the within-cluster variance of newly-created clusters. Click [here](https://bookdown.org/content/f097ddae-23f5-4b2d-b360-ad412a6ca36a/chapter-2.-hierarchical-clustering.html#wards-method) for more information on the various linkage metrics, or see the Scikit-learn reference page linked [here](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.AgglomerativeClustering.html).
 
 ## Featured Visualizations 📊
-My machine learning app utilizes two different kinds of visuals for displaying the evaluation metrics of a given classification model. These include the confusion matrix and the ROC Curve.
+My app relays model feedback to the user through three different kinds of visuals. These include the elbow plot, the silhouette score plot, and the dendrogram.
 
-Confusion matrices:
-- Show the number of true positives, true negatives, false positives, and false negatives in the testing dataset.
-  - True positives (TP) are the datapoints correctly predicted to be 1. True negatives (TN) are the datapoints correctly predicted to be 0.
-  - False positives (FP) are the datapoints incorrectly predicted to be 1. False negatives (FN) are those incorrectly predicted to be 0.
-- Can easily be used to calculate key evaluation metrics like precision and recall, since precision = $\frac{TP}{(TP + FP)}$ and recall = $\frac{TP}{(TP + FN)}$.
-- Give us a quick idea of the model's predictive success with the training set.
+Elbow plots:
+- Display the within-cluster variance for KMeans models built with various values of *k*. 
+- Allow the user to find the optimal number of clusters by locating the value of *k* after which the slope sharply flattens out (like an elbow shape).
   
-![Confusion_Matrix](data/Confusion_Matrix.png)
+![Elbow_Plot](data/Elbow_Plot.png)
 
-The ROC (Receiver Operating Characteristic) Curve:
-- Plots the True Positive Rate (TPR) against the False Positive Rate (FPR).
-- Can be used to visualize the optimal probability threshold for classifying datapoints as a 0 or a 1, though that threshold is optimized automatically in this app.
-- Determines the AUC, or Area Under Curve, for the model, which gives us a good idea of the model's general performance across thresholds (0.8 is typically the benchmark for a good model).
+Silhouette Score Plots:
+- Display the silhouette score, which measures the average similarity of data points within a cluster, at different values of *k*.
+- Provide another source of guidance for choosing the optimal number of clusters by locating the *k* value that maximizes the silhouette score.
 
-![ROC_Curve](data/ROC_Curve.png)
+![Silhouette_Plot](data/Silhouette_Plot.png)
+
+Dendrograms:
+- Help the user visualize the bottom-up clustering process carried out by the hierarchical clustering algorithm.
+- Allow the user to cut the tree at a desired height (i.e. cluster distance) upon visual inspection of the dendrogram, thus giving them an optimal value for *k*.
+
+<img src="data/Dendrogram.png" alt="Dendrogram" width="700"/>
 
 ## References 📚
-For more information on supervised machine learning, I invite you to check out Luis G. Serrano's book, *Grokking Machine Learning*, as most of my general knowledge on the topic has come from that text.
+For more information on unsupervised machine learning, I invite you to check out the overview provided in Luis G. Serrano's book, *Grokking Machine Learning*, as most of my general knowledge on machine learning has come from that text.
 
-Furthermore, the idea for the general layout and probability outputs of this Streamlit app were inspired by the LinkedIn user prediction app linked [here](https://chandinir-linkedin-prediction-app-final-project-app-tjatqd.streamlit.app/). So, thank you to Chandini Ramesh for inspiring this app in many ways! 
+I also invite you to check out the Scikit-Learn API linked [here](https://scikit-learn.org/stable/api/index.html), as it contains information on all of the machine learning models and hyperparameters used in this app. 
 
-Finally, as stated above, the data for this project has been adapted from the work of Vivo Vinco and Basketball Reference, whom I also thank for making the sample data portion of this app possible. You can find the original dataset linked [here](https://www.kaggle.com/datasets/vivovinco/2023-2024-nba-player-stats?resource=download&select=2023-2024+NBA+Player+Stats+-+Regular.csv).
+Finally, as stated above, the underlying data and the glossary for the sabermetrics portion of this project comes from Baseball-Reference.com. So be sure to check out the full dataset on their website linked [here](https://www.baseball-reference.com/leagues/majors/2024-standard-pitching.shtml). Thank you to Baseball Reference for making this app possible!
 
 [^1]: Serrano, Luis G. *Grokking Machine Learning*. Manning, 2021.
