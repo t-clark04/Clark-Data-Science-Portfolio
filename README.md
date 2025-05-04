@@ -23,7 +23,7 @@ Displays my ability to develop and deploy interactive web applications with ``st
 
 <br clear="all">
 
-<img align="left" width="275" height="175" src="Images/MLB.webp"> **[Unsupervised Machine Learning App ⚾📈](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLUnsupervisedApp)**
+<img align="left" width="275" height="175" src="Images/MLB.jpeg"> **[Unsupervised Machine Learning App ⚾📈](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLUnsupervisedApp)**
 
 Showcases my mastery of ``streamlit`` web applications, as well as my understanding of both clustering and dimensionality reduction in ``scikit-learn``. Prompts users to select variables for clustering, choose their desired unsupervised learning models, tune hyperparameters, customize output, and explore their interactive ``plotly`` scatterplot. Explore the app right now by clicking [here](https://clark-unsupervised.streamlit.app/), or navigate over to [MLUnsupervisedApp](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLUnsupervisedApp) for more info!
 
