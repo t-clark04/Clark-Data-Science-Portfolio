@@ -16,14 +16,14 @@ Thank you for checking out my project!
 
 ## Table of Contents
 
-- [Overview](https://github.com/t-clark04/Clark-Data-Science-Portfolio/edit/main/MLUnsupervisedApp/README.md#overview)
-- [Running the App](https://github.com/t-clark04/Clark-Data-Science-Portfolio/edit/main/MLUnsupervisedApp/README.md#running-the-app-)
-- [Data](https://github.com/t-clark04/Clark-Data-Science-Portfolio/edit/main/MLUnsupervisedApp/README.md#data-%EF%B8%8F)
-- [What is Machine Learning?](https://github.com/t-clark04/Clark-Data-Science-Portfolio/edit/main/MLUnsupervisedApp/README.md#what-is-machine-learning-)
-- [Featured Models](https://github.com/t-clark04/Clark-Data-Science-Portfolio/edit/main/MLUnsupervisedApp/README.md#featured-models-%EF%B8%8F)
-- [Model Hyperparameters](https://github.com/t-clark04/Clark-Data-Science-Portfolio/edit/main/MLUnsupervisedApp/README.md#model-hyperparameters-)
-- [Featured Visualizations](https://github.com/t-clark04/Clark-Data-Science-Portfolio/edit/main/MLUnsupervisedApp/README.md#featured-visualizations-)
-- [References](https://github.com/t-clark04/Clark-Data-Science-Portfolio/edit/main/MLUnsupervisedApp/README.md#references-)
+- [Overview](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLUnsupervisedApp#overview)
+- [Running the App](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLUnsupervisedApp#running-the-app-)
+- [Data](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLUnsupervisedApp#data-%EF%B8%8F)
+- [What is Machine Learning?](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLUnsupervisedApp#what-is-machine-learning-)
+- [Featured Models](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLUnsupervisedApp#featured-models-%EF%B8%8F)
+- [Model Hyperparameters](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLUnsupervisedApp#model-hyperparameters-)
+- [Featured Visualizations](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLUnsupervisedApp#featured-visualizations-)
+- [References](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLUnsupervisedApp#references-)
 
 ## Running the App ✅
 This application is deployed on the Streamlit Community Cloud, which means there's an easy way and a hard way to run the app.
