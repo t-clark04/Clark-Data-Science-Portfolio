@@ -36,11 +36,11 @@ You'll have to start by downloading the "MLUnsupervisedApp" folder from my data 
 
 <img src="data/Getting_Started_1.png" alt="Getting_Started_1" width="600"/>
 
-Paste the following link into the box in the center of the page and hit enter on the keyboard: https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp.
+Paste the following link into the box in the center of the page and hit enter on the keyboard: https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLUnsupervisedApp.
 
 The project files have now been downloaded to your computer as a zip file. Locate the zip file in your Downloads folder, and extract the contents.
 
-Now, open up ``app.py`` in your favorite IDE (mine is VSCode!), head over to the terminal, and use the ls and cd commands to navigate your current directory to the "Clark-Data-Science-Portfolio main MLStreamlitApp" folder on your computer. More specifically, to enter an existing folder in your current working directory, enter "cd folder_name". To exit the folder, enter "cd ..". And to view the contents of your current folder, enter "ls".
+Now, open up ``app.py`` in your favorite IDE (mine is VSCode!), head over to the terminal, and use the ls and cd commands to navigate your current directory to the "Clark-Data-Science-Portfolio main MLUnsupervisedApp" folder on your computer. More specifically, to enter an existing folder in your current working directory, enter "cd folder_name". To exit the folder, enter "cd ..". And to view the contents of your current folder, enter "ls".
 
 Once you're in the correct folder, run the following prompt in the command line:
 
