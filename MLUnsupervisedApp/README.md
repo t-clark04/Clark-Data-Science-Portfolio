@@ -48,17 +48,19 @@ Once you're in the correct folder, run the following prompt in the command line:
 
 This will open up the Streamlit app in a new browser window. Happy exploring!
 
-Note: The app.py script uses the following Python libraries: ``streamlit`` (version 1.37.1), ``pandas`` (version 2.2.3), ``seaborn`` (version 0.13.2), ``matplotlib`` (version 3.10.1), ``scikit_learn`` (version 1.6.1) and ``pathlib``. If you have never used these libraries before or if they are not contained within your Python Standard Library, you may need to install them before you can run the terminal command. To do so, just hop over to the terminal in your IDE, and type: ``pip install package-name``. For example, to install pandas, just enter ``pip install pandas`` in the terminal and hit enter. Once all of these dependencies are installed, you should be good to go!
+Note: The app.py script uses the following Python libraries: ``streamlit`` (version 1.37.1), ``pandas`` (version 2.2.3), ``seaborn`` (version 0.13.2), ``matplotlib`` (version 3.10.1), ``scikit_learn`` (version 1.6.1), ``plotly`` (version 5.24.1), ``scipy`` (version 1.15.2), and ``pathlib``. If you have never used these libraries before or if they are not contained within your Python Standard Library, you may need to install them before you can run the terminal command. To do so, just hop over to the terminal in your IDE, and type: ``pip install package-name``. For example, to install pandas, just enter ``pip install pandas`` in the terminal and hit enter. Once all of these dependencies are installed, you should be good to go!
 
 ## Data 🗄️
-- The underlying data for the NBA All-Star portion of the app has been adapted from a larger Kaggle dataset linked [here](https://www.kaggle.com/datasets/vivovinco/2023-2024-nba-player-stats?resource=download&select=2023-2024+NBA+Player+Stats+-+Regular.csv).
-- The full dataset contains over 500 observations of NBA player statistics for the 2023-24 season across 30 different variables, though this project only utilized Rank, Player Name, Position, Points per Game, Assists per Game, and Rebounds per Game.
-- Thank you to Vivo Vinco and Basketball Reference for the use of this informative dataset!
+- The 2024 MLB pitching dataset and the glossary used for the sabermetrics portion of the app come from Baseball-Reference.com.
+- To check out the full dataset, head over to the website linked [here](https://www.baseball-reference.com/leagues/majors/2024-standard-pitching.shtml).
+- I express my most sincere gratitude to Baseball Reference for the use of this information and for making this app possible!
 
 ## What is Machine Learning? 🤖
-- Luis Serrano, author of *Grokking Machine Learning*, defines machine learning as "common sense, except done by computer." [^1] In essence, we prompt machines to learn from experience (i.e. data) in order to make predictions about the future.
-- In our case of *supervised* machine learning, this means that we feed data with a target variable and one or more predictor variables into a machine learning algorithm, and it builds a model so that we can predict that target variable based on the other features. 
-- My app focuses specifically on the prediction of *binary* target variables (like Yes/No, True/False, or 1/0). Since binary variables fall under the umbrella of categorical variables, all three of the machine learning models in the app are more precisely referred to as *classification* models. 
+- Luis Serrano, author of *Grokking Machine Learning*, defines machine learning as "common sense, except done by computer." [^1] In essence, we prompt machines to learn from experience (i.e. data) to help us make decisions or predict the future.
+- In this project, I focus specifically on *unsupervised* machine learning, which means that the dataset we input contains no target variable. There is nothing in the dataset that we wish to predict based on the other features, so we are left with two main options. We can:
+1. Group together similar observations ("clustering") and explore potential relationships between variables in this way.
+2. Cut down the number of variables in our dataset ("dimensionality reduction") with the goal of visualizing multi-dimensional data or preparing the data for *supervised* machine learning (see [Supervised Machine Learning App 🤖🏀](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp)). 
+- My app actually does both! It first clusters the given data using the selected variables and hyperparameters inputted by the user. Then, it uses dimensionality reduction to project the n-dimensional clusters into 2-D space and allow the user to gather insights.  
 
 ## Featured Models 🖥️
 My Streamlit app allows the user to utilize three different machine learning classification models. These include logistic regression, decision trees, and k-nearest neighbors.
