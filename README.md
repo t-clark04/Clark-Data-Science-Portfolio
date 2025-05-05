@@ -17,7 +17,7 @@ Demonstrates my expertise in data cleaning and visualization using Python librar
 #
 
 ## Machine Learning
-<img align="left" width="275" height="200" src="Images/NBA.jpg"> **[Supervised Machine Learning App 🤖🏀](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp)**
+<img align="left" width="290" height="225" src="Images/NBA.jpg"> **[Supervised Machine Learning App 🤖🏀](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp)**
 
 Displays my ability to develop and deploy interactive web applications with ``streamlit`` and build machine learning models with ``scikit-learn``. Allows the user to explore various classification models, tune hyperparameters, make predictions, and evaluate predictive power through user-uploaded data or a provided NBA dataset. Head over to [MLSStreamlitApp](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp) for the full app description, or click [here](https://clark-machine-learning.streamlit.app/) to check out the deployed app now!
 
