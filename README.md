@@ -12,7 +12,7 @@ Showcases my proficiency with the Streamlit library, as well as my skills in wor
 ## Data Cleaning and Visualization
 <img align="left" width="275" height="200" src="Images/Olympics.webp"> **[Tidy Data Project 🧹 ✨](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project)**
 
-Demonstrates my expertise in data cleaning and visualization using Python libraries like ``pandas``, ``seaborn``, and ``matplotlib``. Starting with a "messy" dataset on the 2008 Olympic medalists, I first re-format the data into a ["tidy"](https://www.jstatsoft.org/article/view/v059i10) data frame and then explore relationships in variables (like `Gender` and `Sport`) through pivot tables and visualizations. Click [here](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project) to check it out for yourself! 
+Demonstrates my expertise in data cleaning and visualization using Python libraries like ``pandas``, ``seaborn``, and ``matplotlib``. Starting with a "messy" dataset on the 2008 Olympic medalists, I first re-format the data into a ["tidy"](https://www.jstatsoft.org/article/view/v059i10) data frame and then explore relationships in variables (like Gender and Sport) through pivot tables and visualizations. Click [here](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project) to check it out for yourself! 
 
 #
 
@@ -22,13 +22,14 @@ Demonstrates my expertise in data cleaning and visualization using Python librar
 Displays my ability to develop and deploy interactive web applications with ``streamlit`` and build machine learning models with ``scikit-learn``.
 Allows the user to explore various classification models, tune hyperparameters, make predictions, and evaluate predictive power through user-uploaded data or a provided NBA dataset.
 Head over to [MLSStreamlitApp](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp) for the full app description, or click [here](https://clark-machine-learning.streamlit.app/) to check out the deployed app now!  
-**Models**: Logistic Regression, Decision Tree, K-Nearest Neighbors
+**ML Models**: Logistic Regression, Decision Tree, K-Nearest Neighbors
 
 <br clear="all">
 
 <img align="left" width="275" height="200" src="Images/MLB.jpg"> **[Unsupervised Machine Learning App ⚾📈](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLUnsupervisedApp)**
 
-Showcases my mastery of ``streamlit`` web applications, as well as my understanding of both clustering and dimensionality reduction in ``scikit-learn``. Prompts users to select variables for clustering, choose their desired unsupervised learning models, tune hyperparameters, customize output, and explore their interactive ``plotly`` scatterplot. Explore the app right now by clicking [here](https://clark-unsupervised.streamlit.app/), or navigate over to [MLUnsupervisedApp](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLUnsupervisedApp) for more info!
+Showcases my mastery of ``streamlit`` web applications, as well as my understanding of both clustering and dimensionality reduction in ``scikit-learn``. Prompts users to select variables for clustering, choose their desired unsupervised learning models, tune hyperparameters, customize output, and explore their interactive ``plotly`` scatterplot. Explore the app right now by clicking [here](https://clark-unsupervised.streamlit.app/), or navigate over to [MLUnsupervisedApp](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLUnsupervisedApp) for more info!  
+**ML Models**: KMeans Clustering, Hierarchical Clustering, PCA, t-SNE
 
 #
 
