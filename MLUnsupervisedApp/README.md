@@ -66,7 +66,7 @@ Note: The app.py script uses the following Python libraries: ``streamlit`` (vers
 This Streamlit app utilizes four different unsupervised machine learning models -- two for clustering and two for dimensionality reduction.
 
 Clustering models:
-- **KMeans** groups data into *k* clusters by finding the location of the optimal centroid to minimize the within-cluster sum of squares (WCSS, or inertia) for each cluster.
+- **K-Means** groups data into *k* clusters by finding the location of the optimal centroid to minimize the within-cluster sum of squares (WCSS, or inertia) for each cluster.
 - **Hierarchical clustering** uses a bottom-up approach to build a tree of nested clusters, combining them into larger clusters according to the linkage rule specified by the user.
 
 Dimensionality reduction models:
@@ -76,7 +76,7 @@ Dimensionality reduction models:
 ## Model Hyperparameters 🔧
 In this app, only the two clustering models require user-inputted hyperparameters.
 
-For KMeans Clustering:
+For K-Means Clustering:
 - ``k`` sets the number of clusters to group the data into. It is recommended that the user optimize this number according to the output given in the elbow and silhouette score plots.
 
 For Hierarchical Clustering:
@@ -87,7 +87,7 @@ For Hierarchical Clustering:
 My app relays model feedback to the user through three different kinds of visuals. These include the elbow plot, the silhouette score plot, and the dendrogram.
 
 Elbow plots:
-- Display the within-cluster variance for KMeans models built with various values of *k*. 
+- Display the within-cluster variance for K-Means models built with various values of *k*. 
 - Allow the user to find the optimal number of clusters by locating the value of *k* after which the slope sharply flattens out (like an elbow shape).
   
 ![Elbow_Plot](data/Elbow_Plot.png)
