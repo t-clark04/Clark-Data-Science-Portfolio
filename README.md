@@ -23,16 +23,18 @@ This repository contains all of my data science-related projects completed over 
 ## Machine Learning
 <img align="left" width="275" height="200" src="Images/NBA.jpg"> **[Supervised Machine Learning App 🤖🏀](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp)**
 
-Displays my ability to develop and deploy interactive web applications with ``streamlit`` and build machine learning models with ``scikit-learn``.
-Allows the user to explore various classification models, tune hyperparameters, make predictions, and evaluate predictive power through user-uploaded data or a provided NBA dataset.
-Head over to [MLSStreamlitApp](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp) for the full app description, or click [here](https://clark-machine-learning.streamlit.app/) to check out the deployed app now!  
+- Displays my ability to develop and deploy interactive web applications with ``streamlit`` and build machine learning models with ``scikit-learn``.
+- Allows the user to explore various classification models, tune hyperparameters, make predictions, and evaluate predictive power through user-uploaded data or a provided NBA dataset.
+- Head over to [MLSStreamlitApp](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp) for the full app description, or click [here](https://clark-machine-learning.streamlit.app/) to check out the deployed app now!  
 **ML Models**: Logistic Regression, Decision Tree, K-Nearest Neighbors
 
 <br clear="all">
 
 <img align="left" width="275" height="200" src="Images/MLB.jpg"> **[Unsupervised Machine Learning App ⚾📈](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLUnsupervisedApp)**
 
-Showcases my mastery of ``streamlit`` web applications, as well as my understanding of both clustering and dimensionality reduction in ``scikit-learn``. Prompts users to select variables for clustering, choose their desired unsupervised learning models, tune hyperparameters, customize output, and explore their interactive ``plotly`` scatterplot. Explore the app right now by clicking [here](https://clark-unsupervised.streamlit.app/), or navigate over to [MLUnsupervisedApp](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLUnsupervisedApp) for more info!  
+- Showcases my mastery of ``streamlit`` web applications, as well as my understanding of both clustering and dimensionality reduction in ``scikit-learn``.
+- Prompts users to select variables for clustering, choose their desired unsupervised learning models, tune hyperparameters, customize output, and explore their interactive ``plotly`` scatterplot.
+- Explore the app right now by clicking [here](https://clark-unsupervised.streamlit.app/), or navigate over to [MLUnsupervisedApp](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLUnsupervisedApp) for more info!  
 **ML Models**: KMeans Clustering, Hierarchical Clustering, PCA, t-SNE
 
 #
