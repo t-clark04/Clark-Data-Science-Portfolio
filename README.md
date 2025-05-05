@@ -24,7 +24,7 @@ This repository contains all of my data science-related projects completed over 
 <img align="left" width="275" height="200" src="Images/NBA.jpg"> **[Supervised Machine Learning App 🤖🏀](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp)**
 
 - Displays my ability to develop and deploy interactive web applications with ``streamlit`` and build classification models with ``scikit-learn``.
-- Allows the user to explore classification models, tune hyperparameters, and make predictions on user-uploaded data or a provided NBA dataset.
+- Allows the user to explore machine learning models, tune hyperparameters, and make predictions on user-uploaded data or a provided NBA dataset.
 - Click [here](https://clark-machine-learning.streamlit.app/) to check it out, or see [MLSStreamlitApp](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp) for the full description.
 - **ML Models: Logistic Regression, Decision Tree, K-Nearest Neighbors**
 
