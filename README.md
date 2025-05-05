@@ -32,8 +32,8 @@ This repository contains all of my data science-related projects completed over 
 
 <img align="left" width="275" height="200" src="Images/MLB.jpg"> **[Unsupervised Machine Learning App ⚾📈](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLUnsupervisedApp)**
 
-- Showcases my mastery of ``streamlit`` web applications and my understanding of both clustering and dimensionality reduction in ``scikit-learn``.
-- Prompts users to select variables for clustering, choose their desired unsupervised learning models, tune hyperparameters, customize output, and explore their interactive ``plotly`` scatterplot.
+- Showcases my mastery of ``streamlit`` web applications and understanding of both clustering and dimensionality reduction in ``scikit-learn``.
+- Prompts users to select clustering variables, choose unsupervised learning models, tune hyperparameters, customize output, and explore their interactive ``plotly`` scatterplot.
 - Explore the app right now by clicking [here](https://clark-unsupervised.streamlit.app/), or navigate over to [MLUnsupervisedApp](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLUnsupervisedApp) for more info!  
 - **ML Models**: KMeans Clustering, Hierarchical Clustering, PCA, t-SNE
 
