@@ -14,7 +14,9 @@ This repository contains all of my data science-related projects completed over 
 ## Data Cleaning and Visualization
 <img align="left" width="275" height="200" src="Images/Olympics.webp"> **[Tidy Data Project 🧹 ✨](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project)**
 
-Demonstrates my expertise in data cleaning and visualization using Python libraries like ``pandas``, ``seaborn``, and ``matplotlib``. Starting with a "messy" dataset on the 2008 Olympic medalists, I first re-format the data into a ["tidy"](https://www.jstatsoft.org/article/view/v059i10) data frame and then explore relationships in variables (like Gender and Sport) through pivot tables and visualizations. Click [here](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project) to check it out for yourself! 
+- Demonstrates my expertise in data cleaning and visualization using Python libraries like ``pandas``, ``seaborn``, and ``matplotlib``.
+- Starting with a "messy" Olympic dataset, I first re-format the data into a ["tidy"](https://www.jstatsoft.org/article/view/v059i10) data frame and then explore relationships in variables (like Gender and Sport) through pivot tables and visualizations.
+- Click [here](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/TidyData-Project) to check it out for yourself! 
 
 #
 
