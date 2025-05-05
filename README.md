@@ -26,7 +26,7 @@ This repository contains all of my data science-related projects completed over 
 - Displays my ability to develop and deploy interactive web applications with ``streamlit`` and build machine learning models with ``scikit-learn``.
 - Allows the user to explore classification models, tune hyperparameters, and make predictions on user-uploaded data or a provided NBA dataset.
 - Click [here](https://clark-machine-learning.streamlit.app/) to check it out, or see [MLSStreamlitApp](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLStreamlitApp) for the full description.
-- **ML Models**: Logistic Regression, Decision Tree, K-Nearest Neighbors
+- **ML Models: Logistic Regression, Decision Tree, K-Nearest Neighbors**
 
 <br clear="all">
 
@@ -35,7 +35,7 @@ This repository contains all of my data science-related projects completed over 
 - Showcases my mastery of ``streamlit`` web applications and understanding of both clustering and dimensionality reduction in ``scikit-learn``.
 - Prompts users to select clustering variables, choose their desired models, tune hyperparameters, and explore their customized ``plotly`` scatterplot.
 - Explore the app [here](https://clark-unsupervised.streamlit.app/), or navigate to [MLUnsupervisedApp](https://github.com/t-clark04/Clark-Data-Science-Portfolio/tree/main/MLUnsupervisedApp) for more info!  
-- **ML Models**: KMeans Clustering, Hierarchical Clustering, PCA, t-SNE
+- **ML Models: KMeans Clustering, Hierarchical Clustering, PCA, t-SNE**
 
 #
 
